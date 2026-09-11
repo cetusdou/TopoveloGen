@@ -542,11 +542,12 @@ class GraphEdge(nn.Module):
 # ==============================================================================
 
 class UniversalGraphSystem(nn.Module):
-    def __init__(self, nodes, edges, fusion_temp=0.01):
+    def __init__(self, nodes, edges, fusion_temp=0.01, gradient_clip: float = 50.0):
         super().__init__()
         self.nodes = nodes
         self.edges = nn.ModuleList(edges)
         self.T = fusion_temp
+        self.gradient_clip = float(gradient_clip)
 
     def get_node_basins(self, z: torch.Tensor):
         """计算节点的高斯深坑势能（basin）"""
@@ -606,6 +607,7 @@ class UniversalGraphSystem(nn.Module):
         return u_fused, f_fused
 
     def get_drift(self, z: torch.Tensor) -> torch.Tensor:
+        """Return the numerical latent drift b_num(z) used by simulations."""
         z = z.clone().detach().requires_grad_(True)
         u_fused, f_rot = self.compute_fused_field(z)
         u_basins = self.get_node_basins(z)
@@ -613,7 +615,7 @@ class UniversalGraphSystem(nn.Module):
         
         u_sum = u_total.sum()
         grad = torch.autograd.grad(u_sum, z, create_graph=False)[0]
-        grad = torch.clamp(grad, -50.0, 50.0) # 梯度截断，防抖动
+        grad = torch.clamp(grad, -self.gradient_clip, self.gradient_clip)
         
         
         return -grad + f_rot

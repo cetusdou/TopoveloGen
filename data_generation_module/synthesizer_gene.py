@@ -28,6 +28,7 @@ class GeneSynthesizer:
         nb_dispersion: float = 1.0,
         dropout_prob: float = 0.0,  # Dropout probability (0.0 = no dropout, typical: 0.1-0.3)
         dropout_slope: float = 0.1,  # Slope for dropout probability vs expression (higher = more dropout for low expression)
+        unspliced_capture_ratio: float = 0.2,
         seed: int | None = None,
         # --- 动力学参数 (新) ---
         splicing_rate: float = 1.0,   # beta
@@ -66,6 +67,7 @@ class GeneSynthesizer:
         self.nb_dispersion = float(nb_dispersion)
         self.dropout_prob = float(dropout_prob)
         self.dropout_slope = float(dropout_slope)
+        self.unspliced_capture_ratio = float(unspliced_capture_ratio)
         self.seed = seed
         
         # Kinetics - 支持每个基因独立的 beta 和 gamma
@@ -695,23 +697,33 @@ class GeneSynthesizer:
         self.alpha = alpha
         return alpha
 
-    def _sample_counts(self, expr_rate: torch.Tensor) -> torch.Tensor:
-        """辅助函数：从连续率采样离散计数，支持dropout噪声"""
+    def _draw_capture_factor(self, expr_rate: torch.Tensor) -> torch.Tensor:
+        """Draw a cell-specific capture factor for absolute-abundance counts."""
         N = expr_rate.shape[0]
-        # Log-Normal Library Size
         lib_size = torch.distributions.LogNormal(np.log(self.lib_size_mean), self.lib_size_sd).sample((N, 1)).to(expr_rate.device)
-        
-        # 归一化 (Proportion) * Library Size
-        p_expr = expr_rate / (expr_rate.sum(dim=1, keepdim=True) + 1e-6)
-        mean_counts = p_expr * lib_size
-        
+        total_abundance = expr_rate.sum(dim=1, keepdim=True).clamp(min=1e-6)
+        reference_total = torch.median(total_abundance).clamp(min=1e-6)
+        return lib_size / reference_total
+
+    def _sample_counts(
+        self,
+        expr_rate: torch.Tensor,
+        capture_factor: Optional[torch.Tensor] = None,
+        capture_scale: float = 1.0,
+    ) -> torch.Tensor:
+        """Sample counts from absolute abundances with a cell-specific capture factor."""
+        if capture_factor is None:
+            capture_factor = self._draw_capture_factor(expr_rate)
+
+        mean_counts = torch.clamp(expr_rate, min=0.0) * capture_factor * float(capture_scale)
+
         # 采样计数
         if self.sampling == 'poisson':
             counts = torch.poisson(mean_counts)
         elif self.sampling in ['nb', 'negative_binomial']:
             r = self.nb_dispersion
             mean_counts_clamped = mean_counts.clamp(min=1e-6)
-            gamma = torch.distributions.Gamma(r, mean_counts_clamped / r)
+            gamma = torch.distributions.Gamma(r, r / mean_counts_clamped)
             lam = gamma.sample()
             counts = torch.poisson(lam)
         else:
@@ -891,20 +903,20 @@ class GeneSynthesizer:
         
         # 5. 模拟计数 (可选)
         if simulate_counts:
-            # Spliced 和 Unspliced 具有不同的 Library Size 特征
-            # 通常 Unspliced 的捕获率低很多
-            s_counts = self._sample_counts(s_final)
-            
-            # 临时调整 Unspliced 的 LibSize (假设捕获率是 Spliced 的 20% 左右)
-            original_mean = self.lib_size_mean
-            self.lib_size_mean = original_mean * 0.2
-            u_counts = self._sample_counts(u_final)
-            self.lib_size_mean = original_mean # 恢复
+            # Spliced and unspliced counts share the same cell-specific capture
+            # factor; unspliced molecules use a fixed lower capture efficiency.
+            capture_factor = self._draw_capture_factor(s_final)
+            s_counts = self._sample_counts(s_final, capture_factor=capture_factor)
+            u_counts = self._sample_counts(
+                u_final,
+                capture_factor=capture_factor,
+                capture_scale=self.unspliced_capture_ratio,
+            )
             
             return {
                 'spliced': s_counts,
                 'unspliced': u_counts,
-                'velocity': vel_final, # GT velocity is continuous rate
+                'velocity': vel_final, # GT RNA-state velocity is a continuous rate
                 'alpha': alpha_final
             }
         else:

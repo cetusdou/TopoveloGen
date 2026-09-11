@@ -7,7 +7,16 @@ from typing import Tuple, Optional, List
 from .graph_core import UniversalGraphSystem, GraphNode, CycleNode, GraphEdge
 class GraphSimulator:
     @staticmethod
-    def run(system, start_node_id, n_cells=50, steps=1000, dt=0.01, noise_level=0.1):
+    def run(
+        system,
+        start_node_id,
+        n_cells=50,
+        steps=1000,
+        dt=0.01,
+        noise_level=0.1,
+        bounds=None,
+        boundary_mode="none",
+    ):
         try:
             start_node = next(n for n in system.nodes if n.id == start_node_id)
         except StopIteration:
@@ -26,6 +35,22 @@ class GraphSimulator:
             drift = system.get_drift(z)
             noise = torch.randn_like(z) * noise_level * np.sqrt(dt)
             z = z + drift * dt + noise
+            if bounds is not None and boundary_mode != "none":
+                low, high = bounds
+                low_t = torch.as_tensor(low, dtype=z.dtype, device=z.device)
+                high_t = torch.as_tensor(high, dtype=z.dtype, device=z.device)
+                if low_t.ndim == 0:
+                    low_t = torch.full((dim,), float(low_t), dtype=z.dtype, device=z.device)
+                if high_t.ndim == 0:
+                    high_t = torch.full((dim,), float(high_t), dtype=z.dtype, device=z.device)
+                if boundary_mode == "clip":
+                    z = torch.minimum(torch.maximum(z, low_t), high_t)
+                elif boundary_mode == "reflect":
+                    z = torch.where(z < low_t, 2 * low_t - z, z)
+                    z = torch.where(z > high_t, 2 * high_t - z, z)
+                    z = torch.minimum(torch.maximum(z, low_t), high_t)
+                else:
+                    raise ValueError("boundary_mode must be 'none', 'clip', or 'reflect'")
             traj.append(z.clone())
             
         return torch.stack(traj).detach().cpu().numpy()

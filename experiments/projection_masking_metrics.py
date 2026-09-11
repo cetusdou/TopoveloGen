@@ -1,11 +1,10 @@
 """Projection masking metrics shared across benchmark and simulation diagnostics.
 
-Δ_proj = Cos_UMAP − Cos_gene  (or C^2D_pred − C^G_pred on simulation)
+Delta_proj = Cos_proj - Cos_gene, using the same RNA-state velocity reference
+before and after projection.
 
-On real-method benchmarks where UMAP cosine exceeds gene-space cosine, positive
-Δ_proj indicates projection-based evaluation is more optimistic than gene-space
-evaluation.  On synthetic scVelo diagnostics, use threshold-based *masking cells*
-(C^2D_pred > τ_low and C^G_pred < τ_high) separately from Δ_proj.
+Positive Delta_proj indicates that projection-based evaluation is more
+optimistic than direct gene-space evaluation.
 """
 
 from __future__ import annotations
@@ -20,7 +19,7 @@ import pandas as pd
 # Benchmark methods (UMAP cosine often > gene-space cosine)
 PROJECTION_MASKING_CAPTION = (
     "Projection-based evaluation can be more optimistic than gene-space evaluation "
-    "(Δ_proj = Cos_UMAP − Cos_gene)."
+    "(Delta_proj = Cos_proj - Cos_gene)."
 )
 
 # Synthetic scVelo diagnosis (embedding ceiling + structured gene-space error)
@@ -31,7 +30,7 @@ EVALUATION_CEILING_CAPTION = (
 
 
 def delta_projection_masking(cos_umap: np.ndarray, cos_gene: np.ndarray) -> np.ndarray:
-    """Per-cell projection masking index: Cos_UMAP − Cos_gene."""
+    """Per-cell projection masking index: Cos_proj - Cos_gene."""
     return np.asarray(cos_umap, dtype=np.float64) - np.asarray(cos_gene, dtype=np.float64)
 
 

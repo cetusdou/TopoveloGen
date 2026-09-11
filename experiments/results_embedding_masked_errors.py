@@ -147,13 +147,25 @@ def simulate_trajectory(
     return traj
 
 
-def latent_velocity_from_traj(traj: torch.Tensor, dt: float) -> np.ndarray:
-    """Per-observation latent velocity [T*N, 2] from finite differences."""
+def finite_time_displacement_from_traj(traj: torch.Tensor, dt: float) -> np.ndarray:
+    """Per-observation finite-time latent displacement [T*N, D] from differences."""
     t_steps, n_cells, d = traj.shape
     v = torch.zeros(t_steps, n_cells, d)
     v[:-1] = (traj[1:] - traj[:-1]) / dt
     v[-1] = v[-2]
     return v.reshape(-1, d).numpy()
+
+
+def latent_velocity_from_traj(traj: torch.Tensor, dt: float) -> np.ndarray:
+    """Deprecated alias for finite_time_displacement_from_traj."""
+    return finite_time_displacement_from_traj(traj, dt)
+
+
+def latent_drift_from_system(system: UniversalGraphSystem, z: np.ndarray) -> np.ndarray:
+    """Evaluate the numerical latent drift field b_num(z) at observed cells."""
+    z_t = torch.tensor(z, dtype=torch.float32)
+    drift = system.get_drift(z_t).detach().cpu().numpy()
+    return drift
 
 
 def flatten_traj(traj: torch.Tensor) -> np.ndarray:
@@ -246,6 +258,16 @@ def run_scvelo(
     }
 
 
+def embed_velocity_on_umap(adata, velocity: np.ndarray, vkey: str = "velocity_in") -> np.ndarray:
+    import scvelo as scv
+
+    a = adata.copy()
+    a.layers[vkey] = velocity
+    scv.tl.velocity_graph(a, vkey=vkey)
+    scv.tl.velocity_embedding(a, basis="umap", vkey=vkey)
+    return np.asarray(a.obsm[f"{vkey}_umap"])
+
+
 def align_velocity_gt(
     velocity_gt_full: np.ndarray,
     gene_names_full: np.ndarray,
@@ -308,7 +330,7 @@ def analyze_topology(
     bundle = generate_kinetics_bundle(system, traj, n_genes)
 
     z_all = flatten_traj(traj)
-    v_lat_all = latent_velocity_from_traj(traj, DT)
+    v_lat_all = latent_drift_from_system(system, z_all)
     idx = subsample_observations(len(z_all), subsample, SEED)
 
     s = bundle["spliced_counts"][idx]
@@ -323,7 +345,8 @@ def analyze_topology(
     v_pred = sc["velocity_pred"]
 
     cos_high = cosine_rows(v_pred, v_gt)
-    cos_low = cosine_rows(sc["velocity_umap"], v_lat)
+    v_umap_gt = embed_velocity_on_umap(sc["adata"], v_gt, vkey="velocity_gt")
+    cos_low = cosine_rows(sc["velocity_umap"], v_umap_gt)
     mm = mismatch_mask(cos_low, cos_high)
 
     regions = assign_regions(system, z)
@@ -334,6 +357,7 @@ def analyze_topology(
         "system": system,
         "z": z,
         "v_latent_gt": v_lat,
+        "velocity_umap_gt": v_umap_gt,
         "cos_high": cos_high,
         "cos_low": cos_low,
         "mismatch": mm,
@@ -382,11 +406,11 @@ def plot_figure7(main: Dict[str, Any], sweep: List[Dict[str, Any]]) -> plt.Figur
     z = main["z"]
     system = main["system"]
 
-    # A: GT latent velocity
+    # A: GT latent drift
     ax = axes[0, 0]
     ax.scatter(z[:, 0], z[:, 1], s=1.5, c="#CCCCCC", linewidths=0, rasterized=True)
     _quiver_subsample(ax, z, main["v_latent_gt"], stride=35, scale=8.0, color="C0")
-    ax.set_title("A  Ground-truth latent velocity")
+    ax.set_title("A  Ground-truth latent drift")
     ax.set_xlabel("")
     ax.set_ylabel("")
     ax.set_aspect("equal")

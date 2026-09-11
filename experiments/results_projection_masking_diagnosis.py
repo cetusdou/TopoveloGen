@@ -5,11 +5,13 @@ Tests whether projection-based evaluation, gene-space accuracy, and topological
 organization of errors are decoupled on cycle-bifurcation synthetic data.
 
 Key metrics (per cell):
-  C^G_pred       — gene-space cosine (predicted vs GT velocity)
-  C^2D_pred      — embedding cosine (predicted vs GT latent velocity)
-  C^2D_GT embed  — embedding cosine (GT velocity embedded vs GT latent)
-  Δ_proj         — C^2D_pred − C^G_pred
-  masking cell   — C^2D_pred > τ_low AND C^G_pred < τ_high  (τ_low=0.7, τ_high=0.2)
+  C_gene         - gene-space cosine (predicted RNA velocity vs GT RNA-state velocity)
+  C_proj         - embedding cosine after applying the same projection operator to
+                   predicted and GT RNA-state velocities
+  Delta_proj     - C_proj - C_gene
+  C_lat/RNA      - diagnostic agreement between projected RNA-state velocity and
+                   latent drift mapped into the embedding
+  masking cell   - C_proj > tau_high AND C_gene < tau_low (default 0.7 and 0.2)
 
 Headline (main text):
   Projection-based velocity evaluation has a ceiling, and gene-space errors are
@@ -55,7 +57,7 @@ from experiments.results_embedding_masked_errors import (  # noqa: E402
     assign_regions,
     cosine_rows,
     flatten_traj,
-    latent_velocity_from_traj,
+    latent_drift_from_system,
     mismatch_mask,
     simulate_trajectory,
     subsample_observations,
@@ -317,7 +319,7 @@ def analyze_case(
         bundle = generate_kinetics_bundle_typed(system, traj, n_genes)
 
     z_all = flatten_traj(traj)
-    v_lat_all = latent_velocity_from_traj(traj, DT)
+    v_lat_all = latent_drift_from_system(system, z_all)
     idx = subsample_observations(len(z_all), SUBSAMPLE, SEED)
 
     s = bundle["spliced_counts"][idx]
@@ -332,13 +334,12 @@ def analyze_case(
     v_gt = align_velocity_gt(v_gt_full, genes, sc["gene_names_used"])
     v_pred = sc["velocity_pred"]
 
-    cos_high = cosine_rows(v_pred, v_gt)
-    cos_low = cosine_rows(sc["velocity_umap"], v_lat)
-    delta_proj = delta_projection_masking(cos_low, cos_high)
-    mm = mismatch_mask(cos_low, cos_high)
-
     # M4: GT embedding ceiling
     v_umap_gt = embed_velocity_on_umap(sc["adata"], v_gt)
+    cos_high = cosine_rows(v_pred, v_gt)
+    cos_low = cosine_rows(sc["velocity_umap"], v_umap_gt)
+    delta_proj = delta_projection_masking(cos_low, cos_high)
+    mm = mismatch_mask(cos_low, cos_high)
     cos_low_gt = cosine_rows(v_umap_gt, v_lat)
 
     # M1: PCA subspace capture
@@ -601,7 +602,7 @@ def _draw_region_fraction_bar(ax: plt.Axes, main: Dict[str, Any]) -> None:
 
 
 def _draw_embedding_ceiling_panel(ax: plt.Axes, main: Dict[str, Any], *, panel_letter: str = "C") -> None:
-    """C^2D_GT embed vs C^2D_pred — faint background, masking cells highlighted."""
+    """Latent/RNA diagnostic vs C_proj, with masking cells highlighted."""
     cgt = main["cos_low_gt"]
     cpred = main["cos_low"]
     mm = main["mismatch"]
@@ -785,7 +786,7 @@ def plot_supplementary(main: Dict[str, Any], sweep_rows: List[Dict]) -> plt.Figu
         ax_pca.errorbar(xc, ym, yerr=yerr, fmt="o-", color="C0", lw=1.2, ms=4, capsize=2.5)
     rho = _spearman_rho(main["pca_frac"], main["delta_proj"])
     ax_pca.axhline(0.0, color="k", ls=":", lw=0.6, alpha=0.45)
-    ax_pca.set_xlabel("PCA capture of GT velocity")
+    ax_pca.set_xlabel("PCA capture of GT RNA-state velocity")
     ax_pca.set_ylabel(r"$\Delta_{\mathrm{proj}}$")
     ax_pca.set_title("B  Gene-space capture vs $\\Delta_{\\mathrm{proj}}$ (weak)")
     ax_pca.text(
