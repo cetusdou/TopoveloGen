@@ -1,6 +1,6 @@
 """可运行示例：生成二维景观、轨迹与基因表达。"""
 
-import torch
+import numpy as np
 
 from data_generation_module import (
     CycleNode,
@@ -30,7 +30,7 @@ def main():
     synthesizer.add_trend_gene(edge_idx=0, n_genes=8, pattern="sigmoid")
     synthesizer.add_cycle_gene(node_id="Cycle", n_genes=6)
 
-    z = torch.tensor(traj.reshape(-1, 2), dtype=torch.float32)
+    z = traj.reshape(-1, 2).astype(np.float32)
     counts = synthesizer.generate(z, simulate_counts=False)
     print("counts shape:", counts.shape)
 

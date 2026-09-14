@@ -4,7 +4,6 @@
 """
 
 import numpy as np
-import torch
 
 from data_generation_module import (
     GraphEdge,
@@ -21,7 +20,7 @@ def create_figure8_skeleton(n_points=200, scale=2.0):
     x = scale * np.sin(t)
     y = scale * np.sin(2 * t) / 2
     skeleton = np.stack([x, y], axis=1)
-    return torch.tensor(skeleton, dtype=torch.float32)
+    return skeleton.astype(np.float32)
 
 
 def example_simple_figure8():

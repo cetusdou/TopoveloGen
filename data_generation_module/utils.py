@@ -1,10 +1,11 @@
-import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Tuple, Optional, List
 
 # 通过相对导入获取类型帮助（运行时不会强制依赖）
 from .graph_core import UniversalGraphSystem, GraphNode, CycleNode, GraphEdge
+
+
 class GraphSimulator:
     @staticmethod
     def run(
@@ -21,39 +22,39 @@ class GraphSimulator:
             start_node = next(n for n in system.nodes if n.id == start_node_id)
         except StopIteration:
             raise ValueError(f"Start node {start_node_id} not found")
-            
+
         dim = len(start_node.pos)
-        start_pos = torch.tensor(start_node.pos, dtype=torch.float32)
-        
-        z = start_pos.unsqueeze(0).repeat(n_cells, 1)
-        z += torch.randn_like(z) * start_node.sigma *0.1
-        
-        traj = [z.clone()]
-        
+        start_pos = np.asarray(start_node.pos, dtype=np.float32)
+
+        z = np.tile(start_pos[None, :], (n_cells, 1))
+        z += np.random.randn(*z.shape).astype(z.dtype) * start_node.sigma * 0.1
+
+        traj = [z.copy()]
+
         print(f"Starting simulation in {dim}-Dimensional space...")
         for i in range(steps):
             drift = system.get_drift(z)
-            noise = torch.randn_like(z) * noise_level * np.sqrt(dt)
+            noise = np.random.randn(*z.shape).astype(z.dtype) * noise_level * np.sqrt(dt)
             z = z + drift * dt + noise
             if bounds is not None and boundary_mode != "none":
                 low, high = bounds
-                low_t = torch.as_tensor(low, dtype=z.dtype, device=z.device)
-                high_t = torch.as_tensor(high, dtype=z.dtype, device=z.device)
+                low_t = np.asarray(low, dtype=z.dtype)
+                high_t = np.asarray(high, dtype=z.dtype)
                 if low_t.ndim == 0:
-                    low_t = torch.full((dim,), float(low_t), dtype=z.dtype, device=z.device)
+                    low_t = np.full((dim,), float(low_t), dtype=z.dtype)
                 if high_t.ndim == 0:
-                    high_t = torch.full((dim,), float(high_t), dtype=z.dtype, device=z.device)
+                    high_t = np.full((dim,), float(high_t), dtype=z.dtype)
                 if boundary_mode == "clip":
-                    z = torch.minimum(torch.maximum(z, low_t), high_t)
+                    z = np.minimum(np.maximum(z, low_t), high_t)
                 elif boundary_mode == "reflect":
-                    z = torch.where(z < low_t, 2 * low_t - z, z)
-                    z = torch.where(z > high_t, 2 * high_t - z, z)
-                    z = torch.minimum(torch.maximum(z, low_t), high_t)
+                    z = np.where(z < low_t, 2 * low_t - z, z)
+                    z = np.where(z > high_t, 2 * high_t - z, z)
+                    z = np.minimum(np.maximum(z, low_t), high_t)
                 else:
                     raise ValueError("boundary_mode must be 'none', 'clip', or 'reflect'")
-            traj.append(z.clone())
-            
-        return torch.stack(traj).detach().cpu().numpy()
+            traj.append(z.copy())
+
+        return np.stack(traj)
 
 class GraphVisualizer:
     """
@@ -86,18 +87,18 @@ class GraphVisualizer:
         - node_style: dict (style for GraphNode markers/text)
         - show_colorbar: bool (whether to show colorbar, default True)
         """
-        
+
         # 1. 生成高分辨率网格 (用于背景势能 Contourf)
         limit = bounds[1]
         res = int(plot_kwargs.get('res', 150))
         x = np.linspace(-limit, limit, res)
         y = np.linspace(-limit, limit, res)
         X, Y = np.meshgrid(x, y)
-        grid = torch.tensor(np.stack([X, Y], axis=-1), dtype=torch.float32).reshape(-1, 2)
-        
+        grid = np.stack([X, Y], axis=-1).astype(np.float32).reshape(-1, 2)
+
         # 计算高分率势能
         U = system.potential_numpy(grid).reshape(res, res)
-        
+
         # 创建/复用画布
         created_fig = False
         if ax is None:
@@ -105,7 +106,7 @@ class GraphVisualizer:
             created_fig = True
         else:
             fig = ax.figure
-        
+
         # 2. 绘制势能背景
         v_min, v_max = U.min(), np.percentile(U, 95)
         # 扩展 levels 以便背景平滑
@@ -118,28 +119,27 @@ class GraphVisualizer:
             # attach colorbar to the figure/axis in use
             cbar = fig.colorbar(cntr, ax=ax)
             cbar.set_label(plot_kwargs.get('colorbar_label', "Potential Energy (Depth)"), rotation=270, labelpad=15)
-        
+
         # 3. 绘制局部流线 (Streamplot)
         # 使用稀疏网格
         stream_stride = int(plot_kwargs.get('stream_stride', stride))
         x_s = x[::stream_stride]; y_s = y[::stream_stride]
         X_s, Y_s = np.meshgrid(x_s, y_s)
-        grid_s = torch.tensor(np.stack([X_s, Y_s], axis=-1), dtype=torch.float32).reshape(-1, 2)
-        
+        grid_s = np.stack([X_s, Y_s], axis=-1).astype(np.float32).reshape(-1, 2)
+
         # A. 获取漂移速度
-        with torch.enable_grad():
-            drift_s = system.get_drift(grid_s).detach().numpy()
-            
+        drift_s = system.get_drift(grid_s)
+
         U_s = drift_s[:, 0].reshape(X_s.shape)
         V_s = drift_s[:, 1].reshape(Y_s.shape)
-        
+
         pot_s = system.potential_numpy(grid_s).reshape(X_s.shape)
         mask = pot_s > stream_threshold
-        
+
         # 将背景区域的速度设为 NaN，streamplot 会自动跳过
         U_s[mask] = np.nan
         V_s[mask] = np.nan
-        
+
         # 绘制流线
         stream_color = plot_kwargs.get('stream_color', 'white')
         stream_linewidth = float(plot_kwargs.get('stream_linewidth', 0.6))
@@ -147,12 +147,12 @@ class GraphVisualizer:
         arrowsize = float(plot_kwargs.get('arrowsize', 0.8))
         ax.streamplot(X_s, Y_s, U_s, V_s, color=stream_color, linewidth=stream_linewidth,
                   density=stream_density, arrowsize=arrowsize)
-        
+
         # 4. 绘制图骨架 (Skeleton)
         if show_skeleton:
             edge_style = plot_kwargs.get('skeleton_edge_style', {'c': 'white', 'ls': ':', 'lw': 1.0, 'alpha': 0.4})
             for edge in system.edges:
-                start, end = edge.start.cpu().numpy(), edge.end.cpu().numpy()
+                start, end = edge.start, edge.end
                 ax.plot([start[0], end[0]], [start[1], end[1]], zorder=2, **edge_style)
 
             cycle_style = plot_kwargs.get('cycle_style', {'color': 'cyan', 'fill': False, 'ls': '--', 'linewidth': 1.5, 'alpha': 0.6})
@@ -202,18 +202,18 @@ class GraphVisualizer:
         """
         Plot landscape + trajectories. Accepts same `plot_kwargs` as `plot_landscape`.
         """
-        
+
         # 1. 生成高分辨率网格 (用于背景势能 Contourf)
         limit = bounds[1]
         res = int(plot_kwargs.get('res', 150))
         x = np.linspace(-limit, limit, res)
         y = np.linspace(-limit, limit, res)
         X, Y = np.meshgrid(x, y)
-        grid = torch.tensor(np.stack([X, Y], axis=-1), dtype=torch.float32).reshape(-1, 2)
-        
+        grid = np.stack([X, Y], axis=-1).astype(np.float32).reshape(-1, 2)
+
         # 计算高分率势能
         U = system.potential_numpy(grid).reshape(res, res)
-        
+
         # 创建/复用画布
         created_fig = False
         if ax is None:
@@ -221,7 +221,7 @@ class GraphVisualizer:
             created_fig = True
         else:
             fig = ax.figure
-        
+
         # 2. 绘制势能背景
         v_min, v_max = U.min(), np.percentile(U, 95)
         # 扩展 levels 以便背景平滑
@@ -233,34 +233,33 @@ class GraphVisualizer:
         if show_colorbar:
             cbar = fig.colorbar(cntr, ax=ax)
             cbar.set_label(plot_kwargs.get('colorbar_label', "Potential Energy (Depth)"), rotation=270, labelpad=15)
-        
+
         # 3. [关键修改] 绘制局部流线 (Streamplot)
         # 使用稀疏网格
         stream_stride = int(plot_kwargs.get('stream_stride', stride))
         x_s = x[::stream_stride]; y_s = y[::stream_stride]
         X_s, Y_s = np.meshgrid(x_s, y_s)
-        grid_s = torch.tensor(np.stack([X_s, Y_s], axis=-1), dtype=torch.float32).reshape(-1, 2)
-        
+        grid_s = np.stack([X_s, Y_s], axis=-1).astype(np.float32).reshape(-1, 2)
+
         # A. 获取漂移速度
-        with torch.enable_grad():
-            drift_s = system.get_drift(grid_s).detach().numpy()
-            
+        drift_s = system.get_drift(grid_s)
+
         U_s = drift_s[:, 0].reshape(X_s.shape)
         V_s = drift_s[:, 1].reshape(Y_s.shape)
-        
+
         # B. [新增步骤] 计算稀疏网格的势能，用于掩码
         # 注意：必须重新计算 grid_s 的势能，不能直接从高分辨率 U 中切片，那样容易对不齐
         pot_s = system.potential_numpy(grid_s).reshape(X_s.shape)
-        
+
         # C. [核心逻辑] 应用掩码
         # 我们的沟渠势能是负数 (例如 -2.0)。背景是 0.0。
         # 如果势能 > stream_threshold (比如 -0.05)，说明太浅了/在背景里，不画流线。
         mask = pot_s > stream_threshold
-        
+
         # 将背景区域的速度设为 NaN，streamplot 会自动跳过
         U_s[mask] = np.nan
         V_s[mask] = np.nan
-        
+
         # 绘制流线
         stream_color = plot_kwargs.get('stream_color', 'white')
         stream_linewidth = float(plot_kwargs.get('stream_linewidth', 0.6))
@@ -268,12 +267,12 @@ class GraphVisualizer:
         arrowsize = float(plot_kwargs.get('arrowsize', 0.8))
         ax.streamplot(X_s, Y_s, U_s, V_s, color=stream_color, linewidth=stream_linewidth,
                   density=stream_density, arrowsize=arrowsize)
-        
+
         # 4. 绘制图骨架 (Skeleton)
         if show_skeleton:
             edge_style = plot_kwargs.get('skeleton_edge_style', {'c': 'white', 'ls': ':', 'lw': 1.0, 'alpha': 0.4})
             for edge in system.edges:
-                start, end = edge.start.cpu().numpy(), edge.end.cpu().numpy()
+                start, end = edge.start, edge.end
                 ax.plot([start[0], end[0]], [start[1], end[1]], zorder=2, **edge_style)
 
             cycle_style = plot_kwargs.get('cycle_style', {'color': 'cyan', 'fill': False, 'ls': '--', 'linewidth': 1.5, 'alpha': 0.6})
@@ -302,7 +301,7 @@ class GraphVisualizer:
             n_plot = min(100, traj.shape[1])
             for i in range(n_plot):
                 ax.plot(traj[:, i, 0], traj[:, i, 1], c='white', lw=0.5, alpha=0.3, zorder=1)
-                
+
         ax.set_title(title, fontsize=plot_kwargs.get('title_fontsize', 14))
         ax.set_xlabel("Latent Dim 1")
         ax.set_ylabel("Latent Dim 2")

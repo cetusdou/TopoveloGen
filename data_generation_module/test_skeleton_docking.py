@@ -3,7 +3,6 @@
 验证 GraphEdge 能够正确找到骨架轨迹上的最近点
 """
 
-import torch
 import numpy as np
 from data_generation_module import GraphNode, SkeletonNode, GraphEdge, UniversalGraphSystem
 
@@ -42,9 +41,9 @@ def test_skeleton_docking():
     print(f"  修正后的终点（骨架最近点）: {edge1.end.tolist()}")
     
     # 验证终点确实在骨架轨迹上（或非常接近）
-    skeleton_tensor = torch.tensor(skeleton, dtype=torch.float32)
-    distances_to_skeleton = torch.norm(skeleton_tensor - edge1.end, dim=1)
-    min_distance = distances_to_skeleton.min().item()
+    skeleton_tensor = skeleton.astype(np.float32)
+    distances_to_skeleton = np.linalg.norm(skeleton_tensor - edge1.end, axis=1)
+    min_distance = distances_to_skeleton.min()
     print(f"  终点到骨架的最小距离: {min_distance:.6f} (应该接近0)")
     
     print(f"\n边2 (Figure8 -> End):")
@@ -53,8 +52,8 @@ def test_skeleton_docking():
     print(f"  修正后的终点: {edge2.end.tolist()}")
     
     # 验证起点确实在骨架轨迹上
-    distances_to_skeleton2 = torch.norm(skeleton_tensor - edge2.start, dim=1)
-    min_distance2 = distances_to_skeleton2.min().item()
+    distances_to_skeleton2 = np.linalg.norm(skeleton_tensor - edge2.start, axis=1)
+    min_distance2 = distances_to_skeleton2.min()
     print(f"  起点到骨架的最小距离: {min_distance2:.6f} (应该接近0)")
     
     # 4. 创建系统

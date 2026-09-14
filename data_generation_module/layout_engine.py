@@ -1,5 +1,4 @@
 import numpy as np
-import torch
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import MinMaxScaler
 from typing import Dict, List, Union, Tuple

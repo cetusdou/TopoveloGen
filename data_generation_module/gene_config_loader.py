@@ -4,7 +4,7 @@
 """
 
 import yaml
-import torch
+import numpy as np
 from typing import List, Dict, Any, Optional
 from .synthesizer_gene import GeneSynthesizer
 
@@ -129,14 +129,14 @@ def add_genes_from_config(
             params = {}
             if gene_type == 'sigmoid':
                 if 'center' in gene_config:
-                    params['center'] = torch.tensor([gene_config['center']], dtype=torch.float32)
+                    params['center'] = np.asarray([gene_config['center']], dtype=np.float32)
                 if 'slope' in gene_config:
-                    params['slope'] = torch.tensor([gene_config['slope']], dtype=torch.float32)
+                    params['slope'] = np.asarray([gene_config['slope']], dtype=np.float32)
             elif gene_type == 'impulse':
                 if 'center' in gene_config:
-                    params['center'] = torch.tensor([gene_config['center']], dtype=torch.float32)
+                    params['center'] = np.asarray([gene_config['center']], dtype=np.float32)
                 if 'width' in gene_config:
-                    params['width'] = torch.tensor([gene_config['width']], dtype=torch.float32)
+                    params['width'] = np.asarray([gene_config['width']], dtype=np.float32)
             
             # 添加基因
             start_idx = synthesizer.current_gene_idx

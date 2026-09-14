@@ -1,4 +1,4 @@
-import torch
+import numpy as np
 from data_generation_module import GraphNode, CycleNode, GraphEdge, UniversalGraphSystem, GeneSynthesizer
 
 
@@ -10,9 +10,9 @@ def test_generate_static_counts_shapes():
     gs.add_trend_gene(edge_idx=0, n_genes=5, pattern='sigmoid')
 
     # generate on two points
-    z = torch.tensor([[0.0, 0.0], [2.0, 0.0]], dtype=torch.float32)
+    z = np.asarray([[0.0, 0.0], [2.0, 0.0]], dtype=np.float32)
     counts = gs.generate(z, simulate_counts=True)
-    assert isinstance(counts, torch.Tensor)
+    assert isinstance(counts, np.ndarray)
     assert counts.shape[0] == 2
     assert counts.shape[1] == 10
 
@@ -25,10 +25,10 @@ def test_generate_kinetics_shapes():
     gs.add_trend_gene(edge_idx=0, n_genes=5, pattern='sigmoid')
 
     # small trajectory: 3 steps, 2 cells
-    traj = torch.stack([
-        torch.tensor([[0.0, 0.0], [0.2, 0.0]]),
-        torch.tensor([[0.5, 0.0], [1.0, 0.0]]),
-        torch.tensor([[1.5, 0.0], [2.0, 0.0]])
+    traj = np.stack([
+        np.asarray([[0.0, 0.0], [0.2, 0.0]], dtype=np.float32),
+        np.asarray([[0.5, 0.0], [1.0, 0.0]], dtype=np.float32),
+        np.asarray([[1.5, 0.0], [2.0, 0.0]], dtype=np.float32)
     ])
     out = gs.generate_kinetics(traj, dt=0.1, simulate_counts=False)
     assert 'spliced' in out and 'unspliced' in out and 'alpha' in out and 'velocity' in out
