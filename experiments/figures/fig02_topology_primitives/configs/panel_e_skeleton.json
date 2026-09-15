@@ -1,0 +1,10 @@
+{
+  "topology": "skeleton",
+  "letter": "E",
+  "title": "E. Skeleton (S-curve)",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_skeleton",
+  "formats": ["png", "pdf"],
+  "n_traj_plot": 20
+}

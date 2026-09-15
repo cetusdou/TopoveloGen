@@ -1,0 +1,14 @@
+{
+  "letter": "A",
+  "title": "A  Ground-truth latent velocity",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_a_gt_velocity",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "letter": "D",
+  "title": "D  Expression-dependent dropout",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_d_dropout",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

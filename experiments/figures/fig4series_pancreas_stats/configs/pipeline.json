@@ -1,0 +1,45 @@
+{
+  "stage1": {
+    "seed": 42,
+    "n_samples": 1000,
+    "n_cells": 5000,
+    "d_genes_base": 3000,
+    "n_steps": 150,
+    "dt": 0.05,
+    "noise_level": 0.15,
+    "alpha_scale": 1.5,
+    "n_sampling_steps": 20,
+    "paga_min_connectivity": 0.04,
+    "fusion_temp": 0.05,
+    "target_n_genes": 27000,
+    "kinetics_cache_name": "kinetics_cache.pt",
+    "pancreas_h5ad": "/data/doujy/Documents/Code/Single_Cell_neuron/data/Pancreas/endocrinogenesis_day15.h5ad"
+  },
+  "stage2_postprocess": {
+    "lib_size_mean": 65000.0,
+    "lib_size_sd": 0.30,
+    "cell_size_sigma": 0.20,
+    "sampling": "nb",
+    "nb_theta": 20.0,
+    "nb_theta_gene_sd": 0.55,
+    "chunk_size": 512,
+    "dropout_prob": 0.66,
+    "dropout_slope": 0.20,
+    "downsample_spliced": 0.12,
+    "downsample_unspliced": 0.04,
+    "u_cell_size_sigma": 0.40,
+    "seed": 42
+  },
+  "noise_stage_demo": {
+    "n_cells": 2000,
+    "n_steps": 2000,
+    "n_genes": 500,
+    "lib_size_mean": 35000.0,
+    "lib_size_sd": 0.35,
+    "downsample_spliced": 0.20,
+    "downsample_unspliced": 0.15
+  },
+  "figure_main_size": [10.5, 8.5],
+  "figure_main_dpi": 300,
+  "figure_supp_size": [8.0, 6.5]
+}

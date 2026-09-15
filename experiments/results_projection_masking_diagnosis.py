@@ -1,4 +1,8 @@
 """
+Deprecated entrypoint. Use the panelized package:
+  experiments/figures/fig_diag_projection_masking/
+See experiments/figures/README.md for run instructions.
+
 Projection-masking diagnosis for synthetic scVelo velocity inference.
 
 Tests whether projection-based evaluation, gene-space accuracy, and topological

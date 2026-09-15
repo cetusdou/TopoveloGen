@@ -1,0 +1,18 @@
+{
+  "out_name": "figure_projection_masking_diagnosis",
+  "formats": ["png", "pdf"],
+  "figsize": [9.0, 5.4],
+  "grid": {
+    "height_ratios": [1.0, 1.05],
+    "hspace": 0.40,
+    "wspace": 0.34
+  },
+  "panels": {
+    "a": "panel_a_mismatch_vs_gene_count",
+    "b": "panel_b_decoupled_agreements",
+    "c": "panel_c_gene_module_errors",
+    "d": "panel_d_topology_masking_map",
+    "e": "panel_e_region_masking_fraction"
+  }
+}
+

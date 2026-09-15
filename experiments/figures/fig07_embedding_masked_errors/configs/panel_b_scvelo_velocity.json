@@ -1,0 +1,14 @@
+{
+  "letter": "B",
+  "title": "B  scVelo embedding velocity",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_b_scvelo_velocity",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

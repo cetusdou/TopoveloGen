@@ -1,0 +1,14 @@
+{
+  "letter": "J",
+  "title": "J  Mean\u2013Variance (Overdispersion)",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_j_overdispersion",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

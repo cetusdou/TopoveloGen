@@ -1,0 +1,12 @@
+{
+  "mode": "alpha_scatter",
+  "letter": "D",
+  "title": "D  Junction exit impulse $\\alpha$-field",
+  "gene_key": "Junction_exit",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_d_junction_exit",
+  "formats": ["png", "pdf"],
+  "show_topology": true,
+  "shared_color_limits": true
+}

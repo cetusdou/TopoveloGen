@@ -1,0 +1,15 @@
+{
+  "nrows": 3,
+  "ncols": 3,
+  "figsize": [10.5, 8.5],
+  "dpi": 300,
+  "hspace": 0.40,
+  "wspace": 0.30,
+  "out_name": "figure4_statistical_validation",
+  "formats": ["png", "pdf"],
+  "panels": [
+    ["panel_a_library_size", "panel_b_genes_detected", "panel_c_mean_expression"],
+    ["panel_d_overdispersion", "panel_e_dropout_vs_mean", "panel_f_unspliced_frac"],
+    ["panel_g_sparsity", "panel_h_fano_factor", "panel_i_rank_frequency"]
+  ]
+}

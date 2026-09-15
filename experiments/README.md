@@ -1,8 +1,11 @@
 # Experiments
 
-All result figures use the shared publication style in `styles/nature_science.mplstyle`
-(via `experiments/figure_style.py`). Each script supports `--plot-only` to replot from
-cached data without rerunning simulations.
+**Preferred entrypoint:** panelized packages under [`figures/`](figures/README.md)
+(one script per panel, JSON configs, compose for large figures).
+
+The `results_*.py` / `figure_4_fast.py` scripts below remain as **legacy monoliths**
+(still runnable; docstrings point to the new packages). Shared style lives in
+`styles/nature_science.mplstyle` via `figure_style.py`.
 
 ## Figure 2 — topology primitives (`results_topology_primitives.py`)
 
@@ -11,10 +14,17 @@ linear, bifurcation, cycle, cycle–linear hybrid, skeleton S-curve, and cycle�
 Each panel uses the same visual language (landscape + prescribed skeleton + trajectories/cells).
 Distance-to-manifold quantification is saved to CSV and plotted as Supplementary Fig. S1 (not in the main composite).
 
-**Run** (from repository root; requires PyTorch + matplotlib):
+**Run** (from repository root; numpy + matplotlib). Prefer:
 
 ```bash
-/home/doujy/miniconda3/envs/torch/bin/python experiments/results_topology_primitives.py
+python experiments/figures/fig02_topology_primitives/pipeline/run_pipeline.py
+python experiments/figures/fig02_topology_primitives/compose/compose_main.py
+```
+
+Legacy monolith:
+
+```bash
+python experiments/results_topology_primitives.py
 python experiments/results_topology_primitives.py --plot-only
 ```
 

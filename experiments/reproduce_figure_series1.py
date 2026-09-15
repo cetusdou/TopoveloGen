@@ -1,3 +1,7 @@
+"""
+Legacy notebook-export script. Prefer the panelized packages under experiments/figures/ (see experiments/figures/README.md).
+"""
+
 
 # ===== Original notebook cell 2 =====
 

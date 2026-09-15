@@ -1,0 +1,9 @@
+{
+  "letter": "D",
+  "title": "D  Masking cells on cycle-bifurcation topology",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_d_topology_masking_map",
+  "formats": ["png", "pdf"]
+}
+

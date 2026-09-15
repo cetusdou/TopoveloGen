@@ -1,4 +1,8 @@
 """
+Deprecated entrypoint. Use the panelized package:
+  experiments/figures/fig06_statistical_realism/
+See experiments/figures/README.md for run instructions.
+
 Figure 6: TopoVeloGen reproduces statistical features of single-cell count data.
 
 Generates count matrices from cycle-bifurcation latent cells via GeneSynthesizer

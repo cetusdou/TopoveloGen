@@ -1,0 +1,9 @@
+{
+  "mode": "topology",
+  "letter": "A",
+  "title": "A  Latent topology & sampled cells",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_a_topology",
+  "formats": ["png", "pdf"]
+}

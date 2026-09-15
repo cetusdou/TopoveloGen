@@ -1,0 +1,16 @@
+{
+  "nrows": 2,
+  "ncols": 2,
+  "figsize": [8.0, 6.5],
+  "dpi": 300,
+  "tight_layout": true,
+  "pad": 0.4,
+  "w_pad": 0.6,
+  "h_pad": 0.8,
+  "out_name": "figure4_supplementary_metrics",
+  "formats": ["png", "pdf"],
+  "panels": [
+    ["panel_s1_latent_library", "panel_s2_spliced_unspliced"],
+    ["panel_s3_sparsity_compare", "panel_s4_mean_variance"]
+  ]
+}

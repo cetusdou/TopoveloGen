@@ -1,0 +1,14 @@
+{
+  "letter": "S4",
+  "title": "S4  Gene mean\u2013variance (spliced, synthetic)",
+  "figsize": [
+    3.4,
+    2.9
+  ],
+  "dpi": 300,
+  "out_name": "panel_s4_mean_variance",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

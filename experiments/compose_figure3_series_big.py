@@ -1,4 +1,7 @@
-"""Generate the editable Figure3Series overview figure.
+"""
+Legacy notebook-export script. Prefer the panelized packages under experiments/figures/ (see experiments/figures/README.md).
+
+Generate the editable Figure3Series overview figure.
 
 The large figure is composed during plotting in ``reproduce_figure3_series.py``.
 This wrapper intentionally avoids loading rendered PNG panels, so the PDF/SVG

@@ -1,0 +1,14 @@
+{
+  "letter": "E",
+  "title": "E. Dropout Rate vs Mean",
+  "figsize": [
+    3.4,
+    2.9
+  ],
+  "dpi": 300,
+  "out_name": "panel_e_dropout_vs_mean",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

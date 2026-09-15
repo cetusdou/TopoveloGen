@@ -1,0 +1,10 @@
+{
+  "recompute_if_missing": true,
+  "plot_only": false,
+  "required_csvs": [
+    "method_comparison_summary.csv",
+    "projection_masking_per_cell.csv"
+  ],
+  "optional_csvs": ["projection_distortion.csv"]
+}
+

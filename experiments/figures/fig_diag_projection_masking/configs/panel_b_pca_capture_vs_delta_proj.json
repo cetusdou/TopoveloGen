@@ -1,0 +1,9 @@
+{
+  "letter": "B",
+  "title": "B  Gene-space capture vs Δ_proj (weak)",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_b_pca_capture_vs_delta_proj",
+  "formats": ["png", "pdf"]
+}
+

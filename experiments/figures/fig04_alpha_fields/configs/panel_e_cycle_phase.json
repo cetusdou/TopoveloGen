@@ -1,0 +1,12 @@
+{
+  "mode": "alpha_scatter",
+  "letter": "E",
+  "title": "E  Example cycle-phase $\\alpha$-field",
+  "gene_key": "cycle_start",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_e_cycle_phase",
+  "formats": ["png", "pdf"],
+  "show_topology": true,
+  "shared_color_limits": true
+}

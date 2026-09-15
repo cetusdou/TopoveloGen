@@ -1,0 +1,10 @@
+{
+  "topology": "cycle",
+  "letter": "C",
+  "title": "C. Cycle",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_cycle",
+  "formats": ["png", "pdf"],
+  "n_traj_plot": 20
+}

@@ -1,4 +1,8 @@
 """
+Deprecated entrypoint. Use the panelized package:
+  experiments/figures/fig03_junction_continuity/
+See experiments/figures/README.md for run instructions.
+
 Figure 3: Soft energy-flow fusion preserves continuity at topological junctions.
 
 Evaluates cycle-linear, bifurcation, and cycle-bifurcation junctions: smart rim docking,

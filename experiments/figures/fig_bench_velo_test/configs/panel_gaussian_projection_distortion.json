@@ -1,0 +1,7 @@
+{
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_gaussian_projection_distortion",
+  "formats": ["png", "pdf"]
+}
+

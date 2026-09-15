@@ -1,0 +1,9 @@
+{
+  "mode": "trajectory_alpha",
+  "letter": "A",
+  "title": "A  Linear trajectory & impulse $\\alpha$-field",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_a_trajectory_alpha",
+  "formats": ["png", "pdf"]
+}

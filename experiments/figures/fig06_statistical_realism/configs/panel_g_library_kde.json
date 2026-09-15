@@ -1,0 +1,14 @@
+{
+  "letter": "G",
+  "title": "G  Library Size (Cell Depth)",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_g_library_kde",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

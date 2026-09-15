@@ -1,0 +1,26 @@
+{
+  "seed": 1,
+  "dt": 0.01,
+  "n_steps": 800,
+  "alpha_scale": 1.5,
+  "beta": 1.0,
+  "gamma_default": 0.5,
+  "gamma_values": [0.3, 0.5, 1.0],
+  "gene_sigmoid": 0,
+  "gene_impulse": 1,
+  "sigmoid_center": 0.40,
+  "sigmoid_slope": 10.0,
+  "impulse_center": 0.38,
+  "impulse_width": 0.055,
+  "synth": {
+    "n_genes_total": 2,
+    "edge_strength": 5.0,
+    "cycle_strength": 3.0,
+    "background_noise": 0.0,
+    "dropout_prob": 0.0
+  },
+  "gene_names": ["Sigmoid_lineage", "Impulse_transient"],
+  "scatter_s_traj": 5,
+  "scatter_s_velocity": 4,
+  "phase_start_end_s": 20
+}

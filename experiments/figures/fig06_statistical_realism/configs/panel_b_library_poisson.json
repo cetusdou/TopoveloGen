@@ -1,0 +1,14 @@
+{
+  "letter": "B",
+  "title": "B  Library sizes (Poisson, no dropout)",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_b_library_poisson",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

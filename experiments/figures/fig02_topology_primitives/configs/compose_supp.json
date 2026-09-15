@@ -1,0 +1,5 @@
+{
+  "out_name": "supplementary_s1_topology_quantification",
+  "formats": ["png", "pdf"],
+  "panel": "panel_s1_distance"
+}

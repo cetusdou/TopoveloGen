@@ -1,0 +1,14 @@
+{
+  "letter": "H",
+  "title": "H. Gene Fano Factor",
+  "figsize": [
+    3.4,
+    2.9
+  ],
+  "dpi": 300,
+  "out_name": "panel_h_fano_factor",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

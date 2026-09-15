@@ -1,0 +1,14 @@
+{
+  "letter": "H",
+  "title": "H  Detected Genes (Cell Complexity)",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_h_detected_genes",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

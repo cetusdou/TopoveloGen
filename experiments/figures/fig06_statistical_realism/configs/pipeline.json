@@ -1,0 +1,74 @@
+{
+  "n_cells": 3000,
+  "n_genes": 1000,
+  "n_steps": 4500,
+  "dt": 0.01,
+  "diffusion": 0.006,
+  "save_every": 10,
+  "seed": 1,
+  "alpha_scale": 1.5,
+  "init_radius": 1.0,
+  "init_noise": 0.06,
+  "xlim": [-2.0, 4.0],
+  "ylim": [-2.5, 2.5],
+  "apply_postprocess": false,
+  "cell_size_sigma": 0.0,
+  "capture_rate_spliced": 1.0,
+  "capture_rate_unspliced": 1.0,
+  "noise_alpha_range": [0.01, 0.08],
+  "main_config": {
+    "name": "nb_dropout",
+    "sampling": "nb",
+    "nb_dispersion": 1.5,
+    "dropout_prob": 0.2,
+    "dropout_slope": 0.5,
+    "lib_size_mean": 10000.0,
+    "lib_size_sd": 0.4,
+    "background_noise": 0.02,
+    "simulate_counts": true
+  },
+  "sweep_configs": [
+    {
+      "name": "clean",
+      "sampling": "poisson",
+      "nb_dispersion": 1.5,
+      "dropout_prob": 0.0,
+      "dropout_slope": 0.5,
+      "lib_size_mean": 10000.0,
+      "lib_size_sd": 0.4,
+      "background_noise": 0.02,
+      "simulate_counts": false
+    },
+    {
+      "name": "poisson",
+      "sampling": "poisson",
+      "nb_dispersion": 1.5,
+      "dropout_prob": 0.0,
+      "dropout_slope": 0.5,
+      "lib_size_mean": 10000.0,
+      "lib_size_sd": 0.4,
+      "background_noise": 0.02,
+      "simulate_counts": true
+    },
+    {
+      "name": "nb_dropout",
+      "sampling": "nb",
+      "nb_dispersion": 1.5,
+      "dropout_prob": 0.2,
+      "dropout_slope": 0.5,
+      "lib_size_mean": 10000.0,
+      "lib_size_sd": 0.4,
+      "background_noise": 0.02,
+      "simulate_counts": true
+    }
+  ],
+  "synthesizer": {
+    "edge_strength": 5.0,
+    "cycle_strength": 3.0,
+    "splicing_rate": 1.0,
+    "degradation_rate": 0.5,
+    "n_trend_sigmoid": 15,
+    "n_trend_impulse": 10,
+    "n_cycle_genes": 30
+  }
+}

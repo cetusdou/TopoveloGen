@@ -1,0 +1,14 @@
+{
+  "letter": "E",
+  "title": "E  Spliced vs unspliced (Poisson)",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_e_spliced_unspliced",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

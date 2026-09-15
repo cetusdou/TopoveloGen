@@ -1,0 +1,9 @@
+{
+  "mode": "velocity_consistency",
+  "letter": "F",
+  "title": "F  Velocity consistency",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_f_velocity_consistency",
+  "formats": ["png", "pdf"]
+}

@@ -1,0 +1,9 @@
+{
+  "letter": "C",
+  "title": "C  Gene-space errors concentrate in dynamic genes",
+  "figsize": [3.0, 2.8],
+  "dpi": 300,
+  "out_name": "panel_c_gene_module_errors",
+  "formats": ["png", "pdf"]
+}
+

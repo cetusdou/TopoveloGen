@@ -1,4 +1,8 @@
 """
+Deprecated entrypoint. Use the panelized package:
+  experiments/figures/fig07_embedding_masked_errors/
+See experiments/figures/README.md for run instructions.
+
 Figure 7: Low-dimensional velocity visualizations can mask high-dimensional kinetic errors.
 
 Generates cycle-bifurcation (and other) synthetic count data with ground-truth gene

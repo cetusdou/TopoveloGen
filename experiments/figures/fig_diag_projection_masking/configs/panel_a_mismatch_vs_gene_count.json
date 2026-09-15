@@ -1,0 +1,9 @@
+{
+  "letter": "A",
+  "title": "A  Mismatch persists across gene numbers",
+  "figsize": [3.0, 2.8],
+  "dpi": 300,
+  "out_name": "panel_a_mismatch_vs_gene_count",
+  "formats": ["png", "pdf"]
+}
+

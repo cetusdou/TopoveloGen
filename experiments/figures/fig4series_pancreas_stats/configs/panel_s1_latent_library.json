@@ -1,0 +1,14 @@
+{
+  "letter": "S1",
+  "title": "S1  Latent cells \u00d7 spliced library size",
+  "figsize": [
+    3.4,
+    2.9
+  ],
+  "dpi": 300,
+  "out_name": "panel_s1_latent_library",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

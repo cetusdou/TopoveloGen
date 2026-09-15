@@ -1,0 +1,28 @@
+{
+  "out_name": "figure_benchmark_velo_test",
+  "formats": ["png", "pdf"],
+  "figsize": [12.0, 9.0],
+  "height_ratios": [1.0, 1.0, 0.82],
+  "row_wspaces": [0.06, 0.06, 0.18],
+  "rows": [
+    [
+      "panel_umap_true_time",
+      "panel_gt_velocity_grid",
+      "panel_deepvelo_velocity_grid",
+      "panel_unitvelo_velocity_grid",
+      "panel_scvelo_velocity_grid"
+    ],
+    [
+      "panel_gt_velocity_streamlines",
+      "panel_deepvelo_velocity_streamlines",
+      "panel_unitvelo_velocity_streamlines",
+      "panel_scvelo_velocity_streamlines"
+    ],
+    [
+      "panel_gene_cosine_histogram",
+      "panel_gene_mse_histogram",
+      "panel_lowdim_cosine_histogram"
+    ]
+  ]
+}
+

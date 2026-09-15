@@ -1,0 +1,12 @@
+{
+  "topology": "cycle_linear",
+  "mode": "trajectory",
+  "letter": "C",
+  "title": "C. Cycle–linear: trajectories",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_c_cycle_linear_traj",
+  "formats": ["png", "pdf"],
+  "use_zoom": false,
+  "show_potential_bg": true
+}

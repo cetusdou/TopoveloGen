@@ -1,0 +1,14 @@
+{
+  "letter": "B",
+  "title": "B. Fraction of Genes Detected",
+  "figsize": [
+    3.4,
+    2.9
+  ],
+  "dpi": 300,
+  "out_name": "panel_b_genes_detected",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

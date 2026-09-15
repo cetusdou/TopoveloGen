@@ -1,0 +1,9 @@
+{
+  "letter": "A",
+  "title": "A  Projection masking index",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_a_projection_masking_index",
+  "formats": ["png", "pdf"]
+}
+

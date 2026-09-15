@@ -1,0 +1,14 @@
+{
+  "letter": "F",
+  "title": "F  Mismatch vs topology complexity",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_f_mismatch_complexity",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

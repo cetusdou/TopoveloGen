@@ -1,0 +1,13 @@
+{
+  "nrows": 2,
+  "ncols": 3,
+  "figsize": [9.0, 6.0],
+  "dpi": 300,
+  "tight_layout": {"pad": 0.4, "w_pad": 0.6, "h_pad": 0.8},
+  "out_name": "figure3_junction_continuity",
+  "formats": ["png", "pdf"],
+  "panels": [
+    ["panel_a_cycle_linear_field", "panel_b_cycle_linear_zoom", "panel_c_cycle_linear_traj"],
+    ["panel_d_bifurcation_field", "panel_e_cycle_bifurcation_field", "panel_f_metrics"]
+  ]
+}

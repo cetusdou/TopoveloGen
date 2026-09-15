@@ -1,0 +1,14 @@
+{
+  "letter": "K",
+  "title": "K  Dropout Rate vs Mean",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_k_dropout_vs_mean",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

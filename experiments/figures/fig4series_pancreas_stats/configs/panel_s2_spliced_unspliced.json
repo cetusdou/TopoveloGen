@@ -1,0 +1,14 @@
+{
+  "letter": "S2",
+  "title": "S2  Spliced vs unspliced (synthetic)",
+  "figsize": [
+    3.4,
+    2.9
+  ],
+  "dpi": 300,
+  "out_name": "panel_s2_spliced_unspliced",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

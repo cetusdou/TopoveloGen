@@ -1,0 +1,16 @@
+{
+  "nrows": 2,
+  "ncols": 3,
+  "figsize": [9.0, 6.0],
+  "dpi": 300,
+  "tight_layout": true,
+  "pad": 0.4,
+  "w_pad": 0.6,
+  "h_pad": 0.8,
+  "out_name": "figure7_lowD_highD_mismatch",
+  "formats": ["png", "pdf"],
+  "panels": [
+    ["panel_a_gt_velocity", "panel_b_scvelo_velocity", "panel_c_highd_cosine"],
+    ["panel_d_embedding_vs_gene", "panel_e_mismatch_topology", "panel_f_mismatch_complexity"]
+  ]
+}

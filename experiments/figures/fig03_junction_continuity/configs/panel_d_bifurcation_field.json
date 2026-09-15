@@ -1,0 +1,11 @@
+{
+  "topology": "bifurcation",
+  "mode": "field",
+  "letter": "D",
+  "title": "D. Bifurcation: potential & drift",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_d_bifurcation_field",
+  "formats": ["png", "pdf"],
+  "use_zoom": false
+}

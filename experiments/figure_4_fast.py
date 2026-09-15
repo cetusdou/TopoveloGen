@@ -1,4 +1,8 @@
 """
+Deprecated entrypoint. Use the panelized package:
+  experiments/figures/fig4series_pancreas_stats/
+See experiments/figures/README.md for run instructions.
+
 Figure4Series.ipynb pipeline + supplementary statistical_realism metrics.
 
 TWO-LAYER ARCHITECTURE

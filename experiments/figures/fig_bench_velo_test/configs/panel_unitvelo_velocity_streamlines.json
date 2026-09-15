@@ -1,0 +1,9 @@
+{
+  "method": "unitvelo",
+  "title": "UniTVelo velocity streamlines",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_unitvelo_velocity_streamlines",
+  "formats": ["png", "pdf"]
+}
+

@@ -1,0 +1,16 @@
+{
+  "out_name": "figure_projection_masking_diagnosis_supplementary",
+  "formats": ["png", "pdf"],
+  "figsize": [8.0, 6.8],
+  "grid": {
+    "height_ratios": [1.0, 1.15],
+    "hspace": 0.42,
+    "wspace": 0.32
+  },
+  "panels": {
+    "a": "panel_a_projection_masking_index",
+    "b": "panel_b_pca_capture_vs_delta_proj",
+    "c": "panel_c_embedding_ceiling"
+  }
+}
+

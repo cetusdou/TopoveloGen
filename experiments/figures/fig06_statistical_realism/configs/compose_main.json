@@ -1,0 +1,18 @@
+{
+  "nrows": 4,
+  "ncols": 3,
+  "figsize": [9.0, 12.0],
+  "dpi": 300,
+  "tight_layout": true,
+  "pad": 0.4,
+  "w_pad": 0.6,
+  "h_pad": 0.8,
+  "out_name": "figure6_statistical_realism",
+  "formats": ["png", "pdf"],
+  "panels": [
+    ["panel_a_cells_library", "panel_b_library_poisson", "panel_c_mean_variance"],
+    ["panel_d_dropout", "panel_e_spliced_unspliced", "panel_f_sparsity_sweep"],
+    ["panel_g_library_kde", "panel_h_detected_genes", "panel_i_mean_expression"],
+    ["panel_j_overdispersion", "panel_k_dropout_vs_mean", "panel_l_unspliced_frac"]
+  ]
+}

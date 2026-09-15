@@ -1,0 +1,10 @@
+{
+  "letter": "S1",
+  "title": "Supplementary Fig. S1  Distance-to-manifold",
+  "figsize": [5.5, 3.0],
+  "dpi": 300,
+  "out_name": "supplementary_s1_topology_quantification",
+  "formats": ["png", "pdf"],
+  "ylabel": "Distance to prescribed manifold",
+  "bar_width": 0.26
+}

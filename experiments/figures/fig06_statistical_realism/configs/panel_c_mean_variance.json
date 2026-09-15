@@ -1,0 +1,14 @@
+{
+  "letter": "C",
+  "title": "C  Gene mean\u2013variance (spliced)",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_c_mean_variance",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

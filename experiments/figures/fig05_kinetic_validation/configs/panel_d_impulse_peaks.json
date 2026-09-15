@@ -1,0 +1,9 @@
+{
+  "mode": "impulse_peaks",
+  "letter": "D",
+  "title": "D  Impulse: $t_\\alpha < t_u < t_s$",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_d_impulse_peaks",
+  "formats": ["png", "pdf"]
+}

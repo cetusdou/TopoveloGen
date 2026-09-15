@@ -1,0 +1,14 @@
+{
+  "letter": "I",
+  "title": "I. Gene Rank\u2013Frequency",
+  "figsize": [
+    3.4,
+    2.9
+  ],
+  "dpi": 300,
+  "out_name": "panel_i_rank_frequency",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

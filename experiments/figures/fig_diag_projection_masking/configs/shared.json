@@ -1,0 +1,23 @@
+{
+  "figure_id": "fig_diag_projection_masking",
+  "title": "Projection masking diagnosis",
+  "seed": 1,
+  "out_dir": "results/projection_masking_diagnosis",
+  "data_subdir": "data",
+  "figures_subdir": "figures",
+  "formats": ["png", "pdf"],
+  "tau_low": 0.7,
+  "tau_high": 0.2,
+  "region_priority": ["junction", "cycle_rim", "branch1", "branch2", "edge"],
+  "region_colors": {
+    "cycle_rim": "#4477AA",
+    "junction": "#EE6677",
+    "branch1": "#228833",
+    "branch2": "#CCBB44",
+    "edge": "#AA3377",
+    "other": "#CCCCCC"
+  },
+  "pca_binned_n_bins": 10,
+  "embedding_bg_subsample_cap": 900
+}
+

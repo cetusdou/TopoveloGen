@@ -1,4 +1,8 @@
 """
+Deprecated entrypoint. Use the panelized package:
+  experiments/figures/fig05_kinetic_validation/
+See experiments/figures/README.md for run instructions.
+
 Figure 5: Kinetic integration produces splicing delays and ground-truth RNA velocity.
 
 Validates alpha(t) -> u(t), s(t), v(t) on a linear latent trajectory using

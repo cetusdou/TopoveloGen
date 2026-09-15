@@ -1,0 +1,7 @@
+{
+  "figsize": [9.0, 2.85],
+  "dpi": 300,
+  "out_name": "panel_projection_masking_index",
+  "formats": ["png", "pdf"]
+}
+

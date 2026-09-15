@@ -1,0 +1,9 @@
+{
+  "letter": "E",
+  "title": "E  Masking-cell fraction by region",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_e_region_masking_fraction",
+  "formats": ["png", "pdf"]
+}
+

@@ -1,0 +1,13 @@
+{
+  "nrows": 2,
+  "ncols": 3,
+  "figsize": [9.0, 6.0],
+  "dpi": 300,
+  "tight_layout": {"pad": 0.4, "w_pad": 0.6, "h_pad": 0.8},
+  "out_name": "figure4_alpha_fields",
+  "formats": ["png", "pdf"],
+  "panels": [
+    ["panel_a_topology", "panel_b_branch1_sigmoid", "panel_c_branch2_sigmoid"],
+    ["panel_d_junction_exit", "panel_e_cycle_phase", "panel_f_phase_heatmap"]
+  ]
+}

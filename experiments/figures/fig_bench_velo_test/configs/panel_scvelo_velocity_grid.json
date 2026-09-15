@@ -1,0 +1,9 @@
+{
+  "method": "scvelo",
+  "title": "scVelo grid",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_scvelo_velocity_grid",
+  "formats": ["png", "pdf"]
+}
+

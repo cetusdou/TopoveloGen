@@ -1,0 +1,8 @@
+{
+  "figure_id": "fig05",
+  "title": "Kinetic validation",
+  "seed": 1,
+  "out_dir": "results/kinetic_validation",
+  "data_subdir": "data",
+  "figures_subdir": "figures"
+}

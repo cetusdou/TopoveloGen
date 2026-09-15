@@ -1,0 +1,13 @@
+{
+  "nrows": 2,
+  "ncols": 3,
+  "figsize": [9.0, 6.0],
+  "dpi": 300,
+  "tight_layout": {"pad": 0.4, "w_pad": 0.6, "h_pad": 0.8},
+  "out_name": "figure5_kinetic_validation",
+  "formats": ["png", "pdf"],
+  "panels": [
+    ["panel_a_trajectory_alpha", "panel_b_sigmoid_traces", "panel_c_impulse_phase"],
+    ["panel_d_impulse_peaks", "panel_e_gamma_hysteresis", "panel_f_velocity_consistency"]
+  ]
+}

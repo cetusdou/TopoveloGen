@@ -1,0 +1,9 @@
+{
+  "letter": "C",
+  "title": "C  Low-dimensional projection imposes an embedding ceiling",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_c_embedding_ceiling",
+  "formats": ["png", "pdf"]
+}
+

@@ -1,0 +1,9 @@
+{
+  "mode": "sigmoid_traces",
+  "letter": "B",
+  "title": "B  Sigmoid: $\\alpha$, $u$, $s$ (half-rise lag)",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_b_sigmoid_traces",
+  "formats": ["png", "pdf"]
+}

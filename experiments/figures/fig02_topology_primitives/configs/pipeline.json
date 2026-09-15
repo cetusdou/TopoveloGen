@@ -1,0 +1,47 @@
+{
+  "n_cells": 500,
+  "n_steps": 1000,
+  "dt": 0.01,
+  "diffusion": 0.01,
+  "save_every": 5,
+  "seed": 1,
+  "support_cut": 0.06,
+  "n_grid_plot": 120,
+  "low_support_overlay_alpha": 0.40,
+  "stream_threshold": -0.25,
+  "stream_percentile": 50,
+  "stream_stride": 3,
+  "stream_density": 1.0,
+  "stream_min_speed": 0.12,
+  "n_traj_plot": 20,
+  "figure_order": [
+    "linear",
+    "bifurcation",
+    "cycle",
+    "cycle_linear",
+    "skeleton",
+    "cycle_bifurcation"
+  ],
+  "sim_overrides": {
+    "linear": {"n_steps": 3500, "diffusion": 0.006},
+    "bifurcation": {"n_steps": 4000, "diffusion": 0.006},
+    "skeleton": {"n_steps": 2000, "diffusion": 0.007},
+    "cycle_bifurcation": {"n_steps": 4500, "diffusion": 0.006}
+  },
+  "panel_bounds": {
+    "linear": [[-3.0, 3.0], [-2.0, 2.0]],
+    "bifurcation": [[-3.0, 3.0], [-2.5, 2.5]],
+    "cycle": [[-2.5, 2.5], [-2.5, 2.5]],
+    "cycle_linear": [[-1.5, 4.0], [-2.5, 2.5]],
+    "skeleton": [[-3.0, 3.0], [-2.5, 2.5]],
+    "cycle_bifurcation": [[-1.5, 4.0], [-2.5, 2.5]]
+  },
+  "panel_plot_config": {
+    "linear": {"stream_density": 1.0, "stream_alpha": 0.72},
+    "bifurcation": {"stream_density": 1.0, "stream_alpha": 0.72},
+    "cycle": {"stream_density": 1.2, "stream_alpha": 0.75},
+    "cycle_linear": {"stream_density": 1.1, "stream_alpha": 0.75, "mark_exit": true},
+    "skeleton": {"stream_density": 1.2, "stream_alpha": 0.75},
+    "cycle_bifurcation": {"stream_density": 1.1, "stream_alpha": 0.75}
+  }
+}

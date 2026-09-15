@@ -1,0 +1,16 @@
+{
+  "figure_id": "fig06",
+  "title": "Statistical realism",
+  "seed": 1,
+  "out_dir": "results/statistical_realism",
+  "data_subdir": "data",
+  "figures_subdir": "figures",
+  "colors": {
+    "primary": "#D0021B",
+    "reference": "#4A90E2",
+    "spliced": "C0",
+    "unspliced": "C1"
+  },
+  "validation_label_primary": "NB+dropout",
+  "validation_label_reference": "Poisson"
+}

@@ -1,0 +1,14 @@
+{
+  "letter": "I",
+  "title": "I  Mean Expression Distribution",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_i_mean_expression",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

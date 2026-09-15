@@ -1,0 +1,13 @@
+{
+  "nrows": 2,
+  "ncols": 3,
+  "figsize": [9.0, 6.0],
+  "dpi": 300,
+  "constrained_layout": true,
+  "out_name": "figure2_topology_primitives",
+  "formats": ["png", "pdf"],
+  "panels": [
+    ["panel_a_linear", "panel_b_bifurcation", "panel_c_cycle"],
+    ["panel_d_cycle_linear", "panel_e_skeleton", "panel_f_cycle_bifurcation"]
+  ]
+}

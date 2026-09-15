@@ -1,0 +1,12 @@
+{
+  "mode": "alpha_scatter",
+  "letter": "B",
+  "title": "B  Branch 1 sigmoid $\\alpha$-field",
+  "gene_key": "Branch1_sigmoid",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_b_branch1_sigmoid",
+  "formats": ["png", "pdf"],
+  "show_topology": true,
+  "shared_color_limits": true
+}

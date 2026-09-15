@@ -1,0 +1,14 @@
+{
+  "letter": "L",
+  "title": "L  Unspliced Fraction (Global Kinetics)",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_l_unspliced_frac",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "topology": "cycle_linear",
+  "mode": "field",
+  "letter": "A",
+  "title": "A. Cycle–linear: potential & drift",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_a_cycle_linear_field",
+  "formats": ["png", "pdf"],
+  "use_zoom": false
+}

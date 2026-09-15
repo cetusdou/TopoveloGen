@@ -1,0 +1,14 @@
+{
+  "letter": "C",
+  "title": "C. Mean Expression Distribution",
+  "figsize": [
+    3.4,
+    2.9
+  ],
+  "dpi": 300,
+  "out_name": "panel_c_mean_expression",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

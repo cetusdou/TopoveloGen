@@ -1,0 +1,10 @@
+{
+  "quick": false,
+  "recompute_if_missing": true,
+  "plot_only": false,
+  "required_csvs": [
+    "gene_sweep_summary.csv",
+    "cell_diagnostics.csv"
+  ]
+}
+

@@ -1,0 +1,11 @@
+{
+  "topology": "cycle_bifurcation",
+  "mode": "field",
+  "letter": "E",
+  "title": "E. Cycle–bifurcation: mixed junction",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_e_cycle_bifurcation_field",
+  "formats": ["png", "pdf"],
+  "use_zoom": false
+}

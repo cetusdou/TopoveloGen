@@ -1,0 +1,14 @@
+{
+  "letter": "A",
+  "title": "A. Library Size (Cell Depth)",
+  "figsize": [
+    3.4,
+    2.9
+  ],
+  "dpi": 300,
+  "out_name": "panel_a_library_size",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "method": "deepvelo",
+  "title": "DeepVelo grid",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_deepvelo_velocity_grid",
+  "formats": ["png", "pdf"]
+}
+

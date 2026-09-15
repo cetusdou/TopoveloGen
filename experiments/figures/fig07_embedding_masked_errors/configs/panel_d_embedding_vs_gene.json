@@ -1,0 +1,14 @@
+{
+  "letter": "D",
+  "title": "D  Embedding vs gene-space agreement",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_d_embedding_vs_gene",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

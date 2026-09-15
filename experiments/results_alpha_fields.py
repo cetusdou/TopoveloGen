@@ -1,4 +1,8 @@
 """
+Deprecated entrypoint. Use the panelized package:
+  experiments/figures/fig04_alpha_fields/
+See experiments/figures/README.md for run instructions.
+
 Figure 4: Transcription-rate fields encode spatially localized gene programs.
 
 Demonstrates z -> alpha(z) on a cycle-bifurcation topology using GeneSynthesizer

@@ -1,0 +1,9 @@
+{
+  "mode": "phase_heatmap",
+  "letter": "F",
+  "title": "F  Cycle phase genes (ordered by phase)",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_f_phase_heatmap",
+  "formats": ["png", "pdf"]
+}

@@ -1,0 +1,9 @@
+{
+  "mode": "gamma_hysteresis",
+  "letter": "E",
+  "title": "E  $\\gamma$-dependent hysteresis loops",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_e_gamma_hysteresis",
+  "formats": ["png", "pdf"]
+}

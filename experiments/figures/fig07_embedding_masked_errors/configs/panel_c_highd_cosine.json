@@ -1,0 +1,14 @@
+{
+  "letter": "C",
+  "title": "C  High-D velocity cosine",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_c_highd_cosine",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

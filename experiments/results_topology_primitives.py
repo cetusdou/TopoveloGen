@@ -1,4 +1,8 @@
 """
+Deprecated entrypoint. Use the panelized package:
+  experiments/figures/fig02_topology_primitives/
+See experiments/figures/README.md for run instructions.
+
 Figure 2: Graph-based energy-flow primitives generate controllable latent manifolds.
 
 Runs Langevin dynamics on six representative topologies, saves metrics CSV,

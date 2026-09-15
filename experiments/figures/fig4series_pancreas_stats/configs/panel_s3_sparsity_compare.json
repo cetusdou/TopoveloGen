@@ -1,0 +1,14 @@
+{
+  "letter": "S3",
+  "title": "S3  Sparsity comparison",
+  "figsize": [
+    3.4,
+    2.9
+  ],
+  "dpi": 300,
+  "out_name": "panel_s3_sparsity_compare",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

@@ -1,3 +1,7 @@
+"""
+Legacy notebook-export script. Prefer the panelized packages under experiments/figures/ (see experiments/figures/README.md).
+"""
+
 # ==============================================================================
 # Beautified plotting cell for FigSeriesMain1_TopologyCollection
 # Drop this cell after `topology_data` has been generated.

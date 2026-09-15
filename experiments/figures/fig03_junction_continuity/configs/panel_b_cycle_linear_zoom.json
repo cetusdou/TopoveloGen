@@ -1,0 +1,11 @@
+{
+  "topology": "cycle_linear",
+  "mode": "field",
+  "letter": "B",
+  "title": "B. Cycle–linear: junction zoom",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_b_cycle_linear_zoom",
+  "formats": ["png", "pdf"],
+  "use_zoom": true
+}

@@ -1,0 +1,14 @@
+{
+  "letter": "A",
+  "title": "A  Cells colored by spliced library size",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_a_cells_library",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

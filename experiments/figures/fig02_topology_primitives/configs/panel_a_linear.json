@@ -1,0 +1,10 @@
+{
+  "topology": "linear",
+  "letter": "A",
+  "title": "A. Linear trajectory",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_linear",
+  "formats": ["png", "pdf"],
+  "n_traj_plot": 20
+}

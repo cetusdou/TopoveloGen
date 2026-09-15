@@ -1,0 +1,9 @@
+{
+  "velocity_kind": "gt",
+  "title": "GT grid",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_gt_velocity_grid",
+  "formats": ["png", "pdf"]
+}
+

@@ -1,0 +1,9 @@
+{
+  "letter": "B",
+  "title": "B  Embedding- and gene-space agreements are decoupled",
+  "figsize": [3.0, 2.8],
+  "dpi": 300,
+  "out_name": "panel_b_decoupled_agreements",
+  "formats": ["png", "pdf"]
+}
+

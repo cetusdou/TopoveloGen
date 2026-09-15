@@ -1,4 +1,8 @@
 """
+Deprecated entrypoint. Use the panelized package:
+  experiments/figures/fig_bench_velo_test/
+See experiments/figures/README.md for run instructions.
+
 Benchmark velocity methods on cycle-linear synthetic data (benchmark_velo_test).
 
 Loads precomputed AnnData outputs for DeepVelo, UniTVelo, and scVelo, compares

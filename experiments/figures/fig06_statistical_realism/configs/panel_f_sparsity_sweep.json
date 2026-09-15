@@ -1,0 +1,14 @@
+{
+  "letter": "F",
+  "title": "F  Sparsity under noise settings",
+  "figsize": [
+    3.0,
+    2.8
+  ],
+  "dpi": 300,
+  "out_name": "panel_f_sparsity_sweep",
+  "formats": [
+    "png",
+    "pdf"
+  ]
+}

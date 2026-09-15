@@ -1,0 +1,9 @@
+{
+  "mode": "impulse_phase",
+  "letter": "C",
+  "title": "C  Impulse: $u$–$s$ phase portrait",
+  "figsize": [3.0, 3.0],
+  "dpi": 300,
+  "out_name": "panel_c_impulse_phase",
+  "formats": ["png", "pdf"]
+}
