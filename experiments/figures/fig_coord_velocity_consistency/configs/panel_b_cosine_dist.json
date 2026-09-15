@@ -1,0 +1,10 @@
+{
+  "letter": "B",
+  "title": "B. Cosine vs scVelo by GT coordinate",
+  "figsize": [4.5, 3.2],
+  "dpi": 300,
+  "out_name": "panel_b_cosine_dist",
+  "formats": ["png", "pdf"],
+  "keys": ["cos_abs", "cos_lib", "cos_prop", "cos_log"],
+  "labels": ["absolute", "library-scaled", "proportion", "log-approx"]
+}

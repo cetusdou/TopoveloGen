@@ -22,6 +22,7 @@ Figure packages import `data_generation_module` (numpy API; no torch).
 | [`fig4series_pancreas_stats`](fig4series_pancreas_stats/) | Pancreas count stats A–I + S1–S4 | `figure_4_fast.py` |
 | [`fig_diag_projection_masking`](fig_diag_projection_masking/) | Projection masking diagnosis | `results_projection_masking_diagnosis.py` |
 | [`fig_bench_velo_test`](fig_bench_velo_test/) | Velocity method benchmark | `results_benchmark_velo_test.py` |
+| [`fig_coord_velocity_consistency`](fig_coord_velocity_consistency/) | GT velocity coordinate consistency (supp.) | — |
 
 Shared helpers: [`_common/`](_common/) (`config.py`, `style.py`).
 

@@ -1,0 +1,8 @@
+{
+  "letter": "A",
+  "title": "A. Ground-truth velocity coordinates",
+  "figsize": [4.5, 3.2],
+  "dpi": 300,
+  "out_name": "panel_a_diagram",
+  "formats": ["png", "pdf"]
+}

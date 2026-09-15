@@ -1,0 +1,9 @@
+{
+  "letter": "D",
+  "title": "D. Summary and method coordinates",
+  "figsize": [5.5, 4.0],
+  "dpi": 300,
+  "out_name": "panel_d_summary",
+  "formats": ["png", "pdf"],
+  "fontsize": 7
+}

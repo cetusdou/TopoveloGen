@@ -1,0 +1,58 @@
+{
+  "seed": 1,
+  "dt": 0.01,
+  "diffusion": 0.006,
+  "alpha_scale": 1.5,
+  "tau_high": 0.7,
+  "library_target": 10000.0,
+  "main": {
+    "topology": "cycle_bifurcation",
+    "n_cells": 250,
+    "n_steps": 1800,
+    "save_every": 10,
+    "n_genes": 500,
+    "subsample": 4000
+  },
+  "synthesizer": {
+    "background_noise": 0.015,
+    "lib_size_mean": 10000.0,
+    "lib_size_sd": 0.35,
+    "sampling": "nb",
+    "nb_dispersion": 1.5,
+    "dropout_prob": 0.15,
+    "dropout_slope": 0.5,
+    "splicing_rate": 1.0,
+    "degradation_rate": 0.5,
+    "noise_alpha_range": [0.01, 0.06]
+  },
+  "scvelo": {
+    "min_shared_counts": 15,
+    "n_top_genes": 200,
+    "n_pcs": 30,
+    "n_neighbors": 30,
+    "mode": "stochastic"
+  },
+  "method_table": [
+    {
+      "method": "scVelo",
+      "input_layer": "spliced/unspliced counts",
+      "main_preprocessing": "filter, normalize, moments",
+      "velocity_output_coordinate": "gene-space velocity after scVelo preprocessing",
+      "compared_gt": "v_gt_abs + coordinate diagnostics (lib/prop/log)"
+    },
+    {
+      "method": "UniTVelo",
+      "input_layer": "spliced/unspliced counts",
+      "main_preprocessing": "method-specific normalization",
+      "velocity_output_coordinate": "method-specific gene-space velocity",
+      "compared_gt": "direction-only cosine; rescaling noted"
+    },
+    {
+      "method": "DeepVelo",
+      "input_layer": "spliced/unspliced counts",
+      "main_preprocessing": "graph/neural preprocessing",
+      "velocity_output_coordinate": "learned gene-space velocity",
+      "compared_gt": "direction-only cosine"
+    }
+  ]
+}

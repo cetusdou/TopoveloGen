@@ -1,0 +1,13 @@
+{
+  "nrows": 2,
+  "ncols": 2,
+  "figsize": [10.0, 7.5],
+  "dpi": 300,
+  "constrained_layout": true,
+  "out_name": "figure_coord_velocity_consistency",
+  "formats": ["png", "pdf"],
+  "panels": [
+    ["panel_a_diagram", "panel_b_cosine_dist"],
+    ["panel_c_scatter", "panel_d_summary"]
+  ]
+}

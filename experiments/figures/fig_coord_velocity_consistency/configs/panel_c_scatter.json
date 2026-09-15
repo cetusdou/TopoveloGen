@@ -1,0 +1,11 @@
+{
+  "letter": "C",
+  "title": "C. cos_abs vs cos_prop / cos_log",
+  "figsize": [4.5, 3.2],
+  "dpi": 300,
+  "out_name": "panel_c_scatter",
+  "formats": ["png", "pdf"],
+  "max_points": 2500,
+  "point_alpha": 0.35,
+  "point_size": 6
+}
