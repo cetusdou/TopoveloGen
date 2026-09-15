@@ -13,7 +13,6 @@ from scipy.spatial.distance import cdist
 from matplotlib.colors import LinearSegmentedColormap
 from pathlib import Path
 import sys
-import torch
 
 # 添加项目根目录到路径
 project_root = Path.cwd().parent if Path.cwd().name == 'figure_notebook' else Path.cwd()
@@ -96,7 +95,7 @@ def generate_topology_data(topology_type, N_samples=1500, n_steps=80, dt=0.05, n
             - time_points: 时间点 [n_steps+1]
     """
     np.random.seed(seed)
-    torch.manual_seed(seed)
+    np.random.seed(seed)
 
 
     # 使用真实的数据生成模块
@@ -186,8 +185,8 @@ def generate_topology_data(topology_type, N_samples=1500, n_steps=80, dt=0.05, n
                                 steps=n_steps, dt=dt, noise_level=noise_level)
     # traj.shape == (n_steps+1, N_samples, 2)
     # 确保是numpy数组并保留完整轨迹
-    if isinstance(traj, torch.Tensor):
-        z_trajectory = traj.numpy()
+    if isinstance(traj, np.ndarray):
+        z_trajectory = traj
     else:
         z_trajectory = np.array(traj)
     z_data = z_trajectory[-1]  # 最后一个时间点的潜在空间坐标（用于计算pseudotime和branch）
@@ -399,11 +398,11 @@ LIGHT_SPINE = "#b8b8b8"
 def to_numpy(data):
     """Convert Tensor/List/array-like object to numpy array."""
     if hasattr(data, "detach"):
-        data = data.detach()
+        data = data
     if hasattr(data, "cpu"):
-        data = data.cpu()
+        data = data
     if hasattr(data, "numpy"):
-        data = data.numpy()
+        data = data
     return np.asarray(data)
 
 
@@ -540,7 +539,7 @@ def style_latent_axis(ax):
     ax.set_aspect("equal", adjustable="box")
     ax.set_xticks([])
     ax.set_yticks([])
-    for sp in ax.spines.values():
+    for sp in ax.spines():
         sp.set_visible(False)
 
 
@@ -652,7 +651,7 @@ def make_beautified_topology_collection(save_stem="Fig2_TopologyCollection"):
             minlength=0.12,
             zorder=1,
         )
-        sc =         # Background: trajectory colored by time
+        # Background: trajectory colored by time
         ax_dyn.scatter(
             sampled_z[:, 0], sampled_z[:, 1],
             c=sampled_time_labels,

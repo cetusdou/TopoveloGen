@@ -9,7 +9,6 @@ Usage (from repo root):
     python experiments/results_embedding_masked_errors.py --plot-only
 """
 
-from __future__ import annotations
 
 import argparse
 import csv
@@ -22,7 +21,6 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
-import torch
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
@@ -131,7 +129,7 @@ def simulate_trajectory(
     n_cells: int,
     n_steps: int,
     save_every: int,
-) -> torch.Tensor:
+) -> np.ndarray:
     z0 = initialize_cells(topology if topology != "cycle_bifurcation" else "cycle", n_cells, system, SEED)
     if topology == "cycle_bifurcation":
         z0 = init_cycle_rim_cells(n_cells, radius=1.0, noise=0.05, seed=SEED)
@@ -147,30 +145,30 @@ def simulate_trajectory(
     return traj
 
 
-def finite_time_displacement_from_traj(traj: torch.Tensor, dt: float) -> np.ndarray:
+def finite_time_displacement_from_traj(traj: np.ndarray, dt: float) -> np.ndarray:
     """Per-observation finite-time latent displacement [T*N, D] from differences."""
     t_steps, n_cells, d = traj.shape
-    v = torch.zeros(t_steps, n_cells, d)
+    v = np.zeros(t_steps, n_cells, d)
     v[:-1] = (traj[1:] - traj[:-1]) / dt
     v[-1] = v[-2]
-    return v.reshape(-1, d).numpy()
+    return v.reshape(-1, d)
 
 
-def latent_velocity_from_traj(traj: torch.Tensor, dt: float) -> np.ndarray:
+def latent_velocity_from_traj(traj: np.ndarray, dt: float) -> np.ndarray:
     """Deprecated alias for finite_time_displacement_from_traj."""
     return finite_time_displacement_from_traj(traj, dt)
 
 
 def latent_drift_from_system(system: UniversalGraphSystem, z: np.ndarray) -> np.ndarray:
     """Evaluate the numerical latent drift field b_num(z) at observed cells."""
-    z_t = torch.tensor(z, dtype=torch.float32)
-    drift = system.get_drift(z_t).detach().cpu().numpy()
+    z_t = np.asarray(z, dtype=np.float32)
+    drift = system.get_drift(z_t)
     return drift
 
 
-def flatten_traj(traj: torch.Tensor) -> np.ndarray:
+def flatten_traj(traj: np.ndarray) -> np.ndarray:
     t_steps, n_cells, d = traj.shape
-    return traj.reshape(t_steps * n_cells, d).numpy()
+    return traj.reshape(t_steps * n_cells, d)
 
 
 def subsample_observations(n_obs: int, n_keep: int, seed: int) -> np.ndarray:
@@ -181,7 +179,7 @@ def subsample_observations(n_obs: int, n_keep: int, seed: int) -> np.ndarray:
 
 def generate_kinetics_bundle(
     system: UniversalGraphSystem,
-    traj: torch.Tensor,
+    traj: np.ndarray,
     n_genes: int,
 ) -> Dict[str, np.ndarray]:
     synth = setup_synthesizer(system, n_genes)
@@ -191,8 +189,8 @@ def generate_kinetics_bundle(
     t_steps, n_cells, _ = traj.shape
     n_obs = t_steps * n_cells
 
-    def flat(x: torch.Tensor) -> np.ndarray:
-        return x.reshape(n_obs, -1).detach().cpu().numpy()
+    def flat(x: np.ndarray) -> np.ndarray:
+        return x.reshape(n_obs, -1)
 
     gene_names = list(synth.gene_names)
     return {
@@ -288,24 +286,24 @@ def cosine_rows(a: np.ndarray, b: np.ndarray, eps: float = 1e-8) -> np.ndarray:
 # Regions (cycle-bifurcation)
 # ---------------------------------------------------------------------------
 def assign_regions(system: UniversalGraphSystem, z: np.ndarray) -> Dict[str, np.ndarray]:
-    z_t = torch.tensor(z, dtype=torch.float32)
+    z_t = np.asarray(z, dtype=np.float32)
     regions: Dict[str, np.ndarray] = {}
 
     cycle = next((n for n in system.nodes if isinstance(n, CycleNode)), None)
     if cycle is not None:
-        center = torch.tensor(cycle.pos[:2], dtype=torch.float32)
-        dist_rim = (torch.norm(z_t - center, dim=1) - cycle.radius).abs().numpy()
+        center = np.asarray(cycle.pos[:2], dtype=np.float32)
+        dist_rim = np.abs(np.linalg.norm(z_t - center, axis=1) - cycle.radius)
         regions["cycle_rim"] = dist_rim < 0.25
 
     if len(system.edges) >= 2 and cycle is not None:
-        docks = torch.stack([e.start for e in system.edges[:2]], dim=0).numpy()
+        docks = np.stack([e.start for e in system.edges[:2]], axis=0)
         d0 = np.linalg.norm(z - docks[0], axis=1)
         d1 = np.linalg.norm(z - docks[1], axis=1)
         regions["junction"] = np.minimum(d0, d1) < 0.4
-        regions["branch1"] = torch.sqrt(system.edges[0].distance_sq(z_t)).numpy() < 0.35
-        regions["branch2"] = torch.sqrt(system.edges[1].distance_sq(z_t)).numpy() < 0.35
+        regions["branch1"] = np.sqrt(system.edges[0].distance_sq(z_t)) < 0.35
+        regions["branch2"] = np.sqrt(system.edges[1].distance_sq(z_t)) < 0.35
     elif len(system.edges) == 1:
-        regions["edge"] = torch.sqrt(system.edges[0].distance_sq(z_t)).numpy() < 0.35
+        regions["edge"] = np.sqrt(system.edges[0].distance_sq(z_t)) < 0.35
 
     return regions
 
@@ -469,7 +467,7 @@ def plot_figure7(main: Dict[str, Any], sweep: List[Dict[str, Any]]) -> plt.Figur
     ax.scatter(z[~mm, 0], z[~mm, 1], s=1.5, c="#BBBBBB", linewidths=0, label="agreement", rasterized=True)
     ax.scatter(z[mm, 0], z[mm, 1], s=5, c="C1", linewidths=0, label="low-D ok, high-D wrong", rasterized=True)
     for edge in system.edges:
-        s, e = edge.start.cpu().numpy(), edge.end.cpu().numpy()
+        s, e = edge.start, edge.end
         ax.plot([s[0], e[0]], [s[1], e[1]], color="#888888", ls="--", lw=0.8, alpha=0.6)
     ax.set_title("E  Mismatch cells on topology")
     ax.set_xlabel("")

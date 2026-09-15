@@ -82,11 +82,11 @@ LIGHT_SPINE = "#b8b8b8"
 def to_numpy(data):
     """Convert Tensor/List/array-like object to numpy array."""
     if hasattr(data, "detach"):
-        data = data.detach()
+        data = data
     if hasattr(data, "cpu"):
-        data = data.cpu()
+        data = data
     if hasattr(data, "numpy"):
-        data = data.numpy()
+        data = data
     return np.asarray(data)
 
 
@@ -223,7 +223,7 @@ def style_latent_axis(ax):
     ax.set_aspect("equal", adjustable="box")
     ax.set_xticks([])
     ax.set_yticks([])
-    for sp in ax.spines.values():
+    for sp in ax.spines():
         sp.set_visible(False)
 
 

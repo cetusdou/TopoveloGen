@@ -25,9 +25,9 @@ Usage (from repo root):
     python experiments/results_figure4_statistical_realism.py --rebuild-cache
 """
 
-from __future__ import annotations
 
 import argparse
+import pickle
 import csv
 import sys
 from pathlib import Path
@@ -35,7 +35,6 @@ from typing import Dict, List, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
-import torch
 from scipy.stats import gaussian_kde
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -177,7 +176,7 @@ def _generate_noise_stage_sparsities(
     z0 = init_cycle_rim_cells(N_CB, radius=1.0, noise=0.06, seed=seed)
     _, z_cells = simulate_langevin(system_cb, z0, n_steps=2000, dt=0.01,
                                    diffusion=0.006, save_every=10, seed=seed)
-    z_t = torch.tensor(z_cells, dtype=torch.float32)
+    z_t = np.asarray(z_cells, dtype=np.float32)
 
     # Gene config (noise genes only, fast)
     N_G = 500
@@ -208,8 +207,8 @@ def _generate_noise_stage_sparsities(
                                                scale=1.5)
         xs = kinetics["spliced"]
         xu = kinetics["unspliced"]
-        if isinstance(xs, torch.Tensor):
-            xs, xu = xs.numpy(), xu.numpy()
+        if isinstance(xs, np.ndarray):
+            xs, xu = xs, xu
         # Apply binomial downsampling for the nb_dropout stage (matching our pipeline)
         if cfg["name"] == "nb_dropout":
             xs = rng.binomial(xs.astype(int), 0.20).astype(float)
@@ -406,11 +405,11 @@ def draw_graph_topology(ax, system, z):
     xs = np.linspace(xlim[0], xlim[1], n)
     ys = np.linspace(ylim[0], ylim[1], n)
     xx, yy = np.meshgrid(xs, ys)
-    grid = torch.tensor(np.stack([xx, yy], axis=-1), dtype=torch.float32).reshape(-1, 2)
+    grid = np.asarray(np.stack([xx, yy], axis=-1), dtype=np.float32).reshape(-1, 2)
     u = system.potential_numpy(grid).reshape(n, n)
     ax.contourf(xx, yy, u, levels=20, cmap="Greys", alpha=0.08, zorder=0)
     for edge in system.edges:
-        s, e = edge.start.cpu().numpy(), edge.end.cpu().numpy()
+        s, e = edge.start, edge.end
         ax.plot([s[0], e[0]], [s[1], e[1]], "k--", lw=0.8, alpha=0.45, zorder=1)
     for node in system.nodes:
         ax.scatter(node.pos[0], node.pos[1], s=35, c="0.35", edgecolors="k", linewidths=0.5, zorder=2)
@@ -552,15 +551,15 @@ def _save_and_plot(result: Figure4Result) -> None:
 
     print("Saving CSV statistics...")
     rows = save_csvs(result)
-    torch.save(
+    pickle.dump(
         {
-            "z":             torch.tensor(result.z,             dtype=torch.float32),
-            "spliced":       torch.tensor(result.spliced),
-            "unspliced":     torch.tensor(result.unspliced),
-            "real_spliced":  torch.tensor(result.real_spliced),
-            "real_unspliced":torch.tensor(result.real_unspliced),
+            "z":             np.asarray(result.z,             dtype=np.float32),
+            "spliced":       np.asarray(result.spliced),
+            "unspliced":     np.asarray(result.unspliced),
+            "real_spliced":  np.asarray(result.real_spliced),
+            "real_unspliced":np.asarray(result.real_unspliced),
         },
-        DATA_DIR / "count_matrices.pt",
+        open(str(DATA_DIR / "count_matrices.pt"), "wb"),
     )
 
     stats_real = calc_6_metrics(result.real_spliced, result.real_unspliced)
@@ -660,16 +659,16 @@ def plot_only() -> None:
     pt = DATA_DIR / "count_matrices.pt"
     if not pt.exists():
         raise FileNotFoundError("Run the full pipeline first.")
-    data = torch.load(pt, weights_only=False)
-    s    = data["spliced"].numpy()
-    u    = data["unspliced"].numpy()
-    z    = data["z"].numpy()
-    xr_s = data["real_spliced"].numpy()
-    xr_u = data["real_unspliced"].numpy()
+    data = pickle.load(open(str(pt), "rb"))
+    s    = data["spliced"]
+    u    = data["unspliced"]
+    z    = data["z"]
+    xr_s = data["real_spliced"]
+    xr_u = data["real_unspliced"]
 
     # Load system from kinetics cache if available, else rebuild
     if KINETICS_CACHE_PATH.exists():
-        cache  = torch.load(KINETICS_CACHE_PATH, weights_only=False)
+        cache  = pickle.load(open(str(KINETICS_CACHE_PATH), "rb"))
         system = cache["system"]
         config_dict = cache.get("config_dict", {})
     else:

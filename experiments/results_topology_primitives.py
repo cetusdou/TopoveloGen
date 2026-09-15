@@ -11,7 +11,6 @@ Usage (from repo root):
     python experiments/results_topology_primitives.py
 """
 
-from __future__ import annotations
 
 import csv
 import sys
@@ -22,7 +21,6 @@ from typing import Callable, Dict, List, Optional, Tuple
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
-import torch
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
@@ -124,13 +122,13 @@ STREAM_MIN_SPEED = 0.12  # hide weak drift at channel rims
 # ---------------------------------------------------------------------------
 def simulate_langevin(
     system: UniversalGraphSystem,
-    z0: torch.Tensor,
+    z0: np.ndarray,
     n_steps: int = N_STEPS,
     dt: float = DT,
     diffusion: float = DIFFUSION,
     save_every: int = SAVE_EVERY,
     seed: int = SEED,
-) -> Tuple[torch.Tensor, torch.Tensor]:
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Overdamped Langevin: z_{t+dt} = z_t + b(z_t) dt + sqrt(2 D dt) * noise.
 
@@ -138,20 +136,19 @@ def simulate_langevin(
         traj_history: [n_saved, n_cells, dims]
         final_positions: [n_cells, dims]
     """
-    torch.manual_seed(seed)
-    z = z0.clone().float()
+    np.random.seed(seed)
+    z = z0.copy().astype(np.float32)
     noise_scale = float(np.sqrt(2.0 * diffusion * dt))
-    saved: List[torch.Tensor] = [z.clone()]
+    saved: List[np.ndarray] = [z.copy()]
 
     for step in range(1, n_steps + 1):
-        with torch.enable_grad():
-            drift = system.get_drift(z).detach()
-        z = z + drift * dt + noise_scale * torch.randn_like(z)
+        drift = system.get_drift(z)
+        z = z + drift * dt + noise_scale * np.random.randn(*z.shape).astype(z.dtype)
         if step % save_every == 0:
-            saved.append(z.clone())
+            saved.append(z.copy())
 
-    traj = torch.stack(saved, dim=0)
-    return traj, z.detach()
+    traj = np.stack(saved, axis=0)
+    return traj, z
 
 
 # ---------------------------------------------------------------------------
@@ -300,13 +297,13 @@ def initialize_cells(
     n_cells: int,
     system: UniversalGraphSystem,
     seed: int = SEED,
-) -> torch.Tensor:
+) -> np.ndarray:
     rng = np.random.default_rng(seed)
     small = 0.08
 
     if topology in ("linear", "bifurcation"):
         z0 = rng.normal([-2.0, 0.0], small, size=(n_cells, 2)).astype(np.float32)
-        return torch.tensor(z0)
+        return np.asarray(z0)
 
     if topology == "cycle":
         center = np.array([0.0, 0.0])
@@ -314,7 +311,7 @@ def initialize_cells(
         angles = rng.uniform(0, 2 * np.pi, size=n_cells)
         z0 = center + radius * np.stack([np.cos(angles), np.sin(angles)], axis=1)
         z0 += rng.normal(0, small, size=z0.shape)
-        return torch.tensor(z0.astype(np.float32))
+        return np.asarray(z0.astype(np.float32))
 
     if topology == "cycle_linear":
         cycle = next(n for n in system.nodes if isinstance(n, CycleNode))
@@ -323,14 +320,14 @@ def initialize_cells(
         angles = rng.uniform(0, 2 * np.pi, size=n_cells)
         z0 = center + radius * np.stack([np.cos(angles), np.sin(angles)], axis=1)
         z0 += rng.normal(0, small, size=z0.shape)
-        return torch.tensor(z0.astype(np.float32))
+        return np.asarray(z0.astype(np.float32))
 
     if topology == "skeleton":
         skel = next(n for n in system.nodes if isinstance(n, SkeletonNode))
-        pts = skel.skeleton_points.numpy()
+        pts = skel.skeleton_points
         idx = rng.integers(0, len(pts), size=n_cells)
         z0 = pts[idx] + rng.normal(0, small, size=(n_cells, 2))
-        return torch.tensor(z0.astype(np.float32))
+        return np.asarray(z0.astype(np.float32))
 
     if topology == "cycle_bifurcation":
         cycle = next(n for n in system.nodes if isinstance(n, CycleNode))
@@ -339,7 +336,7 @@ def initialize_cells(
         angles = rng.uniform(0, 2 * np.pi, size=n_cells)
         z0 = center + radius * np.stack([np.cos(angles), np.sin(angles)], axis=1)
         z0 += rng.normal(0, small, size=z0.shape)
-        return torch.tensor(z0.astype(np.float32))
+        return np.asarray(z0.astype(np.float32))
 
     raise ValueError(f"Unknown topology: {topology}")
 
@@ -351,31 +348,30 @@ def make_grid(
     xlim: Tuple[float, float],
     ylim: Tuple[float, float],
     n_grid: int,
-) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-    xs = torch.linspace(xlim[0], xlim[1], n_grid)
-    ys = torch.linspace(ylim[0], ylim[1], n_grid)
-    xx, yy = torch.meshgrid(xs, ys, indexing="xy")
-    grid = torch.stack([xx.flatten(), yy.flatten()], dim=1)
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    xs = np.linspace(xlim[0], xlim[1], n_grid)
+    ys = np.linspace(ylim[0], ylim[1], n_grid)
+    xx, yy = np.meshgrid(xs, ys, indexing="xy")
+    grid = np.stack([xx.flatten(), yy.flatten()], axis=1)
     return xx, yy, grid
 
 
-def compute_manifold_support(system: UniversalGraphSystem, grid: torch.Tensor) -> torch.Tensor:
+def compute_manifold_support(system: UniversalGraphSystem, grid: np.ndarray) -> np.ndarray:
     """
     ρ_max(z) = max_c exp(-d_c² / 2σ_c²): confidence that z lies on a graph component.
     """
-    support_list: List[torch.Tensor] = []
-    with torch.no_grad():
-        for edge in system.edges:
-            d2, _, _, sig = edge.get_component_data(grid)
-            rho = torch.exp(-d2 / (2.0 * sig**2 + 1e-8))
-            support_list.append(rho)
-        for node in system.nodes:
-            d2, _, _, sig = node.get_potential_and_flow(grid)
-            rho = torch.exp(-d2 / (2.0 * sig**2 + 1e-8))
-            support_list.append(rho)
+    support_list: List[np.ndarray] = []
+    for edge in system.edges:
+        d2, _, _, sig = edge.get_component_data(grid)
+        rho = np.exp(-d2 / (2.0 * sig**2 + 1e-8))
+        support_list.append(rho)
+    for node in system.nodes:
+        d2, _, _, sig = node.get_potential_and_flow(grid)
+        rho = np.exp(-d2 / (2.0 * sig**2 + 1e-8))
+        support_list.append(rho)
     if not support_list:
-        return torch.zeros(grid.shape[0], device=grid.device, dtype=grid.dtype)
-    return torch.stack(support_list, dim=1).max(dim=1).values
+        return np.zeros(grid.shape[0], dtype=grid.dtype)
+    return np.stack(support_list, axis=1).max(axis=1)
 
 
 def compute_grid(
@@ -385,12 +381,10 @@ def compute_grid(
     n_grid: int = 80,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     xx_t, yy_t, grid = make_grid(xlim, ylim, n_grid)
-    with torch.no_grad():
-        u = system.potential_numpy(grid).reshape(n_grid, n_grid)
-    with torch.enable_grad():
-        drift = system.get_drift(grid).detach().cpu().numpy()
+    u = system.potential_numpy(grid).reshape(n_grid, n_grid)
+    drift = system.get_drift(grid)
     drift = drift.reshape(n_grid, n_grid, 2)
-    return xx_t.numpy(), yy_t.numpy(), u, drift
+    return xx_t, yy_t, u, drift
 
 
 def square_panel_limits(
@@ -415,12 +409,10 @@ def compute_landscape_fields(
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Potential, drift, and manifold-support on a regular grid."""
     xx_t, yy_t, grid = make_grid(xlim, ylim, n_grid)
-    with torch.no_grad():
-        u = system.potential_numpy(grid).reshape(n_grid, n_grid)
-        rho = compute_manifold_support(system, grid).reshape(n_grid, n_grid).cpu().numpy()
-    with torch.enable_grad():
-        drift = system.get_drift(grid).detach().cpu().numpy().reshape(n_grid, n_grid, 2)
-    return xx_t.numpy(), yy_t.numpy(), u, drift, rho
+    u = system.potential_numpy(grid).reshape(n_grid, n_grid)
+    rho = compute_manifold_support(system, grid).reshape(n_grid, n_grid)
+    drift = system.get_drift(grid).reshape(n_grid, n_grid, 2)
+    return xx_t, yy_t, u, drift, rho
 
 
 def _landscape_stream_threshold(u: np.ndarray) -> float:
@@ -456,11 +448,10 @@ def plot_landscape_streamlines(
     yy_s = yy[sl, sl]
     u_s = u[sl, sl]
 
-    grid = torch.tensor(
-        np.stack([xx_s.ravel(), yy_s.ravel()], axis=-1), dtype=torch.float32
+    grid = np.asarray(
+        np.stack([xx_s.ravel(), yy_s.ravel()], axis=-1), dtype=np.float32
     )
-    with torch.enable_grad():
-        drift = system.get_drift(grid).detach().cpu().numpy()
+    drift = system.get_drift(grid)
     vx = drift[:, 0].reshape(xx_s.shape)
     vy = drift[:, 1].reshape(xx_s.shape)
 
@@ -491,8 +482,8 @@ def _draw_graph_skeleton(ax: plt.Axes, system: UniversalGraphSystem) -> None:
     """Prescribed graph/skeleton overlay (user-specified target manifold)."""
     skel_kw = {"color": SKELETON_COLOR, "ls": "--", "lw": 1.3, "alpha": 0.92, "zorder": 5}
     for edge in system.edges:
-        s = edge.start.cpu().numpy()
-        e = edge.end.cpu().numpy()
+        s = edge.start
+        e = edge.end
         ax.plot([s[0], e[0]], [s[1], e[1]], **skel_kw)
     for node in system.nodes:
         if isinstance(node, CycleNode):
@@ -508,7 +499,7 @@ def _draw_graph_skeleton(ax: plt.Axes, system: UniversalGraphSystem) -> None:
             )
             ax.add_artist(circ)
         elif isinstance(node, SkeletonNode):
-            sk = node.skeleton_points.cpu().numpy()
+            sk = node.skeleton_points
             ax.plot(sk[:, 0], sk[:, 1], **skel_kw)
 
 
@@ -601,14 +592,13 @@ def _plot_support_masked_streamplot(
 
 
 def _support_at_points(system: UniversalGraphSystem, points: np.ndarray) -> np.ndarray:
-    grid = torch.tensor(points, dtype=torch.float32)
-    with torch.no_grad():
-        return compute_manifold_support(system, grid).cpu().numpy()
+    grid = np.asarray(points, dtype=np.float32)
+    return compute_manifold_support(system, grid)
 
 
 def plot_topology_panel(
     system: UniversalGraphSystem,
-    traj: torch.Tensor,
+    traj: np.ndarray,
     ax: plt.Axes,
     title: str,
     xlim: Tuple[float, float],
@@ -632,7 +622,7 @@ def plot_topology_panel(
     _draw_graph_skeleton(ax, system)
 
     if cfg.get("mark_exit") and system.edges:
-        exit_pt = system.edges[0].start.cpu().numpy()
+        exit_pt = system.edges[0].start
         ax.scatter(
             exit_pt[0],
             exit_pt[1],
@@ -648,10 +638,10 @@ def plot_topology_panel(
     n_cells = traj.shape[1]
     idx = rng.choice(n_cells, size=min(n_traj_plot, n_cells), replace=False)
     for j in idx:
-        path = traj[:, j, :].cpu().numpy()
+        path = traj[:, j, :]
         ax.plot(path[:, 0], path[:, 1], color="0.35", lw=0.4, alpha=0.45, zorder=4)
 
-    final_z = traj[-1].cpu().numpy()
+    final_z = traj[-1]
     rho_cells = _support_at_points(system, final_z)
     supported = rho_cells > support_cut
     ax.scatter(
@@ -688,12 +678,12 @@ def plot_topology_panel(
 # ---------------------------------------------------------------------------
 # Metrics
 # ---------------------------------------------------------------------------
-def _edge_tangent(edge: GraphEdge, z: torch.Tensor) -> torch.Tensor:
-    vec = edge.vec.to(z.device)
-    return vec / (torch.norm(vec) + 1e-8)
+def _edge_tangent(edge: GraphEdge, z: np.ndarray) -> np.ndarray:
+    vec = edge.vec
+    return vec / (np.linalg.norm(vec) + 1e-8)
 
 
-def _graphnode_fallback_tangent(system: UniversalGraphSystem, node: GraphNode, z: torch.Tensor) -> torch.Tensor:
+def _graphnode_fallback_tangent(system: UniversalGraphSystem, node: GraphNode, z: np.ndarray) -> np.ndarray:
     """Direction along the closest incident edge (by projection), for point nodes."""
     incident = [
         e
@@ -701,34 +691,34 @@ def _graphnode_fallback_tangent(system: UniversalGraphSystem, node: GraphNode, z
         if e.node_start.id == node.id or e.node_end.id == node.id
     ]
     if not incident:
-        return torch.zeros_like(z)
-    best_d2 = torch.full((z.shape[0],), float("inf"), device=z.device)
-    best_t = torch.zeros_like(z)
+        return np.zeros_like(z)
+    best_d2 = np.full((z.shape[0],), float("inf"), )
+    best_t = np.zeros_like(z)
     for edge in incident:
         d2 = edge.distance_sq(z)
-        t = _edge_tangent(edge, z).unsqueeze(0).expand(z.shape[0], -1)
+        t = _edge_tangent(edge, z)[None, :]
         mask = d2 < best_d2
-        best_d2 = torch.where(mask, d2, best_d2)
-        best_t = torch.where(mask.unsqueeze(1), t, best_t)
+        best_d2 = np.where(mask, d2, best_d2)
+        best_t = np.where(mask[:, None], t, best_t)
     return best_t
 
 
 def _component_distances_and_tangents(
-    system: UniversalGraphSystem, z: torch.Tensor
-) -> Tuple[torch.Tensor, torch.Tensor]:
+    system: UniversalGraphSystem, z: np.ndarray
+) -> Tuple[np.ndarray, np.ndarray]:
     """Per-cell min distance and tangent from nearest graph component."""
     n = z.shape[0]
-    d2_parts: List[torch.Tensor] = []
-    tangent_parts: List[torch.Tensor] = []
+    d2_parts: List[np.ndarray] = []
+    tangent_parts: List[np.ndarray] = []
 
     for edge in system.edges:
         d2_parts.append(edge.distance_sq(z))
-        tangent_parts.append(_edge_tangent(edge, z).unsqueeze(0).expand(n, -1))
+        tangent_parts.append(np.broadcast_to(_edge_tangent(edge, z)[None, :], (n, 2)))
 
     for node in system.nodes:
         d2, _, flow, _ = node.get_potential_and_flow(z)
         d2_parts.append(d2)
-        flow_norm = torch.norm(flow, dim=1, keepdim=True)
+        flow_norm = np.linalg.norm(flow, axis=1, keepdims=True)
         t_flow = flow / (flow_norm + 1e-8)
         if float(flow_norm.max()) > 1e-6:
             tangent_parts.append(t_flow)
@@ -737,36 +727,34 @@ def _component_distances_and_tangents(
         else:
             tangent_parts.append(t_flow)
 
-    d2_stack = torch.stack(d2_parts, dim=1)
-    tan_stack = torch.stack(tangent_parts, dim=1)
-    nearest = torch.argmin(d2_stack, dim=1)
-    d_min = torch.sqrt(torch.gather(d2_stack, 1, nearest.unsqueeze(1)).squeeze(1))
-    t_target = tan_stack[torch.arange(n, device=z.device), nearest]
-    t_norm = torch.norm(t_target, dim=1, keepdim=True)
-    t_target = torch.where(t_norm > 1e-6, t_target / (t_norm + 1e-8), t_target)
+    d2_stack = np.stack(d2_parts, axis=1)
+    tan_stack = np.stack(tangent_parts, axis=1)
+    nearest = np.argmin(d2_stack, axis=1)
+    d_min = np.sqrt(d2_stack[np.arange(d2_stack.shape[0]), nearest])
+    t_target = tan_stack[np.arange(n, ), nearest]
+    t_norm = np.linalg.norm(t_target, axis=1, keepdims=True)
+    t_target = np.where(t_norm > 1e-6, t_target / (t_norm + 1e-8), t_target)
     return d_min, t_target
 
 
 def compute_topology_metrics(
     system: UniversalGraphSystem,
-    z_final: torch.Tensor,
+    z_final: np.ndarray,
 ) -> Dict[str, float]:
     d_min, t_target = _component_distances_and_tangents(system, z_final)
-    with torch.enable_grad():
-        b = system.get_drift(z_final).detach()
-    b_norm = torch.norm(b, dim=1) + 1e-8
-    t_norm = torch.norm(t_target, dim=1) + 1e-8
-    cos = torch.clamp((b * t_target).sum(dim=1) / (b_norm * t_norm), -1.0, 1.0)
+    b = system.get_drift(z_final)
+    b_norm = np.linalg.norm(b, axis=1) + 1e-8
+    t_norm = np.linalg.norm(t_target, axis=1) + 1e-8
+    cos = np.clip((b * t_target).sum(axis=1) / (b_norm * t_norm), -1.0, 1.0)
 
-    with torch.no_grad():
-        _, f_rot = system.compute_fused_field(z_final)
-    f_norm = torch.norm(f_rot, dim=1) + 1e-8
-    cos_rot = torch.clamp((f_rot * t_target).sum(dim=1) / (f_norm * t_norm), -1.0, 1.0)
+    _, f_rot = system.compute_fused_field(z_final)
+    f_norm = np.linalg.norm(f_rot, axis=1) + 1e-8
+    cos_rot = np.clip((f_rot * t_target).sum(axis=1) / (f_norm * t_norm), -1.0, 1.0)
 
     return {
         "mean_distance": float(d_min.mean()),
-        "median_distance": float(d_min.median()),
-        "p90_distance": float(torch.quantile(d_min, 0.9)),
+        "median_distance": float(np.median(d_min)),
+        "p90_distance": float(np.quantile(d_min, 0.9)),
         "mean_flow_alignment": float(cos.mean()),
         "mean_rot_flow_alignment": float(cos_rot.mean()),
     }
@@ -794,10 +782,10 @@ def save_metrics_csv(rows: List[Dict], path: Path) -> None:
         writer.writerows(rows)
 
 
-def save_trajectory_npz(name: str, traj: torch.Tensor, metrics: Dict) -> None:
+def save_trajectory_npz(name: str, traj: np.ndarray, metrics: Dict) -> None:
     path = DATA_DIR / f"{name}_traj.npz"
     path.parent.mkdir(parents=True, exist_ok=True)
-    np.savez(path, traj=traj.numpy(), **{k: np.array(v) for k, v in metrics.items()})
+    np.savez(path, traj=traj, **{k: np.array(v) for k, v in metrics.items()})
 
 
 def plot_figure_2(all_results: Dict[str, Dict], out_path: Path) -> None:
@@ -931,7 +919,7 @@ def load_plot_results() -> Dict[str, Dict]:
         if not npz_path.exists():
             raise FileNotFoundError(f"Missing cached trajectory: {npz_path}")
         data = np.load(npz_path, allow_pickle=False)
-        traj = torch.tensor(data["traj"])
+        traj = np.asarray(data["traj"])
         metrics = {
             "mean_distance": float(data["mean_distance"]),
             "median_distance": float(data["median_distance"]),

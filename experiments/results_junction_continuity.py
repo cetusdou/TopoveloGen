@@ -8,9 +8,9 @@ Usage (from repo root):
     python experiments/results_junction_continuity.py
 """
 
-from __future__ import annotations
 
 import csv
+import pickle
 import sys
 import argparse
 from pathlib import Path
@@ -18,7 +18,6 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
-import torch
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
@@ -141,18 +140,18 @@ def init_cycle_rim_cells(
     radius: float = 1.0,
     noise: float = 0.05,
     seed: int = SEED,
-) -> torch.Tensor:
+) -> np.ndarray:
     rng = np.random.default_rng(seed)
     theta = rng.uniform(0, 2 * np.pi, size=n_cells)
     z0 = radius * np.stack([np.cos(theta), np.sin(theta)], axis=1)
     z0 += rng.normal(0, noise, size=z0.shape)
-    return torch.tensor(z0.astype(np.float32))
+    return np.asarray(z0.astype(np.float32))
 
 
-def init_stem_cells(n_cells: int, seed: int = SEED) -> torch.Tensor:
+def init_stem_cells(n_cells: int, seed: int = SEED) -> np.ndarray:
     rng = np.random.default_rng(seed)
     z0 = rng.normal([-2.0, 0.0], 0.08, size=(n_cells, 2)).astype(np.float32)
-    return torch.tensor(z0)
+    return np.asarray(z0)
 
 
 # ---------------------------------------------------------------------------
@@ -162,35 +161,33 @@ def make_grid(
     xlim: Tuple[float, float],
     ylim: Tuple[float, float],
     n_grid: int = N_GRID,
-) -> Tuple[np.ndarray, np.ndarray, torch.Tensor]:
-    xs = torch.linspace(xlim[0], xlim[1], n_grid)
-    ys = torch.linspace(ylim[0], ylim[1], n_grid)
-    xx, yy = torch.meshgrid(xs, ys, indexing="xy")
-    grid = torch.stack([xx.flatten(), yy.flatten()], dim=1)
-    return xx.numpy(), yy.numpy(), grid
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    xs = np.linspace(xlim[0], xlim[1], n_grid)
+    ys = np.linspace(ylim[0], ylim[1], n_grid)
+    xx, yy = np.meshgrid(xs, ys, indexing="xy")
+    grid = np.stack([xx.flatten(), yy.flatten()], axis=1)
+    return xx, yy, grid
 
 
 def compute_potential_and_drift(
     system: UniversalGraphSystem,
-    grid: torch.Tensor,
+    grid: np.ndarray,
     n_grid: int,
 ) -> Tuple[np.ndarray, np.ndarray]:
-    with torch.no_grad():
-        u = system.potential_numpy(grid).reshape(n_grid, n_grid)
-    with torch.enable_grad():
-        drift = system.get_drift(grid).detach().cpu().numpy().reshape(n_grid, n_grid, 2)
+    u = system.potential_numpy(grid).reshape(n_grid, n_grid)
+    drift = system.get_drift(grid).reshape(n_grid, n_grid, 2)
     return u, drift
 
 
 def junction_center_for(system: UniversalGraphSystem, topology_key: str) -> np.ndarray:
     if topology_key == "cycle_linear":
-        return system.edges[0].start.cpu().numpy()
+        return system.edges[0].start
     if topology_key == "bifurcation":
         branch = next(n for n in system.nodes if n.id == "Branch")
         return np.array(branch.pos[:2], dtype=np.float64)
     if topology_key == "cycle_bifurcation":
         # Use mean of cycle exit docks on upper/lower branches
-        starts = torch.stack([e.start for e in system.edges], dim=0).cpu().numpy()
+        starts = np.stack([e.start for e in system.edges], axis=0)
         return starts.mean(axis=0)
     raise ValueError(topology_key)
 
@@ -201,9 +198,9 @@ def rim_docking_error(system: UniversalGraphSystem) -> Optional[float]:
     if cycle is None or not system.edges:
         return None
     edge = system.edges[0]
-    center = torch.tensor(cycle.pos[:2], dtype=torch.float32)
-    start = edge.start.float()
-    dist = torch.norm(start - center).item()
+    center = np.asarray(cycle.pos[:2], dtype=np.float32)
+    start = edge.start.astype(np.float32)
+    dist = np.linalg.norm(start - center).item()
     return abs(dist - cycle.radius)
 
 
@@ -258,36 +255,36 @@ def region_mask_from_center(
     return (xx - center[0]) ** 2 + (yy - center[1]) ** 2 <= radius**2
 
 
-def passage_success_cycle_linear(traj: torch.Tensor) -> float:
+def passage_success_cycle_linear(traj: np.ndarray) -> float:
     final = traj[-1]
-    return float((final[:, 0] > 2.2).float().mean())
+    return float((final[:, 0] > 2.2).astype(np.float32).mean())
 
 
-def passage_success_bifurcation(traj: torch.Tensor) -> float:
+def passage_success_bifurcation(traj: np.ndarray) -> float:
     final = traj[-1]
-    return float((final[:, 0] > 1.5).float().mean())
+    return float((final[:, 0] > 1.5).astype(np.float32).mean())
 
 
-def branch_balance_bifurcation(traj: torch.Tensor) -> Tuple[float, float]:
+def branch_balance_bifurcation(traj: np.ndarray) -> Tuple[float, float]:
     final = traj[-1]
     downstream = final[:, 0] > 1.5
     if downstream.sum() == 0:
         return float("nan"), float("nan")
-    b1 = ((final[:, 1] > 0.25) & downstream).float().sum() / downstream.float().sum()
-    b2 = ((final[:, 1] < -0.25) & downstream).float().sum() / downstream.float().sum()
+    b1 = ((final[:, 1] > 0.25) & downstream).astype(np.float32).sum() / downstream.astype(np.float32).sum()
+    b2 = ((final[:, 1] < -0.25) & downstream).astype(np.float32).sum() / downstream.astype(np.float32).sum()
     return float(b1), float(b2)
 
 
-def passage_success_cycle_bifurcation(traj: torch.Tensor) -> float:
+def passage_success_cycle_bifurcation(traj: np.ndarray) -> float:
     final = traj[-1]
-    ok = (final[:, 0] > 2.3) & (final[:, 1].abs() > 0.25)
-    return float(ok.float().mean())
+    ok = (final[:, 0] > 2.3) & (np.abs(final[:, 1]) > 0.25)
+    return float(ok.astype(np.float32).mean())
 
 
 def compute_junction_metrics(
     topology_key: str,
     system: UniversalGraphSystem,
-    traj: torch.Tensor,
+    traj: np.ndarray,
     xx: np.ndarray,
     yy: np.ndarray,
     u: np.ndarray,
@@ -337,7 +334,7 @@ def _annotate_junction(
     center: np.ndarray,
 ) -> None:
     for edge in system.edges:
-        s, e = edge.start.cpu().numpy(), edge.end.cpu().numpy()
+        s, e = edge.start, edge.end
         ax.plot([s[0], e[0]], [s[1], e[1]], "w:", lw=1.2, alpha=0.65, zorder=4)
     for node in system.nodes:
         if isinstance(node, CycleNode):
@@ -394,7 +391,7 @@ def plot_field_panel(
 
 def plot_trajectory_panel(
     ax: plt.Axes,
-    traj: torch.Tensor,
+    traj: np.ndarray,
     xlim: Tuple[float, float],
     ylim: Tuple[float, float],
     title: str,
@@ -410,9 +407,9 @@ def plot_trajectory_panel(
     t, n, _ = traj.shape
     idx = rng.choice(n, size=min(n_show, n), replace=False)
     for i in idx:
-        path = traj[:, i, :].cpu().numpy()
+        path = traj[:, i, :]
         ax.plot(path[:, 0], path[:, 1], color="white", lw=0.45, alpha=0.45, zorder=3)
-    final = traj[-1].cpu().numpy()
+    final = traj[-1]
     ax.scatter(final[:, 0], final[:, 1], s=3, c="C1", alpha=0.65, zorder=5, edgecolors="none")
     ax.set_title(title.replace(". ", "  ", 1))
     ax.set_xlim(xlim)
@@ -594,9 +591,9 @@ def main() -> None:
         writer.writeheader()
         writer.writerows(metric_rows)
 
-    torch.save(
+    pickle.dump(
         {k: results[k]["traj"] for k in results},
-        DATA_DIR / "trajectories.pt",
+        open(str(DATA_DIR / "trajectories.pt"), "wb"),
     )
 
     plot_figure3(results, metric_rows)
@@ -614,7 +611,7 @@ def plot_only() -> None:
 
     with metrics_path.open(newline="") as f:
         metric_rows = list(csv.DictReader(f))
-    trajs = torch.load(traj_path, weights_only=False)
+    trajs = pickle.load(open(str(traj_path), "rb"))
 
     results: Dict[str, Dict[str, Any]] = {}
     for cfg in get_junction_configs():

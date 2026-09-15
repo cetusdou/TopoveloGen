@@ -11,7 +11,6 @@ from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
 import seaborn as sns
 from pathlib import Path
 import sys
-import torch
 
 # 添加项目根目录到路径
 # 获取项目根目录（notebook所在目录的父目录）
@@ -63,7 +62,7 @@ print(f"✓ 配色方案已加载: {len(color_palette)} 种颜色")
 
 # 生成Y形拓扑的完整轨迹数据
 np.random.seed(42)
-torch.manual_seed(42)
+np.random.seed(42)
 
 # 参数设置
 N_samples = 2000  # 增加样本数以获得更好的UMAP
@@ -175,7 +174,7 @@ else:
 
 # 合并采样结果
 z_final = np.concatenate([z_last, z_earlier], axis=0)  # [n_cells_to_sample, 2]
-z_final = torch.tensor(z_final, dtype=torch.float32)
+z_final = np.asarray(z_final, dtype=np.float32)
 
 # 记录每个细胞来自哪个时间点（用于后续分析）
 time_indices = np.concatenate([
@@ -235,8 +234,8 @@ from scipy import sparse
 
 print("计算pseudotime和branch信息...")
 
-# 转换z_final为numpy（如果还是torch tensor）
-z_final_np = z_final.numpy() if isinstance(z_final, torch.Tensor) else z_final
+# 转换z_final为numpy（已经是 numpy）
+z_final_np = z_final if isinstance(z_final, np.ndarray) else z_final
 n_cells_sampled = z_final_np.shape[0]
 
 # 使用潜在空间坐标计算pseudotime
@@ -275,13 +274,13 @@ print(f"  Branch分布: Stem/Prog={np.sum(branch==0)}, FateA={np.sum(branch==1)}
 # 生成spliced/unspliced数据用于velocity计算
 print("  生成spliced/unspliced数据用于velocity计算...")
 # 关键：使用完整轨迹生成数据，这样才能有正确的动力学方向
-# 将完整轨迹转换为torch tensor
-traj_torch = torch.tensor(traj, dtype=torch.float32)  # [n_steps+1, N_samples, 2]
+# 将完整轨迹转为 numpy 数组
+traj_np = np.asarray(traj, dtype=np.float32)  # [n_steps+1, N_samples, 2]
 
 # 使用完整轨迹生成真实的spliced/unspliced数据
 print("    使用完整轨迹生成真实的spliced/unspliced（包含正确的动力学方向）...")
 kinetics_result_full = synth.generate_kinetics(
-    traj_torch, 
+    traj_np, 
     dt=dt, 
     simulate_counts=True,
     scale=1.0
@@ -292,10 +291,10 @@ Xs_s_full = kinetics_result_full['spliced']
 Xs_u_full = kinetics_result_full['unspliced']
 
 # 转换为numpy
-if isinstance(Xs_s_full, torch.Tensor):
-    Xs_s_full = Xs_s_full.numpy()
-if isinstance(Xs_u_full, torch.Tensor):
-    Xs_u_full = Xs_u_full.numpy()
+if isinstance(Xs_s_full, np.ndarray):
+    Xs_s_full = Xs_s_full
+if isinstance(Xs_u_full, np.ndarray):
+    Xs_u_full = Xs_u_full
 
 # 如果是3D，展平为2D [n_steps+1 * N_samples, n_genes]
 if Xs_s_full.ndim == 3:

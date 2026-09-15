@@ -8,9 +8,9 @@ Usage (from repo root):
     python experiments/results_kinetic_validation.py
 """
 
-from __future__ import annotations
 
 import csv
+import pickle
 import io
 import contextlib
 import sys
@@ -21,7 +21,6 @@ from typing import Dict, List, Tuple
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
-import torch
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
@@ -69,14 +68,14 @@ def build_linear_system() -> UniversalGraphSystem:
 def deterministic_edge_trajectory(
     system: UniversalGraphSystem,
     n_steps: int = N_STEPS,
-) -> torch.Tensor:
+) -> np.ndarray:
     """Move uniformly along the main edge: [Steps, 1, 2]."""
     edge = system.edges[0]
-    p0 = edge.start.float()
-    p1 = edge.end.float()
-    t = torch.linspace(0.0, 1.0, n_steps)
-    z = p0.unsqueeze(0) + t[:, None] * (p1 - p0).unsqueeze(0)
-    return z.unsqueeze(1)
+    p0 = edge.start.astype(np.float32)
+    p1 = edge.end.astype(np.float32)
+    t = np.linspace(0.0, 1.0, n_steps)
+    z = p0[None, :] + t[:, None] * (p1 - p0)[None, :]
+    return z[:, None]
 
 
 def make_synthesizer(
@@ -98,14 +97,14 @@ def make_synthesizer(
         edge_idx=0,
         n_genes=1,
         pattern="sigmoid",
-        params={"center": torch.tensor([0.40]), "slope": torch.tensor([10.0])},
+        params={"center": np.asarray([0.40]), "slope": np.asarray([10.0])},
         include_cycle_rim=True,
     )
     synth.add_trend_gene(
         edge_idx=0,
         n_genes=1,
         pattern="impulse",
-        params={"center": torch.tensor([0.38]), "width": torch.tensor([0.055])},
+        params={"center": np.asarray([0.38]), "width": np.asarray([0.055])},
         include_cycle_rim=True,
     )
     synth.gene_names = ["Sigmoid_lineage", "Impulse_transient"]
@@ -116,21 +115,21 @@ def make_synthesizer(
 
 def run_kinetics(
     synth: GeneSynthesizer,
-    traj: torch.Tensor,
+    traj: np.ndarray,
     dt: float = DT,
-) -> Dict[str, torch.Tensor]:
+) -> Dict[str, np.ndarray]:
     with contextlib.redirect_stdout(io.StringIO()):
         return synth.generate_kinetics(traj, dt=dt, scale=ALPHA_SCALE, simulate_counts=False)
 
 
 def extract_traces(
-    result: Dict[str, torch.Tensor],
+    result: Dict[str, np.ndarray],
     steps: int,
     gene_idx: int,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Return alpha, u, s, v as 1D arrays [steps] for a single cell."""
     def _col(key: str) -> np.ndarray:
-        x = result[key].reshape(steps, 1, -1)[:, 0, gene_idx].detach().cpu().numpy()
+        x = result[key].reshape(steps, 1, -1)[:, 0, gene_idx]
         return x
 
     return _col("alpha"), _col("unspliced"), _col("spliced"), _col("velocity")
@@ -152,14 +151,14 @@ def half_rise_time(y: np.ndarray, dt: float) -> float:
 # ---------------------------------------------------------------------------
 def plot_figure5(
     system: UniversalGraphSystem,
-    traj: torch.Tensor,
-    result_default: Dict[str, torch.Tensor],
-    gamma_results: Dict[float, Dict[str, torch.Tensor]],
+    traj: np.ndarray,
+    result_default: Dict[str, np.ndarray],
+    gamma_results: Dict[float, Dict[str, np.ndarray]],
 ) -> plt.Figure:
     apply_publication_style()
     steps = traj.shape[0]
     time = np.arange(steps) * DT
-    z_path = traj[:, 0, :].detach().cpu().numpy()
+    z_path = traj[:, 0, :]
 
     a_sig, u_sig, s_sig, _ = extract_traces(result_default, steps, GENE_SIGMOID)
     a_imp, u_imp, s_imp, v_imp = extract_traces(result_default, steps, GENE_IMPULSE)
@@ -179,7 +178,7 @@ def plot_figure5(
         zorder=3,
     )
     edge = system.edges[0]
-    s0, s1 = edge.start.cpu().numpy(), edge.end.cpu().numpy()
+    s0, s1 = edge.start, edge.end
     ax.plot([s0[0], s1[0]], [s0[1], s1[1]], color="0.35", ls="--", lw=1.0, alpha=0.6)
     ax.set_title("A  Linear trajectory & impulse $\\alpha$-field")
     ax.set_aspect("equal")
@@ -320,7 +319,7 @@ def main() -> None:
     a_sig, u_sig, s_sig, _ = extract_traces(result_default, N_STEPS, GENE_SIGMOID)
     a_imp, u_imp, s_imp, v_imp = extract_traces(result_default, N_STEPS, GENE_IMPULSE)
 
-    gamma_results: Dict[float, Dict[str, torch.Tensor]] = {}
+    gamma_results: Dict[float, Dict[str, np.ndarray]] = {}
     lags: Dict[float, float] = {}
     for gamma in GAMMA_VALUES:
         synth_g = make_synthesizer(system, gamma=gamma)
@@ -357,12 +356,12 @@ def main() -> None:
         time[:-1],
     )
 
-    torch.save(
+    pickle.dump(
         {
             "traj": traj,
-            "result_default": {k: v.cpu() for k, v in result_default.items()},
+            "result_default": {k: v for k, v in result_default.items()},
         },
-        DATA_DIR / "kinetic_tensors.pt",
+        open(str(DATA_DIR / "kinetic_tensors.pt"), "wb"),
     )
 
     print("Plotting Figure 5...")
@@ -383,11 +382,11 @@ def plot_only() -> None:
     if not tensor_path.exists():
         raise FileNotFoundError("Missing cached kinetic tensors. Run full pipeline first.")
     print("Loading cached results for Figure 5...")
-    data = torch.load(tensor_path, weights_only=False)
+    data = pickle.load(open(str(tensor_path), "rb"))
     traj = data["traj"]
     result_default = {k: v for k, v in data["result_default"].items()}
     system = build_linear_system()
-    gamma_results: Dict[float, Dict[str, torch.Tensor]] = {}
+    gamma_results: Dict[float, Dict[str, np.ndarray]] = {}
     for gamma in GAMMA_VALUES:
         synth_g = make_synthesizer(system, gamma=gamma)
         gamma_results[gamma] = run_kinetics(synth_g, traj)

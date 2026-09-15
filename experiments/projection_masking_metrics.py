@@ -7,7 +7,6 @@ Positive Delta_proj indicates that projection-based evaluation is more
 optimistic than direct gene-space evaluation.
 """
 
-from __future__ import annotations
 
 from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, Optional

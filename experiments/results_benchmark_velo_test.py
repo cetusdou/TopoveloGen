@@ -13,7 +13,6 @@ Usage (from repo root):
     python experiments/results_benchmark_velo_test.py --plot-only
 """
 
-from __future__ import annotations
 
 import argparse
 import csv

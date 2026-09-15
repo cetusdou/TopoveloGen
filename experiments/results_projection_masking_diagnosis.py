@@ -23,7 +23,6 @@ Usage (from repo root):
     python experiments/results_projection_masking_diagnosis.py --quick
 """
 
-from __future__ import annotations
 
 import argparse
 import csv
@@ -36,7 +35,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
-import torch
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
@@ -169,7 +167,7 @@ def setup_synthesizer_typed(system: UniversalGraphSystem, n_genes: int) -> Tuple
 
 def generate_kinetics_bundle_typed(
     system: UniversalGraphSystem,
-    traj: torch.Tensor,
+    traj: np.ndarray,
     n_genes: int,
 ) -> Dict[str, np.ndarray]:
     synth, gene_types = setup_synthesizer_typed(system, n_genes)
@@ -179,8 +177,8 @@ def generate_kinetics_bundle_typed(
     t_steps, n_cells, _ = traj.shape
     n_obs = t_steps * n_cells
 
-    def flat(x: torch.Tensor) -> np.ndarray:
-        return x.reshape(n_obs, -1).detach().cpu().numpy()
+    def flat(x: np.ndarray) -> np.ndarray:
+        return x.reshape(n_obs, -1)
 
     return {
         "spliced_counts": flat(counts["spliced"]),
@@ -306,7 +304,7 @@ def analyze_case(
     *,
     n_top_genes: Optional[int] = 200,
     reuse_bundle: Optional[Dict[str, np.ndarray]] = None,
-    reuse_traj: Optional[torch.Tensor] = None,
+    reuse_traj: Optional[np.ndarray] = None,
     reuse_system: Optional[UniversalGraphSystem] = None,
 ) -> Dict[str, Any]:
     system = reuse_system or build_cycle_bifurcation_system()
@@ -555,7 +553,7 @@ def _draw_topology_map(ax: plt.Axes, main: Dict[str, Any], *, panel_letter: str 
         )
 
     for edge in main["system"].edges:
-        s, e = edge.start.cpu().numpy(), edge.end.cpu().numpy()
+        s, e = edge.start, edge.end
         ax.plot([s[0], e[0]], [s[1], e[1]], color="#999999", ls="--", lw=0.65, alpha=0.55, zorder=2)
 
     ax.set_aspect("equal")

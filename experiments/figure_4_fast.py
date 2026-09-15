@@ -19,16 +19,15 @@ Usage (from repo root):
     python experiments/figure_4_fast.py --force-kinetics  # force rebuild Stage-1 kinetics
 """
 
-from __future__ import annotations
 
 import argparse
+import pickle
 import sys
 from pathlib import Path
 from typing import Dict, List
 
 import matplotlib.pyplot as plt
 import numpy as np
-import torch
 from scipy.ndimage import gaussian_filter1d
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -193,7 +192,7 @@ def _generate_noise_stage_sparsities(
     z0 = init_cycle_rim_cells(N_CB, radius=1.0, noise=0.06, seed=seed)
     _, z_cells = simulate_langevin(system_cb, z0, n_steps=2000, dt=0.01,
                                    diffusion=0.006, save_every=10, seed=seed)
-    z_t = torch.tensor(z_cells, dtype=torch.float32)
+    z_t = np.asarray(z_cells, dtype=np.float32)
 
     # Gene config (noise genes only, fast)
     N_G = 500
@@ -224,8 +223,8 @@ def _generate_noise_stage_sparsities(
                                                scale=1.5)
         xs = kinetics["spliced"]
         xu = kinetics["unspliced"]
-        if isinstance(xs, torch.Tensor):
-            xs, xu = xs.numpy(), xu.numpy()
+        if isinstance(xs, np.ndarray):
+            xs, xu = xs, xu
         # Apply binomial downsampling for the nb_dropout stage (matching our pipeline)
         if cfg["name"] == "nb_dropout":
             xs = rng.binomial(xs.astype(int), 0.20).astype(float)
@@ -253,12 +252,12 @@ def _load_noise_stage_sparsities(seed: int) -> Dict[str, Dict[str, float]] | Non
     path = _noise_sparsity_cache_path(seed)
     if not path.exists():
         return None
-    return torch.load(path, weights_only=False)
+    return pickle.load(open(str(path), "rb"))
 
 
 def _save_noise_stage_sparsities(data: Dict[str, Dict[str, float]], seed: int) -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    torch.save(data, _noise_sparsity_cache_path(seed))
+    pickle.dump(data, open(str(_noise_sparsity_cache_path(seed), "wb")))
 
 # ---------------------------------------------------------------------------
 # Notebook 6-panel validation + noise row
@@ -441,11 +440,11 @@ def draw_graph_topology(ax, system, z):
     xs = np.linspace(xlim[0], xlim[1], n)
     ys = np.linspace(ylim[0], ylim[1], n)
     xx, yy = np.meshgrid(xs, ys)
-    grid = torch.tensor(np.stack([xx, yy], axis=-1), dtype=torch.float32).reshape(-1, 2)
+    grid = np.asarray(np.stack([xx, yy], axis=-1), dtype=np.float32).reshape(-1, 2)
     u = system.potential_numpy(grid).reshape(n, n)
     ax.contourf(xx, yy, u, levels=20, cmap="Greys", alpha=0.08, zorder=0)
     for edge in system.edges:
-        s, e = edge.start.cpu().numpy(), edge.end.cpu().numpy()
+        s, e = edge.start, edge.end
         ax.plot([s[0], e[0]], [s[1], e[1]], "k--", lw=0.8, alpha=0.45, zorder=1)
     for node in system.nodes:
         ax.scatter(node.pos[0], node.pos[1], s=35, c="0.35", edgecolors="k", linewidths=0.5, zorder=2)

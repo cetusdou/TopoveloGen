@@ -11,9 +11,9 @@ Usage (from repo root):
     python experiments/results_statistical_realism.py --preset figure4
 """
 
-from __future__ import annotations
 
 import csv
+import pickle
 import io
 import contextlib
 import sys
@@ -24,7 +24,6 @@ from typing import Dict, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
-import torch
 from scipy.stats import gaussian_kde
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -166,7 +165,7 @@ def build_cycle_bifurcation_system() -> UniversalGraphSystem:
     return UniversalGraphSystem([cycle, fate1, fate2], edges, fusion_temp=0.01)
 
 
-def sample_final_cells(system: UniversalGraphSystem, n_cells: int) -> torch.Tensor:
+def sample_final_cells(system: UniversalGraphSystem, n_cells: int) -> np.ndarray:
     z0 = init_cycle_rim_cells(n_cells, radius=1.0, noise=0.06, seed=SEED)
     _, z_final = simulate_langevin(
         system,
@@ -232,9 +231,9 @@ def apply_observation_postprocess(s: np.ndarray, u: np.ndarray, seed: int) -> Tu
 
 def generate_counts(
     synth: GeneSynthesizer,
-    z: torch.Tensor,
+    z: np.ndarray,
     cfg: SynthConfig,
-) -> Dict[str, torch.Tensor]:
+) -> Dict[str, np.ndarray]:
     with contextlib.redirect_stdout(io.StringIO()):
         result = synth.generate_kinetics(
             z,
@@ -248,8 +247,8 @@ def generate_counts(
 # ---------------------------------------------------------------------------
 # Statistics
 # ---------------------------------------------------------------------------
-def to_numpy(x: torch.Tensor) -> np.ndarray:
-    return x.detach().cpu().numpy() if isinstance(x, torch.Tensor) else np.asarray(x)
+def to_numpy(x: np.ndarray) -> np.ndarray:
+    return x if isinstance(x, np.ndarray) else np.asarray(x)
 
 
 def compute_cell_stats(S: np.ndarray, U: np.ndarray) -> Dict[str, np.ndarray]:
@@ -362,11 +361,11 @@ def draw_topology(ax: plt.Axes, system: UniversalGraphSystem, xlim, ylim) -> Non
     xs = np.linspace(xlim[0], xlim[1], n)
     ys = np.linspace(ylim[0], ylim[1], n)
     xx, yy = np.meshgrid(xs, ys)
-    grid = torch.tensor(np.stack([xx, yy], axis=-1), dtype=torch.float32).reshape(-1, 2)
+    grid = np.asarray(np.stack([xx, yy], axis=-1), dtype=np.float32).reshape(-1, 2)
     u = system.potential_numpy(grid).reshape(n, n)
     ax.contourf(xx, yy, u, levels=20, cmap="Greys", alpha=0.08, zorder=0)
     for edge in system.edges:
-        s, e = edge.start.cpu().numpy(), edge.end.cpu().numpy()
+        s, e = edge.start, edge.end
         ax.plot([s[0], e[0]], [s[1], e[1]], "k--", lw=0.8, alpha=0.45, zorder=1)
     cycle_nodes = [n for n in system.nodes if isinstance(n, CycleNode)]
     if cycle_nodes:
@@ -612,7 +611,7 @@ def _load_poisson_from_cache(data: dict) -> Tuple[np.ndarray, np.ndarray]:
     system = build_cycle_bifurcation_system()
     poisson_cfg = next(c for c in SWEEP_CONFIGS if c.name == "poisson")
     synth = setup_synthesizer(system, poisson_cfg)
-    res = generate_counts(synth, torch.tensor(z, dtype=torch.float32), poisson_cfg)
+    res = generate_counts(synth, np.asarray(z, dtype=np.float32), poisson_cfg)
     s_poisson = to_numpy(res["spliced"]).astype(np.float64)
     u_poisson = to_numpy(res["unspliced"]).astype(np.float64)
     return apply_observation_postprocess(s_poisson, u_poisson, SEED + 42)
@@ -680,18 +679,18 @@ def main_figure4() -> None:
         "poisson": (sparsity(S_poisson), sparsity(U_poisson)),
     }
 
-    torch.save(
+    pickle.dump(
         {
-            "z": torch.tensor(z, dtype=torch.float32),
-            "spliced": torch.tensor(S),
-            "unspliced": torch.tensor(U),
-            "spliced_poisson": torch.tensor(S_poisson),
-            "unspliced_poisson": torch.tensor(U_poisson),
-            "real_spliced": torch.tensor(result.real_spliced),
-            "real_unspliced": torch.tensor(result.real_unspliced),
+            "z": np.asarray(z, dtype=np.float32),
+            "spliced": np.asarray(S),
+            "unspliced": np.asarray(U),
+            "spliced_poisson": np.asarray(S_poisson),
+            "unspliced_poisson": np.asarray(U_poisson),
+            "real_spliced": np.asarray(result.real_spliced),
+            "real_unspliced": np.asarray(result.real_unspliced),
             "figure4": True,
         },
-        DATA_DIR / "count_matrices.pt",
+        open(str(DATA_DIR / "count_matrices.pt"), "wb"),
     )
 
     print("Plotting merged figure (A–F + G–L real vs synthetic)...")
@@ -710,7 +709,7 @@ def plot_only_figure4() -> None:
         raise FileNotFoundError("Missing cached count data. Run full pipeline first.")
 
     print("Loading cached Figure4 results...")
-    data = torch.load(count_path, weights_only=False)
+    data = pickle.load(open(str(count_path), "rb"))
     z = to_numpy(data["z"])
     S = to_numpy(data["spliced"]).astype(np.float64)
     U = to_numpy(data["unspliced"]).astype(np.float64)
@@ -807,15 +806,15 @@ def main() -> None:
 
     save_count_summary_csv(DATA_DIR / "count_statistics.csv", summary_rows)
 
-    torch.save(
+    pickle.dump(
         {
             "z": z,
-            "spliced": torch.tensor(S),
-            "unspliced": torch.tensor(U),
-            "spliced_poisson": torch.tensor(S_poisson),
-            "unspliced_poisson": torch.tensor(U_poisson),
+            "spliced": np.asarray(S),
+            "unspliced": np.asarray(U),
+            "spliced_poisson": np.asarray(S_poisson),
+            "unspliced_poisson": np.asarray(U_poisson),
         },
-        DATA_DIR / "count_matrices.pt",
+        open(str(DATA_DIR / "count_matrices.pt"), "wb"),
     )
 
     print("Plotting merged figure (A–F topology/observation + G–L validation)...")
@@ -838,7 +837,7 @@ def plot_only() -> None:
         raise FileNotFoundError("Missing cached count data. Run full pipeline first.")
 
     print("Loading cached results for merged figure...")
-    data = torch.load(count_path, weights_only=False)
+    data = pickle.load(open(str(count_path), "rb"))
     z = to_numpy(data["z"])
     S = to_numpy(data["spliced"]).astype(np.float64)
     U = to_numpy(data["unspliced"]).astype(np.float64)

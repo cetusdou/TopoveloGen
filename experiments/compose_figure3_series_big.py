@@ -5,7 +5,6 @@ This wrapper intentionally avoids loading rendered PNG panels, so the PDF/SVG
 outputs remain editable vector graphics.
 """
 
-from __future__ import annotations
 
 import os
 import runpy

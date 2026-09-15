@@ -13,7 +13,6 @@ from scipy.spatial.distance import cdist
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 from pathlib import Path
 import sys
-import torch
 from umap import UMAP
 
 # 添加项目根目录到路径
@@ -106,7 +105,7 @@ print("✓ Publication style 已加载（styles/nature_science.mplstyle）")
 def generate_cycle_linear_data(N_samples=2000, n_steps=100, dt=0.05, noise_level=0.15, seed=42):
     """生成Cycle-Linear拓扑的模拟数据"""
     np.random.seed(seed)
-    torch.manual_seed(seed)
+    np.random.seed(seed)
     
     # 创建Cycle-Linear拓扑
     nodes = [
@@ -125,8 +124,8 @@ def generate_cycle_linear_data(N_samples=2000, n_steps=100, dt=0.05, noise_level
     traj = GraphSimulator.run(system, start_node, n_cells=N_samples, 
                                 steps=n_steps, dt=dt, noise_level=noise_level)
     
-    if isinstance(traj, torch.Tensor):
-        z_trajectory = traj.numpy()
+    if isinstance(traj, np.ndarray):
+        z_trajectory = traj
     else:
         z_trajectory = np.array(traj)
     
@@ -282,7 +281,7 @@ for gene in config_dict['genes']:
 print(f"  基因类型分布: {stats}")
 print(f"  各Edge基因分布:")
 for edge_idx, edge_stats in sorted(stats_by_edge.items()):
-    total = sum(edge_stats.values())
+    total = sum(edge_stats())
     print(f"    Edge {edge_idx}: {edge_stats} (总计: {total})")
 
 # 统计 include_cycle_rim 设置
@@ -322,7 +321,7 @@ print("\n生成基因表达数据...")
 
 # 生成动力学数据（unspliced和spliced）
 z_trajectory = topology_data['z_trajectory']  # [n_steps+1, N_samples, 2]
-z_trajectory_tensor = torch.tensor(z_trajectory, dtype=torch.float32)
+z_trajectory_tensor = np.asarray(z_trajectory, dtype=np.float32)
 dt = topology_data['time_points'][1] - topology_data['time_points'][0]
 
 print(f"\n轨迹信息:")
@@ -342,8 +341,8 @@ if hasattr(synth, 'generate_kinetics'):
     n_cells = topology_data['z_data'].shape[0]
     
     # 获取最后一个时间点的数据（最后n_cells行）
-    u_all = kinetics_result['unspliced'][-n_cells:].numpy()  # [n_cells, n_genes]
-    s_all = kinetics_result['spliced'][-n_cells:].numpy()   # [n_cells, n_genes]
+    u_all = kinetics_result['unspliced'][-n_cells:]  # [n_cells, n_genes]
+    s_all = kinetics_result['spliced'][-n_cells:]   # [n_cells, n_genes]
     
     print(f"✓ 动力学数据生成完成（带dropout噪声的计数数据）")
     print(f"  u_all shape: {u_all.shape}")
@@ -353,11 +352,11 @@ if hasattr(synth, 'generate_kinetics'):
     
     # 检查是否有 velocity 和 alpha 数据
     if 'velocity' in kinetics_result:
-        vel_all = kinetics_result['velocity'][-n_cells:].numpy() if isinstance(kinetics_result['velocity'], torch.Tensor) else kinetics_result['velocity'][-n_cells:]
+        vel_all = kinetics_result['velocity'][-n_cells:] if isinstance(kinetics_result['velocity'], np.ndarray) else kinetics_result['velocity'][-n_cells:]
         print(f"  velocity range: [{vel_all.min():.2f}, {vel_all.max():.2f}]")
     
     if 'alpha' in kinetics_result:
-        alpha_all = kinetics_result['alpha'][-n_cells:].numpy() if isinstance(kinetics_result['alpha'], torch.Tensor) else kinetics_result['alpha'][-n_cells:]
+        alpha_all = kinetics_result['alpha'][-n_cells:] if isinstance(kinetics_result['alpha'], np.ndarray) else kinetics_result['alpha'][-n_cells:]
         print(f"  alpha (transcription rate) range: [{alpha_all.min():.2f}, {alpha_all.max():.2f}]")
     
     # ---------------------------------------------------------
@@ -366,12 +365,12 @@ if hasattr(synth, 'generate_kinetics'):
     print("\n保存 kinetics_result...")
     kinetics_save_path = "kinetics_result.npz"
     
-    # 将 torch.Tensor 转换为 numpy 数组
+    # 将 np.ndarray 转换为 numpy 数组
     save_dict = {}
     for key in ['unspliced', 'spliced', 'velocity', 'alpha']:
         if key in kinetics_result:
-            if isinstance(kinetics_result[key], torch.Tensor):
-                save_dict[key] = kinetics_result[key].numpy()
+            if isinstance(kinetics_result[key], np.ndarray):
+                save_dict[key] = kinetics_result[key]
             else:
                 save_dict[key] = kinetics_result[key]
     
@@ -466,9 +465,9 @@ X_u = kinetics_result['unspliced']
 X_a = kinetics_result['alpha'] # 提取 Alpha
 
 # 转换为 numpy
-if hasattr(X_s, 'numpy'): X_s = X_s.numpy()
-if hasattr(X_u, 'numpy'): X_u = X_u.numpy()
-if hasattr(X_a, 'numpy'): X_a = X_a.numpy()
+if hasattr(X_s, 'numpy'): X_s = X_s
+if hasattr(X_u, 'numpy'): X_u = X_u
+if hasattr(X_a, 'numpy'): X_a = X_a
 
 # 确保形状一致 (N_samples, n_genes)
 X_s = X_s.reshape(-1, X_s.shape[1]) # 假设 480 是基因数，或者使用 X_s.shape[1]
@@ -644,8 +643,8 @@ X_s = kinetics_result['spliced']
 X_u = kinetics_result['unspliced']
 
 # 转换为 numpy
-if hasattr(X_s, 'numpy'): X_s = X_s.numpy()
-if hasattr(X_u, 'numpy'): X_u = X_u.numpy()
+if hasattr(X_s, 'numpy'): X_s = X_s
+if hasattr(X_u, 'numpy'): X_u = X_u
 
 # 确保数据维度对齐
 min_len = min(X_s.shape[0], X_u.shape[0])
@@ -956,7 +955,6 @@ save_current_figure('Figure3Series_phase_portrait')
 
 import matplotlib.pyplot as plt
 import numpy as np
-import torch
 from sklearn.neighbors import NearestNeighbors
 
 print("绘制 Panel D (网格向量场版)...")
@@ -968,14 +966,14 @@ fig, ax_d = plt.subplots(figsize=(6, 6), dpi=120)
 # ==========================================
 u_data = kinetics_result['unspliced'][:, gene_idx]
 s_data = kinetics_result['spliced'][:, gene_idx]
-u_local = u_data.numpy() if isinstance(u_data, torch.Tensor) else np.array(u_data)
-s_local = s_data.numpy() if isinstance(s_data, torch.Tensor) else np.array(s_data)
+u_local = u_data if isinstance(u_data, np.ndarray) else np.array(u_data)
+s_local = s_data if isinstance(s_data, np.ndarray) else np.array(s_data)
 
 # 计算真实速度 (Ground Truth Velocity)
 alpha_vals = kinetics_result['alpha'][:, gene_idx]
-alpha_local = alpha_vals.numpy() if isinstance(alpha_vals, torch.Tensor) else np.array(alpha_vals)
-beta = synth.beta[gene_idx].item() if isinstance(synth.beta, torch.Tensor) else synth.beta[gene_idx]
-gamma = synth.gamma[gene_idx].item() if isinstance(synth.gamma, torch.Tensor) else synth.gamma[gene_idx]
+alpha_local = alpha_vals if isinstance(alpha_vals, np.ndarray) else np.array(alpha_vals)
+beta = synth.beta[gene_idx].item() if isinstance(synth.beta, np.ndarray) else synth.beta[gene_idx]
+gamma = synth.gamma[gene_idx].item() if isinstance(synth.gamma, np.ndarray) else synth.gamma[gene_idx]
 
 v_s = beta * u_local - gamma * s_local
 v_u = alpha_local - beta * u_local
@@ -1185,9 +1183,9 @@ for i, gene_info in enumerate(selected_genes):
             u_val = kinetics_result['unspliced'][cell_idx_flat, gene_idx]
             s_val = kinetics_result['spliced'][cell_idx_flat, gene_idx]
             # 转换为numpy
-            if isinstance(u_val, torch.Tensor):
+            if isinstance(u_val, np.ndarray):
                 u_val = u_val.item()
-            if isinstance(s_val, torch.Tensor):
+            if isinstance(s_val, np.ndarray):
                 s_val = s_val.item()
             u_traj.append(u_val)
             s_traj.append(s_val)
@@ -1266,9 +1264,9 @@ else:
                 u_val = kinetics_result['unspliced'][cell_idx_flat, gene_idx]
                 s_val = kinetics_result['spliced'][cell_idx_flat, gene_idx]
                 # 转换为numpy
-                if isinstance(u_val, torch.Tensor):
+                if isinstance(u_val, np.ndarray):
                     u_val = u_val.item()
-                if isinstance(s_val, torch.Tensor):
+                if isinstance(s_val, np.ndarray):
                     s_val = s_val.item()
                 u_det.append(u_val)
                 s_det.append(s_val)
@@ -1359,7 +1357,7 @@ z_trajectory_sample_indices = np.random.randint(
 # A. 提取三个矩阵
 X_s = kinetics_result['spliced']
 
-if hasattr(X_s, 'numpy'): X_s = X_s.numpy()
+if hasattr(X_s, 'numpy'): X_s = X_s
 
 
 # 确保形状一致 (N_samples, n_genes)
@@ -1647,11 +1645,11 @@ ax_g.legend(frameon=False, fontsize=7)
 
 # H. Velocity tangency verification
 ax_h = bottom_axes[1]
-u_local = u_data.numpy() if isinstance(u_data, torch.Tensor) else np.array(u_data)
-s_local = s_data.numpy() if isinstance(s_data, torch.Tensor) else np.array(s_data)
-alpha_local = alpha_vals.numpy() if isinstance(alpha_vals, torch.Tensor) else np.array(alpha_vals)
-beta_val = synth.beta[phase_gene_idx].item() if isinstance(synth.beta, torch.Tensor) else synth.beta[phase_gene_idx]
-gamma_val = synth.gamma[phase_gene_idx].item() if isinstance(synth.gamma, torch.Tensor) else synth.gamma[phase_gene_idx]
+u_local = u_data if isinstance(u_data, np.ndarray) else np.array(u_data)
+s_local = s_data if isinstance(s_data, np.ndarray) else np.array(s_data)
+alpha_local = alpha_vals if isinstance(alpha_vals, np.ndarray) else np.array(alpha_vals)
+beta_val = synth.beta[phase_gene_idx].item() if isinstance(synth.beta, np.ndarray) else synth.beta[phase_gene_idx]
+gamma_val = synth.gamma[phase_gene_idx].item() if isinstance(synth.gamma, np.ndarray) else synth.gamma[phase_gene_idx]
 v_s = beta_val * u_local - gamma_val * s_local
 v_u = alpha_local - beta_val * u_local
 n_samples = 1000
@@ -1712,8 +1710,8 @@ for i, gene_info in enumerate(selected_genes):
         if cell_idx_flat < kinetics_result["unspliced"].shape[0]:
             u_val = kinetics_result["unspliced"][cell_idx_flat, this_gene_idx]
             s_val = kinetics_result["spliced"][cell_idx_flat, this_gene_idx]
-            u_traj.append(u_val.item() if isinstance(u_val, torch.Tensor) else u_val)
-            s_traj.append(s_val.item() if isinstance(s_val, torch.Tensor) else s_val)
+            u_traj.append(u_val.item() if isinstance(u_val, np.ndarray) else u_val)
+            s_traj.append(s_val.item() if isinstance(s_val, np.ndarray) else s_val)
     if u_traj:
         ax_i.plot(s_traj, u_traj, "-", color=color, linewidth=1.8, label=label, alpha=0.85)
 ax_i.set_xlabel("Spliced (s)")
@@ -1736,8 +1734,8 @@ if cycle_gene is not None:
             if cell_idx_flat < kinetics_result["unspliced"].shape[0]:
                 u_val = kinetics_result["unspliced"][cell_idx_flat, stochastic_gene_idx]
                 s_val = kinetics_result["spliced"][cell_idx_flat, stochastic_gene_idx]
-                u_det.append(u_val.item() if isinstance(u_val, torch.Tensor) else u_val)
-                s_det.append(s_val.item() if isinstance(s_val, torch.Tensor) else s_val)
+                u_det.append(u_val.item() if isinstance(u_val, np.ndarray) else u_val)
+                s_det.append(s_val.item() if isinstance(s_val, np.ndarray) else s_val)
         u_det = np.array(u_det)
         s_det = np.array(s_det)
         ax_j.plot(s_det, u_det, "k-", linewidth=2.0, label="Deterministic", alpha=0.9, zorder=10)

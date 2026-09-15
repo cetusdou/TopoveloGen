@@ -18,7 +18,6 @@ Stage 2  (fast, <10 s, always re-runs)  ← observation noise layer
 To force a fresh Stage-1 run, delete  kinetics_cache.pt.
 """
 
-from __future__ import annotations
 
 import io
 import contextlib
@@ -32,7 +31,6 @@ from typing import Dict, Optional, Tuple
 
 import numpy as np
 import scanpy as sc
-import torch
 import yaml
 from scipy import sparse
 
@@ -287,7 +285,7 @@ def _find_start_node(system: UniversalGraphSystem) -> str:
     in_deg = {n.id: 0 for n in system.nodes}
     for e in system.edges:
         in_deg[e.node_end.id] += 1
-    min_in = min(in_deg.values())
+    min_in = min(in_deg())
     cands = [nid for nid, d in in_deg.items() if d == min_in]
     if len(cands) > 1:
         return max(cands, key=lambda nid: next(n.potential for n in system.nodes if n.id == nid))
@@ -531,7 +529,7 @@ def _add_noise_genes(
 # ---------------------------------------------------------------------------
 def _build_kinetics_cache(h5ad_path: Optional[Path] = None) -> dict:
     """Run the full slow pipeline and return a cache dict."""
-    np.random.seed(SEED); torch.manual_seed(SEED)
+    np.random.seed(SEED); np.random.seed(SEED)
 
     print("  Loading pancreas reference & building PAGA topology...")
     xr_s, xr_u, adata = load_pancreas_reference(h5ad_path)
@@ -563,8 +561,8 @@ def _build_kinetics_cache(h5ad_path: Optional[Path] = None) -> dict:
         kinetics = synth.generate_kinetics(traj, dt=DT, simulate_counts=False, scale=ALPHA_SCALE)
 
     xs_s = kinetics["spliced"];   xs_u = kinetics["unspliced"]
-    if isinstance(xs_s, torch.Tensor): xs_s = xs_s.numpy()
-    if isinstance(xs_u, torch.Tensor): xs_u = xs_u.numpy()
+    if isinstance(xs_s, np.ndarray): xs_s = xs_s
+    if isinstance(xs_u, np.ndarray): xs_u = xs_u
 
     print(f"  Sampling {N_CELLS} cells from last {N_SAMPLING_STEPS} time steps...")
     xs_s, xs_u, z, pseudotime = _sample_cells(xs_s, xs_u, traj, SEED)
@@ -578,7 +576,7 @@ def _build_kinetics_cache(h5ad_path: Optional[Path] = None) -> dict:
         xr_s        = xr_s.astype(np.float32),
         xr_u        = xr_u.astype(np.float32),
         config_dict = config_dict,
-        system      = system,           # picklable via torch.save
+        system      = system,           # picklable via pickle
     )
 
 
@@ -593,7 +591,7 @@ def load_or_build_kinetics_cache(
 
     if not force_rebuild and cache_path.exists():
         try:
-            saved = torch.load(cache_path, weights_only=False)
+            saved = pickle.load(open(str(cache_path), "rb"))
             if saved.get("cache_key") == key:
                 print(f"  [Stage 1] Loaded kinetics cache from {cache_path.name}")
                 return saved
@@ -604,7 +602,7 @@ def load_or_build_kinetics_cache(
 
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     result = _build_kinetics_cache(h5ad_path)
-    torch.save(result, cache_path)
+    pickle.dump(result, open(str(cache_path), "wb"))
     print(f"  [Stage 1] Kinetics cache saved → {cache_path}")
     return result
 
@@ -694,7 +692,7 @@ def generate_poisson_baseline(
     with contextlib.redirect_stdout(io.StringIO()):
         res = synth.generate_kinetics(z, dt=DT, simulate_counts=False, scale=ALPHA_SCALE)
     s, u = res["spliced"], res["unspliced"]
-    if isinstance(s, torch.Tensor): s, u = s.numpy(), u.numpy()
+    if isinstance(s, np.ndarray): s, u = s, u
     pp = PostProcessConfig(lib_size_mean=50000.0, dropout_prob=0.0,
                            sampling="poisson", seed=seed)
     s, u = _apply_count_noise(s.astype(np.float64), u.astype(np.float64), pp)

@@ -1,6 +1,5 @@
 """Shared publication matplotlib style for TopoVeloGen result figures."""
 
-from __future__ import annotations
 
 from pathlib import Path
 from typing import Iterable, Union
