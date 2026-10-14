@@ -185,11 +185,12 @@ def generate_kinetics_bundle(
     system: UniversalGraphSystem,
     traj: np.ndarray,
     n_genes: int,
+    save_every: int,
 ) -> Dict[str, np.ndarray]:
     synth = setup_synthesizer(system, n_genes)
     with contextlib.redirect_stdout(io.StringIO()):
         clean = synth.generate_kinetics(
-            traj, dt=DT * SAVE_EVERY, scale=ALPHA_SCALE, simulate_counts=False
+            traj, dt=DT * save_every, scale=ALPHA_SCALE, simulate_counts=False
         )
         capture = synth._draw_capture_factor(clean["spliced"])
         spliced_counts = synth._sample_counts(clean["spliced"], capture_factor=capture)
@@ -337,7 +338,7 @@ def analyze_topology(
 ) -> Dict[str, Any]:
     system = TOPOLOGY_BUILDERS[topology]()
     traj = simulate_trajectory(system, topology, n_cells, n_steps, save_every)
-    bundle = generate_kinetics_bundle(system, traj, n_genes)
+    bundle = generate_kinetics_bundle(system, traj, n_genes, save_every)
 
     z_all = flatten_traj(traj)
     v_lat_all = latent_drift_from_system(system, z_all)
