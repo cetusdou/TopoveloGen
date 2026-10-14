@@ -1,0 +1,47 @@
+{
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "cells": 24,
+  "horizon": 8.0,
+  "dts": [
+    0.02,
+    0.01,
+    0.005
+  ],
+  "noise": 0.15,
+  "topologies": [
+    "linear",
+    "cycle_bifurcation"
+  ],
+  "threshold": 0.5,
+  "rates": [
+    [
+      1.0,
+      0.5
+    ],
+    [
+      1.0,
+      1.0
+    ],
+    [
+      0.5,
+      2.0
+    ]
+  ],
+  "omegas": [
+    0.1,
+    0.3,
+    1.0,
+    3.0,
+    10.0
+  ],
+  "harmonic_horizon": 80.0,
+  "harmonic_fit_start": 40.0,
+  "alpha_baseline": 2.0,
+  "alpha_amplitude": 1.0
+}

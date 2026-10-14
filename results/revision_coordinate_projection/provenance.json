@@ -1,0 +1,63 @@
+{
+  "config": {
+    "dt": 0.01,
+    "steps": 1200,
+    "burnin_steps": 200,
+    "diffusion": 0.006,
+    "trajectories": 48,
+    "genes": 160,
+    "observations": 600,
+    "save_every": 20,
+    "neighbors": 20,
+    "seeds": [
+      11,
+      22,
+      33,
+      44,
+      55
+    ],
+    "topologies": [
+      "cycle",
+      "bifurcation",
+      "cycle_bifurcation"
+    ]
+  },
+  "interpretation": "Supplementary oracle capture-corrected deterministic scVelo control; not default preprocessing or cross-method validation",
+  "smoothing": "Fixed uniform kNN operator including self, built from log1p capture-corrected counts; both GT and observations smoothed",
+  "projection": "PCA linear pushforward; UMAP positive cosine kernel over fixed neighbors, row normalized, zero if no positive weights; no grid scaling",
+  "uncertainty": "Independent dataset seeds are replication units; snapshots within a trajectory are correlated",
+  "source_sha256": "df53630696e32c9a4e3392ca3ccc0d9f05d86f0239f5b90e766860d5a297f8b9",
+  "source_hashes": {
+    "data_generation_module\\graph_core.py": "497290588d56320bf3c76794222d9d278d17b5114ba0c3a06f52359efb205b6d",
+    "data_generation_module\\synthesizer_gene.py": "aeb9eb30f655be863536b66eb8c77301b7a105fcfbb53dd0cfcfd8972529a7dd",
+    "experiments\\figures\\fig_coord_velocity_consistency\\lib\\core.py": "0c8e10cc04a6980d16ef792ce25b9d6140e8731719404ee5d356222c64d16c01",
+    "experiments\\results_topology_primitives.py": "dafa5f048372bdf092efc98a9ac6f829b4117abf6372ba37e0ccc2dbcba57882",
+    "experiments\\results_statistical_realism.py": "418bc3f10fa4f2266436019666685f74380494d27c870d39525b0f8b1547b005"
+  },
+  "synthesizer_settings": {
+    "background_noise": 0.015,
+    "lib_size_mean": 10000.0,
+    "lib_size_sd": 0.35,
+    "sampling": "nb",
+    "nb_dispersion": 1.5,
+    "dropout_prob": 0.15,
+    "dropout_slope": 0.5,
+    "splicing_rate": 1.0,
+    "degradation_rate": 0.5,
+    "noise_alpha_range": [
+      0.01,
+      0.06
+    ]
+  },
+  "git_head": "6d81fc432558b29d7bf68ba3d369a3a05f57ef27",
+  "versions": {
+    "numpy": "2.2.6",
+    "scipy": "1.15.3",
+    "pandas": "2.3.3",
+    "scvelo": "0.3.3",
+    "scanpy": "1.11.5",
+    "anndata": "0.11.4",
+    "umap-learn": "0.5.12",
+    "scikit-learn": "1.7.2"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "positive_scale_max_cosine_difference": 3.5762786865234375e-07,
+  "all_finite_predictions": true,
+  "snapshot_velocity": "beta*u-gamma*s at stored state"
+}

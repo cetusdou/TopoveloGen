@@ -1,0 +1,18 @@
+{
+  "capture_ratio": 0.2,
+  "sampling": {
+    "background_noise": 0.015,
+    "lib_size_mean": 10000.0,
+    "lib_size_sd": 0.35,
+    "sampling": "nb",
+    "nb_dispersion": 1.5,
+    "dropout_prob": 0.15,
+    "dropout_slope": 0.5,
+    "splicing_rate": 1.0,
+    "degradation_rate": 0.5,
+    "noise_alpha_range": [
+      0.01,
+      0.06
+    ]
+  }
+}

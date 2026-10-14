@@ -1,0 +1,91 @@
+{
+  "base": {
+    "dt": 0.01,
+    "steps": 1200,
+    "burnin_steps": 200,
+    "diffusion": 0.006,
+    "trajectories": 48,
+    "genes": 160,
+    "observations": 600,
+    "save_every": 20,
+    "neighbors": 20
+  },
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "topologies": [
+    "cycle",
+    "bifurcation",
+    "cycle_bifurcation"
+  ],
+  "conditions": {
+    "baseline": {},
+    "diffusion_low": {
+      "diffusion": 0.002
+    },
+    "diffusion_high": {
+      "diffusion": 0.012
+    },
+    "kinetics_slow": {
+      "splicing_rate": 0.5,
+      "degradation_rate": 0.25
+    },
+    "kinetics_fast": {
+      "splicing_rate": 2.0,
+      "degradation_rate": 1.0
+    },
+    "dropout_none": {
+      "dropout_prob": 0.0
+    },
+    "dropout_high": {
+      "dropout_prob": 0.3
+    },
+    "cells_low": {
+      "observations": 300
+    },
+    "cells_high": {
+      "observations": 900
+    },
+    "genes_fixed_low": {
+      "genes": 80,
+      "signal_reference_genes": 160
+    },
+    "genes_fixed_high": {
+      "genes": 320,
+      "signal_reference_genes": 160
+    }
+  },
+  "synth_defaults": {
+    "background_noise": 0.015,
+    "lib_size_mean": 10000.0,
+    "lib_size_sd": 0.35,
+    "sampling": "nb",
+    "nb_dispersion": 1.5,
+    "dropout_prob": 0.15,
+    "dropout_slope": 0.5,
+    "splicing_rate": 1.0,
+    "degradation_rate": 0.5,
+    "noise_alpha_range": [
+      0.01,
+      0.06
+    ]
+  },
+  "estimand": "Oracle capture-corrected deterministic scVelo; same fixed PCA map of prediction and RNA-state reference",
+  "regions": "Prespecified geometric bins; low_velocity is lowest within-dataset decile of reference norm and overrides geometry",
+  "versions": {
+    "numpy": "2.2.6",
+    "scipy": "1.15.3",
+    "pandas": "2.3.3",
+    "scvelo": "0.3.3",
+    "scikit-learn": "1.7.2"
+  },
+  "source_sha256": {
+    "experiments\\revision_factor_regions.py": "bf7589dbc8ce1e3e7a32684d7290d4054652bd8bc926ba53fd371fdbed124bd9",
+    "experiments\\revision_coordinate_projection.py": "8441cfcf020e28e0ffc81b8e1feaf353457b3e5a521d965a3cd1dfcd040390af",
+    "experiments\\figures\\fig_coord_velocity_consistency\\lib\\core.py": "043c2b4ac32f61fd65ddb3ac8e2234472d28a812b14178f53e29efb43d4d860c"
+  }
+}

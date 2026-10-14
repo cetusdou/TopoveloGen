@@ -1,0 +1,20 @@
+{
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "cells_per_incoming": 12,
+  "duration": 4.0,
+  "dts": [
+    0.02,
+    0.01,
+    0.005
+  ],
+  "noise_amplitude": 0.15,
+  "entry_radius": 0.12,
+  "exit_radius": 0.35,
+  "skeleton_points": 121
+}

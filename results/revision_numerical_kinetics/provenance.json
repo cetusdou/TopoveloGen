@@ -1,0 +1,22 @@
+{
+  "python": "D:\\Works_And_Books\\Projects\\TopoVeloGen\\TopoveloGen\\.venv-revision\\Scripts\\python.exe",
+  "python_version": "3.10.13",
+  "numpy": "2.2.6",
+  "scipy": "1.15.3",
+  "matplotlib": "3.10.9",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "command": [
+    "experiments/revision_numerical_kinetics.py"
+  ],
+  "source_sha256": {
+    "experiments\\revision_numerical_kinetics.py": "d257a1b2788facba85c06e4f6a1a7f245cd8a47992fef20dbd044645f70da747",
+    "data_generation_module\\graph_core.py": "497290588d56320bf3c76794222d9d278d17b5114ba0c3a06f52359efb205b6d",
+    "data_generation_module\\utils.py": "fa4f47e064d4d706f0b976587b9395dad512830ac4b32cbd672dbb352ae1e339",
+    "data_generation_module\\synthesizer_gene.py": "b75a0b6c17cc88910703203742d1c5521e6093a778099ed4359b88bc86a508f6",
+    "data_generation_module\\presets.py": "4026f67b0d5c841d6d0e1a7623a4a4f1eb4755e6daf9dc4f426d692f5d9f048c"
+  },
+  "git_head": "6d81fc432558b29d7bf68ba3d369a3a05f57ef27",
+  "git_status": " M .gitignore\n M data_generation_module/synthesizer_gene.py\n M experiments/figures/fig_coord_velocity_consistency/lib/core.py\n?? experiments/REVISION_EXPERIMENTS.md\n?? experiments/revision_coordinate_projection.py\n?? experiments/revision_numerical_kinetics.py\n?? experiments/revision_numerical_kinetics_README.md\n?? results/\n",
+  "runtime_seconds": 257.2412190437317,
+  "finished_utc": "2026-10-12T08:12:55Z"
+}
