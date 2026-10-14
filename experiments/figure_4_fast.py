@@ -256,12 +256,14 @@ def _load_noise_stage_sparsities(seed: int) -> Dict[str, Dict[str, float]] | Non
     path = _noise_sparsity_cache_path(seed)
     if not path.exists():
         return None
-    return pickle.load(open(str(path), "rb"))
+    with path.open("rb") as handle:
+        return pickle.load(handle)
 
 
 def _save_noise_stage_sparsities(data: Dict[str, Dict[str, float]], seed: int) -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    pickle.dump(data, open(str(_noise_sparsity_cache_path(seed), "wb")))
+    with _noise_sparsity_cache_path(seed).open("wb") as handle:
+        pickle.dump(data, handle)
 
 # ---------------------------------------------------------------------------
 # Notebook 6-panel validation + noise row

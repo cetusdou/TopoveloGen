@@ -176,8 +176,16 @@ def generate_kinetics_bundle_typed(
 ) -> Dict[str, np.ndarray]:
     synth, gene_types = setup_synthesizer_typed(system, n_genes)
     with contextlib.redirect_stdout(io.StringIO()):
-        clean = synth.generate_kinetics(traj, dt=DT, scale=ALPHA_SCALE, simulate_counts=False)
-        counts = synth.generate_kinetics(traj, dt=DT, scale=ALPHA_SCALE, simulate_counts=True)
+        clean = synth.generate_kinetics(
+            traj, dt=DT * SAVE_EVERY, scale=ALPHA_SCALE, simulate_counts=False
+        )
+        capture = synth._draw_capture_factor(clean["spliced"])
+        spliced_counts = synth._sample_counts(clean["spliced"], capture_factor=capture)
+        unspliced_counts = synth._sample_counts(
+            clean["unspliced"],
+            capture_factor=capture,
+            capture_scale=synth.unspliced_capture_ratio,
+        )
     t_steps, n_cells, _ = traj.shape
     n_obs = t_steps * n_cells
 
@@ -185,8 +193,8 @@ def generate_kinetics_bundle_typed(
         return x.reshape(n_obs, -1)
 
     return {
-        "spliced_counts": flat(counts["spliced"]),
-        "unspliced_counts": flat(counts["unspliced"]),
+        "spliced_counts": flat(spliced_counts),
+        "unspliced_counts": flat(unspliced_counts),
         "velocity_gt": flat(clean["velocity"]),
         "gene_names": np.array(synth.gene_names),
         "gene_types": gene_types,

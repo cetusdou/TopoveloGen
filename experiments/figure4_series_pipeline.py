@@ -285,7 +285,7 @@ def _find_start_node(system: UniversalGraphSystem) -> str:
     in_deg = {n.id: 0 for n in system.nodes}
     for e in system.edges:
         in_deg[e.node_end.id] += 1
-    min_in = min(in_deg())
+    min_in = min(in_deg.values())
     cands = [nid for nid, d in in_deg.items() if d == min_in]
     if len(cands) > 1:
         return max(cands, key=lambda nid: next(n.potential for n in system.nodes if n.id == nid))

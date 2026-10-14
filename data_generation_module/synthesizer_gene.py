@@ -788,7 +788,7 @@ class GeneSynthesizer:
             traj_input:
                 - 3D数组 [Steps, Cells, Dims]: 完整轨迹，进行ODE积分
                 - 2D数组 [Cells, Dims]: 单时间点，创建单步轨迹进行积分
-            dt: 仿真时间步长 (必须与 GraphSimulator.run 中的 dt 一致)
+            dt: 相邻输入轨迹采样点的时间间隔；稀疏保存时包含保存步数因子。
             scale: 空间门控的缩放因子
             simulate_counts: 是否生成计数数据（带dropout噪声）
 
@@ -814,6 +814,8 @@ class GeneSynthesizer:
             raise ValueError(f"generate_kinetics requires 2D [Cells, Dims] or 3D [Steps, Cells, Dims] array, got {traj.ndim}D")
 
         steps, n_cells, dims = traj.shape
+        if steps == 0 or n_cells == 0 or not np.isfinite(dt) or dt <= 0:
+            raise ValueError("A nonempty trajectory and finite positive sampling interval are required")
 
         # 2. 初始化状态 (u: unspliced, s: spliced)
         # 设置稳态初始值（推荐，最物理）：在模拟的第一步，直接把细胞的 u 和 s 设置为起始基因表达状态的理论稳态值
@@ -851,33 +853,24 @@ class GeneSynthesizer:
             print(f"Integrating gene kinetics for single time point (starting from steady state)...")
 
         # 3. 欧拉积分循环
+        alpha_previous = alpha_0
         for i in range(steps):
             z_t = traj[i] # [Cells, Dims]
-
-            # A. 计算当前的转录速率 alpha(t)
+            # Input positions and output states share t_i=i*dt. The first
+            # sample is initialization; later updates use left-endpoint rates.
+            if i > 0:
+                du = alpha_previous - beta_t * u
+                ds = beta_t * u - gamma_t * s
+                u = np.clip(u + du * dt, 0.0, None)
+                s = np.clip(s + ds * dt, 0.0, None)
             alpha_t = self._compute_transcription_rate(z_t, current_s=s, scale=scale)
-
-            # B. ODE 更新
-            # du/dt = alpha - beta * u
-            # ds/dt = beta * u - gamma * s
-            # 使用基因级的 beta 和 gamma（逐元素运算）
-
-            du = alpha_t - beta_t * u
-            ds = beta_t * u - gamma_t * s
-
-            # Euler step
-            u = u + du * dt
-            s = s + ds * dt
-
-            # 物理约束：分子数不能为负
-            u = np.clip(u, 0.0, None)
-            s = np.clip(s, 0.0, None)
+            alpha_previous = alpha_t
 
             # C. 记录数据
             u_history.append(u.copy())
             s_history.append(s.copy())
             alpha_history.append(alpha_t.copy())
-            vel_history.append(ds.copy()) # 记录真实的 RNA 速度
+            vel_history.append((beta_t * u - gamma_t * s).copy())
 
         # 4. 处理输出格式
         # 如果是单时间点（steps=1），直接返回 [Cells, Genes]

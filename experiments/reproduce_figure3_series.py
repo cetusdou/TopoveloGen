@@ -285,7 +285,7 @@ for gene in config_dict['genes']:
 print(f"  基因类型分布: {stats}")
 print(f"  各Edge基因分布:")
 for edge_idx, edge_stats in sorted(stats_by_edge.items()):
-    total = sum(edge_stats())
+    total = sum(edge_stats.values())
     print(f"    Edge {edge_idx}: {edge_stats} (总计: {total})")
 
 # 统计 include_cycle_rim 设置

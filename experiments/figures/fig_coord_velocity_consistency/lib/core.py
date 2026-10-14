@@ -139,7 +139,8 @@ def configure(
         METHOD_TABLE = list(pipeline["method_table"])
 
 
-def setup_synthesizer(system: UniversalGraphSystem, n_genes: int) -> GeneSynthesizer:
+def setup_synthesizer(system: UniversalGraphSystem, n_genes: int,
+                      signal_reference_genes: int | None = None) -> GeneSynthesizer:
     synth = GeneSynthesizer(
         system=system,
         n_genes_total=n_genes,
@@ -156,9 +157,10 @@ def setup_synthesizer(system: UniversalGraphSystem, n_genes: int) -> GeneSynthes
         degradation_rate=float(SYNTH_KW["degradation_rate"]),
         seed=SEED,
     )
-    n_branch = max(1, n_genes // 25)
-    n_imp = max(1, n_genes // 50)
-    n_cycle = max(8, n_genes // 12)
+    signal_reference_genes = n_genes if signal_reference_genes is None else signal_reference_genes
+    n_branch = max(1, signal_reference_genes // 25)
+    n_imp = max(1, signal_reference_genes // 50)
+    n_cycle = max(8, signal_reference_genes // 12)
     n_edges = len(system.edges)
     if n_edges >= 1:
         synth.add_trend_gene(edge_idx=0, n_genes=n_branch, pattern="sigmoid", include_cycle_rim=True)
@@ -170,7 +172,7 @@ def setup_synthesizer(system: UniversalGraphSystem, n_genes: int) -> GeneSynthes
             synth.add_trend_gene(edge_idx=0, n_genes=n_imp, pattern="impulse", include_cycle_rim=True)
     if any(isinstance(n, CycleNode) for n in system.nodes):
         if n_edges == 0:
-            n_cycle = max(n_cycle, n_genes // 3)
+            n_cycle = max(n_cycle, signal_reference_genes // 3)
         phases = np.linspace(0, 2 * np.pi, n_cycle, endpoint=False)
         synth.add_cycle_gene(node_id="Cycle", n_genes=n_cycle, phase=phases.tolist(), angular_sigma=0.5)
     synth.add_noise_gene(n_genes=n_genes - synth.current_gene_idx, alpha_range=SYNTH_KW["noise_alpha_range"])
@@ -218,8 +220,14 @@ def generate_kinetics_bundle(
 ) -> Dict[str, np.ndarray]:
     synth = setup_synthesizer(system, n_genes)
     with contextlib.redirect_stdout(io.StringIO()):
-        clean = synth.generate_kinetics(traj, dt=DT, scale=ALPHA_SCALE, simulate_counts=False)
-        counts = synth.generate_kinetics(traj, dt=DT, scale=ALPHA_SCALE, simulate_counts=True)
+        sample_dt = DT * int(MAIN["save_every"])
+        clean = synth.generate_kinetics(traj, dt=sample_dt, scale=ALPHA_SCALE, simulate_counts=False)
+        capture = synth._draw_capture_factor(clean["spliced"])
+        counts = {
+            "spliced": synth._sample_counts(clean["spliced"], capture_factor=capture),
+            "unspliced": synth._sample_counts(clean["unspliced"], capture_factor=capture,
+                                              capture_scale=synth.unspliced_capture_ratio),
+        }
     t_steps, n_cells, _ = traj.shape
     n_obs = t_steps * n_cells
 
