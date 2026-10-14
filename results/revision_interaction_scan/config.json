@@ -1,0 +1,75 @@
+{
+  "base": {
+    "dt": 0.01,
+    "steps": 1200,
+    "burnin_steps": 200,
+    "diffusion": 0.006,
+    "trajectories": 48,
+    "genes": 160,
+    "observations": 600,
+    "save_every": 20,
+    "neighbors": 20
+  },
+  "synth_defaults": {
+    "background_noise": 0.015,
+    "lib_size_mean": 10000.0,
+    "lib_size_sd": 0.35,
+    "sampling": "nb",
+    "nb_dispersion": 1.5,
+    "dropout_prob": 0.15,
+    "dropout_slope": 0.5,
+    "splicing_rate": 1.0,
+    "degradation_rate": 0.5,
+    "noise_alpha_range": [
+      0.01,
+      0.06
+    ]
+  },
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "topologies": [
+    "cycle",
+    "bifurcation",
+    "cycle_bifurcation"
+  ],
+  "levels": {
+    "diffusion": {
+      "low": 0.002,
+      "high": 0.012
+    },
+    "kinetics": {
+      "slow": [
+        0.5,
+        0.25
+      ],
+      "fast": [
+        2.0,
+        1.0
+      ]
+    },
+    "dropout": {
+      "none": 0.0,
+      "high": 0.3
+    }
+  },
+  "estimand": "Mean paired PCA minus gene-space cosine on valid cells; oracle capture-corrected deterministic scVelo",
+  "design": "Full 2x2x2 crossing of diffusion, kinetics, dropout within each topology; cell and gene counts fixed",
+  "versions": {
+    "numpy": "2.2.6",
+    "scipy": "1.15.3",
+    "pandas": "2.3.3",
+    "scvelo": "0.3.3",
+    "scikit-learn": "1.7.2"
+  },
+  "source_sha256": {
+    "experiments\\revision_interaction_scan.py": "e13873c3fb56fea383abe30e468775f8c30be616ebe62c1641471594c0088773",
+    "experiments\\revision_factor_regions.py": "cd0686a2de264e16c416d5cc414598f37b046a6f8d4f22a1903e9d2310991344",
+    "experiments\\revision_coordinate_projection.py": "8441cfcf020e28e0ffc81b8e1feaf353457b3e5a521d965a3cd1dfcd040390af",
+    "experiments\\figures\\fig_coord_velocity_consistency\\lib\\core.py": "043c2b4ac32f61fd65ddb3ac8e2234472d28a812b14178f53e29efb43d4d860c"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "dts": [
+    0.02,
+    0.01,
+    0.005,
+    0.0025
+  ],
+  "horizon": 8.0,
+  "cells": 24,
+  "noise_amplitude": 0.15,
+  "diffusion_coefficient": 0.01125,
+  "topology": "cycle_bifurcation",
+  "initial_distribution": "independent standard normal in two latent dimensions",
+  "coupling": "shared fine Brownian increments aggregated to each coarser step",
+  "branch_rule": "sign of final y among trajectories with final x>1.2; all abs(final y)>.5",
+  "reference": "dt=.0025 is a numerical comparator, not exact continuous-time truth",
+  "source_sha256": {
+    "experiments\\revision_branch_convergence.py": "6f78e519a57dccad642324511f28b174961107258a3ab75a56c0055c8f1317fa",
+    "experiments\\revision_numerical_kinetics.py": "7b7931ff8d6946b6a4fcdb66c49ba77e6e1e76e340fdd58003973e37c50ab688"
+  }
+}
