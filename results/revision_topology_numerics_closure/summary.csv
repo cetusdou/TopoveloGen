@@ -1,0 +1,17 @@
+topology,initial_group,dt,n_seeds,n_initial,path_rms_pooled,n_entered,n_primary_resolved,n_primary_left_or_lower,n_primary_right_or_upper,n_primary_unresolved,n_terminal_left_or_lower,n_terminal_right_or_upper,n_terminal_unresolved,n_jointly_resolved,n_primary_disagree_vs_finest,primary_right_or_upper_fraction_all,terminal_right_or_upper_fraction_all,primary_disagreement_fraction_joint
+cycle_bifurcation,stem_upper,0.02,5,60,0.6129580145272185,,60,59,1,0,59,1,0,60,3,0.016666666666666666,0.016666666666666666,0.05
+cycle_bifurcation,stem_upper,0.01,5,60,0.34701111254261635,,60,59,1,0,59,1,0,60,1,0.016666666666666666,0.016666666666666666,0.016666666666666666
+cycle_bifurcation,stem_upper,0.005,5,60,0.00460919655159378,,60,58,2,0,58,2,0,60,0,0.03333333333333333,0.03333333333333333,0.0
+cycle_bifurcation,stem_upper,0.0025,5,60,0.0,,60,58,2,0,58,2,0,60,0,0.03333333333333333,0.03333333333333333,0.0
+cycle_bifurcation,stem_lower,0.02,5,60,0.6558526579333863,,60,57,3,0,57,3,0,60,3,0.05,0.05,0.05
+cycle_bifurcation,stem_lower,0.01,5,60,0.6014081532253926,,60,55,5,0,55,5,0,60,3,0.08333333333333333,0.08333333333333333,0.05
+cycle_bifurcation,stem_lower,0.005,5,60,0.35239580459825,,60,55,5,0,55,5,0,60,1,0.08333333333333333,0.08333333333333333,0.016666666666666666
+cycle_bifurcation,stem_lower,0.0025,5,60,0.0,,60,54,6,0,54,6,0,60,0,0.1,0.1,0.0
+figure_eight,incoming_left,0.02,5,60,0.2336423754476316,60,60,0,60,0,0,60,0,60,0,1.0,1.0,0.0
+figure_eight,incoming_left,0.01,5,60,0.10179309165228728,60,60,0,60,0,0,60,0,60,0,1.0,1.0,0.0
+figure_eight,incoming_left,0.005,5,60,0.04084901207346043,60,60,0,60,0,0,60,0,60,0,1.0,1.0,0.0
+figure_eight,incoming_left,0.0025,5,60,0.0,60,60,0,60,0,0,60,0,60,0,1.0,1.0,0.0
+figure_eight,incoming_right,0.02,5,60,0.21641878660264094,60,60,0,60,0,0,60,0,60,0,1.0,1.0,0.0
+figure_eight,incoming_right,0.01,5,60,0.10879617910153537,60,60,0,60,0,0,60,0,60,0,1.0,1.0,0.0
+figure_eight,incoming_right,0.005,5,60,0.0629067037259794,60,60,0,60,0,0,60,0,60,0,1.0,1.0,0.0
+figure_eight,incoming_right,0.0025,5,60,0.0,60,60,0,60,0,0,60,0,60,0,1.0,1.0,0.0

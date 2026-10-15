@@ -1,0 +1,51 @@
+{
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "dts": [
+    0.02,
+    0.01,
+    0.005,
+    0.0025
+  ],
+  "fine_dt": 0.0025,
+  "noise_amplitude": 0.15,
+  "diffusion_coefficient": 0.01125,
+  "cells_per_initial_group": 12,
+  "cycle_bifurcation": {
+    "duration": 8.0,
+    "groups": {
+      "stem_upper": "12 independent N((-2,+0.12), 0.04^2 I) positions",
+      "stem_lower": "12 independent N((-2,-0.12), 0.04^2 I) positions"
+    },
+    "terminal_rule": "upper/lower when final x > 1.2 and abs(final y) > 0.5; otherwise unresolved"
+  },
+  "figure_eight": {
+    "duration": 4.0,
+    "groups": {
+      "incoming_left": "12 positions around (-0.18,-0.18), independent N(0,0.015^2 I) jitter",
+      "incoming_right": "12 positions around (0.18,-0.18), independent N(0,0.015^2 I) jitter"
+    },
+    "crossing_rule": "first entry within radius 0.12 then first exit beyond radius 0.35; exit x sign",
+    "terminal_rule": "sign of final x (left/right), with x=0 unresolved",
+    "skeleton_points": 121
+  },
+  "coupling": "one fine Brownian stream per seed/topology, summed into coarser increments",
+  "initialization": "specified positions encoded as simulator normal draws using start position and start-node sigma*0.1",
+  "comparator_caveat": "dt=0.0025 is a numerical comparator, not exact continuous-time truth",
+  "figure_eight_caveat": "position-only state cannot preserve incoming branch at the self-crossing",
+  "source_sha256": {
+    "experiments\\revision_topology_numerics_closure.py": "9879cee8db990c70b6bcfd25cd39f90c373d16de92810be4ab6a399c3dcf8e09",
+    "experiments\\revision_branch_convergence.py": "6f78e519a57dccad642324511f28b174961107258a3ab75a56c0055c8f1317fa",
+    "experiments\\revision_figure8_junction.py": "88f8b410e8c469ecaced89ecbbbb4dda15d61b1cca2634b425e6a6dccb2c57ea",
+    "experiments\\revision_numerical_kinetics.py": "7b7931ff8d6946b6a4fcdb66c49ba77e6e1e76e340fdd58003973e37c50ab688",
+    "data_generation_module\\presets.py": "4026f67b0d5c841d6d0e1a7623a4a4f1eb4755e6daf9dc4f426d692f5d9f048c",
+    "data_generation_module\\graph_core.py": "497290588d56320bf3c76794222d9d278d17b5114ba0c3a06f52359efb205b6d",
+    "data_generation_module\\utils.py": "fa4f47e064d4d706f0b976587b9395dad512830ac4b32cbd672dbb352ae1e339"
+  },
+  "settings_sha256": "cea05190f6f8de464f552f8249faeb6db6690c724ac9c886d4bdb0cc200f9407"
+}
