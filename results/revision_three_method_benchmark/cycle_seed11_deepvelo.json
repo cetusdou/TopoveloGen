@@ -1,0 +1,90 @@
+{
+  "method": "deepvelo",
+  "dataset": "cycle_seed11",
+  "input_sha256": "4223d1c73a893cf3869c012843f6d8903716d2e30f2e6556c974c38301ee9505",
+  "versions": {
+    "python": "3.9.19",
+    "numpy": "1.23.5",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "anndata": "0.8.0",
+    "scanpy": "1.9.3",
+    "scvelo": "0.2.5",
+    "unitvelo": "0.2.5.2",
+    "deepvelo": "0.2.4",
+    "torch": "1.12.1",
+    "tensorflow-cpu": "2.10.1",
+    "dgl": "0.6.1"
+  },
+  "input_coordinate": "oracle capture-corrected abundance; 20-neighbor uniform Ms/Mu supplied; X=log1p(Ms)",
+  "fit": {
+    "name": "DeepVelo_Base",
+    "n_gpu": 0,
+    "arch": {
+      "type": "VeloGCN",
+      "args": {
+        "layers": [
+          64,
+          64
+        ],
+        "dropout": 0.2,
+        "fc_layer": false,
+        "pred_unspliced": false,
+        "n_genes": 160
+      }
+    },
+    "data_loader": {
+      "type": "VeloDataLoader",
+      "args": {
+        "shuffle": false,
+        "validation_split": 0.0,
+        "num_workers": 0,
+        "type": "pca, t",
+        "topC": 20,
+        "topG": 20,
+        "batch_size": 360
+      }
+    },
+    "optimizer": {
+      "type": "Adam",
+      "args": {
+        "lr": 0.001,
+        "weight_decay": 0,
+        "amsgrad": true
+      }
+    },
+    "loss": {
+      "type": "mle_plus_direction",
+      "args": {
+        "pearson_scale": 18.0,
+        "coeff_u": 1.0,
+        "coeff_s": 1.0
+      }
+    },
+    "constraint_loss": false,
+    "mask_zeros": false,
+    "metrics": [
+      "mse"
+    ],
+    "lr_scheduler": {
+      "type": "StepLR",
+      "args": {
+        "step_size": 1,
+        "gamma": 0.97
+      }
+    },
+    "trainer": {
+      "epochs": 100,
+      "save_dir": "D:\\Works_And_Books\\Projects\\TopoVeloGen\\TopoveloGen\\results\\revision_three_method_benchmark\\method_work\\deepvelo\\cycle_seed11",
+      "save_period": 1000,
+      "verbosity": 1,
+      "monitor": "min mse",
+      "early_stop": 1000,
+      "tensorboard": false
+    }
+  },
+  "status": "success",
+  "n_genes_used": 160,
+  "output_sha256": "f68e4239cd2b3f1ba1d0531ad1336f3abc6a83d4f3988b852a3a3d969c17e5b1",
+  "output_coordinate": "method velocity layer fitted from supplied oracle-corrected Ms/Mu; temporal scale is method-specific and not physically calibrated"
+}

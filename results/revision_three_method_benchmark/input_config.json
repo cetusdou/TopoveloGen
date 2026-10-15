@@ -1,0 +1,56 @@
+{
+  "config": {
+    "dt": 0.01,
+    "steps": 1000,
+    "burnin_steps": 200,
+    "diffusion": 0.006,
+    "trajectories": 32,
+    "genes": 160,
+    "observations": 360,
+    "save_every": 20,
+    "neighbors": 20
+  },
+  "seeds": [
+    11,
+    22,
+    33
+  ],
+  "topologies": [
+    "cycle",
+    "bifurcation",
+    "cycle_bifurcation"
+  ],
+  "coordinate": "oracle capture-corrected continuous-abundance units; fixed uniform neighbor moments applied to prediction target and RNA-state reference",
+  "capture_correction": "spliced counts / cell capture; unspliced counts / cell capture / fixed unspliced efficiency ratio",
+  "source_sha256": "ce15c366476d7cf26b3507961de936dcf7db64179c791ae30f1adb2fe5c93433",
+  "simulator_source_sha256": "043c2b4ac32f61fd65ddb3ac8e2234472d28a812b14178f53e29efb43d4d860c",
+  "synthesizer_settings": {
+    "background_noise": 0.015,
+    "lib_size_mean": 10000.0,
+    "lib_size_sd": 0.35,
+    "sampling": "nb",
+    "nb_dispersion": 1.5,
+    "dropout_prob": 0.15,
+    "dropout_slope": 0.5,
+    "splicing_rate": 1.0,
+    "degradation_rate": 0.5,
+    "noise_alpha_range": [
+      0.01,
+      0.06
+    ]
+  },
+  "versions": {
+    "python": "3.10.13",
+    "numpy": "2.2.6",
+    "scipy": "1.15.3",
+    "scikit-learn": "1.7.2",
+    "anndata": "0.11.4",
+    "scanpy": "1.11.5",
+    "scvelo": "0.3.3",
+    "unitvelo": null,
+    "deepvelo": null,
+    "torch": null,
+    "tensorflow-cpu": null,
+    "dgl": null
+  }
+}

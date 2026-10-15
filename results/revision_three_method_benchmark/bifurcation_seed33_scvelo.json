@@ -1,0 +1,30 @@
+{
+  "method": "scvelo",
+  "dataset": "bifurcation_seed33",
+  "input_sha256": "7d860110dd8aed4edcc61d78551a04a4d13b3d249cee72bbd17d79cec65278ad",
+  "versions": {
+    "python": "3.9.19",
+    "numpy": "1.23.5",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "anndata": "0.8.0",
+    "scanpy": "1.9.3",
+    "scvelo": "0.2.5",
+    "unitvelo": "0.2.5.2",
+    "deepvelo": "0.2.4",
+    "torch": "1.12.1",
+    "tensorflow-cpu": "2.10.1",
+    "dgl": "0.6.1"
+  },
+  "input_coordinate": "oracle capture-corrected abundance; 20-neighbor uniform Ms/Mu supplied; X=log1p(Ms)",
+  "fit": {
+    "mode": "deterministic",
+    "use_raw": false,
+    "min_r2": "-inf",
+    "min_likelihood": "-inf"
+  },
+  "status": "success",
+  "n_genes_used": 160,
+  "output_sha256": "13464b280e4021416a8819fbd6156049807bf9c3e539b8f2cbfa698cad0c98ed",
+  "output_coordinate": "method velocity layer fitted from supplied oracle-corrected Ms/Mu; temporal scale is method-specific and not physically calibrated"
+}
