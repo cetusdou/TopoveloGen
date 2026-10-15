@@ -1,0 +1,68 @@
+{
+  "scvelo": "0.3.3",
+  "comparison": "within-simulator directional score only; distinct generative models and noise scales are not matched",
+  "neighbors": 20,
+  "moment_weight": "uniform including self",
+  "inputs": [
+    {
+      "simulator": "TopoVeloGen",
+      "seed": 11,
+      "input_sha256": {
+        "bifurcation_seed11.npz": "a78950a4e462491d19b9bf70a982fdb1f85dcc986b2ef40bf7dc728d14f8471b"
+      },
+      "cells": 360,
+      "genes": 160
+    },
+    {
+      "simulator": "scMultiSim",
+      "seed": 11,
+      "input_sha256": {
+        "spliced_seed11.csv": "c48aa5cc88756cf253707c9389c6f9bddee8d5694046b9e4da6bff8ff6941f2d",
+        "unspliced_seed11.csv": "e77f796ba540449ca46012ecee7429060da1e48be6f84c4f0d0803ad32d70adc",
+        "velocity_seed11.csv": "025cad469ae402e21de42a0ceb3b7c1b095a256ec938d816fd37f573f14b616a"
+      },
+      "cells": 360,
+      "genes": 160
+    },
+    {
+      "simulator": "TopoVeloGen",
+      "seed": 22,
+      "input_sha256": {
+        "bifurcation_seed22.npz": "89b4a74fd4f86bf0e45881270b9931c60b968e6acb452f5a4931074babb89662"
+      },
+      "cells": 360,
+      "genes": 160
+    },
+    {
+      "simulator": "scMultiSim",
+      "seed": 22,
+      "input_sha256": {
+        "spliced_seed22.csv": "196af896cc56b3d7ad7ca78d5b2f1cbbb0f10b7e176be31feb38bc8c074dca7f",
+        "unspliced_seed22.csv": "bb0e8ef7e8ea8cbdac6e2b84de30b7e3189e3e077201eb5eda4591e8e212ae45",
+        "velocity_seed22.csv": "798e09de51135c7868324efa0d563f7c8f2a45565bedef1b88f081352d41e18d"
+      },
+      "cells": 360,
+      "genes": 160
+    },
+    {
+      "simulator": "TopoVeloGen",
+      "seed": 33,
+      "input_sha256": {
+        "bifurcation_seed33.npz": "7d860110dd8aed4edcc61d78551a04a4d13b3d249cee72bbd17d79cec65278ad"
+      },
+      "cells": 360,
+      "genes": 160
+    },
+    {
+      "simulator": "scMultiSim",
+      "seed": 33,
+      "input_sha256": {
+        "spliced_seed33.csv": "5c4371f38b313f4aa7a08a1b2324930212e854bf1bdbe3523036bb12f1151c45",
+        "unspliced_seed33.csv": "82c143a23a258d413453cb8970124fdfca72e24775da7e9c4ff432ddb01dfc79",
+        "velocity_seed33.csv": "3d2d9451996d9a06369ad5cac0416013b03f72f434632ed340aefdefef182a6a"
+      },
+      "cells": 360,
+      "genes": 160
+    }
+  ]
+}

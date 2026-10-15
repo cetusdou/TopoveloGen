@@ -1,0 +1,271 @@
+{
+  "seeds": [
+    11,
+    22,
+    33
+  ],
+  "dataset_count": 72,
+  "design_rows": [
+    {
+      "family": "cell_gene",
+      "topology": "cycle",
+      "cells": 300,
+      "genes": 80,
+      "diffusion": 0.006,
+      "dropout": 0.15
+    },
+    {
+      "family": "cell_gene",
+      "topology": "cycle",
+      "cells": 300,
+      "genes": 320,
+      "diffusion": 0.006,
+      "dropout": 0.15
+    },
+    {
+      "family": "cell_gene",
+      "topology": "cycle",
+      "cells": 900,
+      "genes": 80,
+      "diffusion": 0.006,
+      "dropout": 0.15
+    },
+    {
+      "family": "cell_gene",
+      "topology": "cycle",
+      "cells": 900,
+      "genes": 320,
+      "diffusion": 0.006,
+      "dropout": 0.15
+    },
+    {
+      "family": "cell_gene",
+      "topology": "bifurcation",
+      "cells": 300,
+      "genes": 80,
+      "diffusion": 0.006,
+      "dropout": 0.15
+    },
+    {
+      "family": "cell_gene",
+      "topology": "bifurcation",
+      "cells": 300,
+      "genes": 320,
+      "diffusion": 0.006,
+      "dropout": 0.15
+    },
+    {
+      "family": "cell_gene",
+      "topology": "bifurcation",
+      "cells": 900,
+      "genes": 80,
+      "diffusion": 0.006,
+      "dropout": 0.15
+    },
+    {
+      "family": "cell_gene",
+      "topology": "bifurcation",
+      "cells": 900,
+      "genes": 320,
+      "diffusion": 0.006,
+      "dropout": 0.15
+    },
+    {
+      "family": "cell_gene",
+      "topology": "cycle_bifurcation",
+      "cells": 300,
+      "genes": 80,
+      "diffusion": 0.006,
+      "dropout": 0.15
+    },
+    {
+      "family": "cell_gene",
+      "topology": "cycle_bifurcation",
+      "cells": 300,
+      "genes": 320,
+      "diffusion": 0.006,
+      "dropout": 0.15
+    },
+    {
+      "family": "cell_gene",
+      "topology": "cycle_bifurcation",
+      "cells": 900,
+      "genes": 80,
+      "diffusion": 0.006,
+      "dropout": 0.15
+    },
+    {
+      "family": "cell_gene",
+      "topology": "cycle_bifurcation",
+      "cells": 900,
+      "genes": 320,
+      "diffusion": 0.006,
+      "dropout": 0.15
+    },
+    {
+      "family": "diffusion_dropout",
+      "topology": "cycle",
+      "cells": 600,
+      "genes": 160,
+      "diffusion": 0.002,
+      "dropout": 0.0
+    },
+    {
+      "family": "diffusion_dropout",
+      "topology": "cycle",
+      "cells": 600,
+      "genes": 160,
+      "diffusion": 0.002,
+      "dropout": 0.3
+    },
+    {
+      "family": "diffusion_dropout",
+      "topology": "cycle",
+      "cells": 600,
+      "genes": 160,
+      "diffusion": 0.012,
+      "dropout": 0.0
+    },
+    {
+      "family": "diffusion_dropout",
+      "topology": "cycle",
+      "cells": 600,
+      "genes": 160,
+      "diffusion": 0.012,
+      "dropout": 0.3
+    },
+    {
+      "family": "diffusion_dropout",
+      "topology": "bifurcation",
+      "cells": 600,
+      "genes": 160,
+      "diffusion": 0.002,
+      "dropout": 0.0
+    },
+    {
+      "family": "diffusion_dropout",
+      "topology": "bifurcation",
+      "cells": 600,
+      "genes": 160,
+      "diffusion": 0.002,
+      "dropout": 0.3
+    },
+    {
+      "family": "diffusion_dropout",
+      "topology": "bifurcation",
+      "cells": 600,
+      "genes": 160,
+      "diffusion": 0.012,
+      "dropout": 0.0
+    },
+    {
+      "family": "diffusion_dropout",
+      "topology": "bifurcation",
+      "cells": 600,
+      "genes": 160,
+      "diffusion": 0.012,
+      "dropout": 0.3
+    },
+    {
+      "family": "diffusion_dropout",
+      "topology": "cycle_bifurcation",
+      "cells": 600,
+      "genes": 160,
+      "diffusion": 0.002,
+      "dropout": 0.0
+    },
+    {
+      "family": "diffusion_dropout",
+      "topology": "cycle_bifurcation",
+      "cells": 600,
+      "genes": 160,
+      "diffusion": 0.002,
+      "dropout": 0.3
+    },
+    {
+      "family": "diffusion_dropout",
+      "topology": "cycle_bifurcation",
+      "cells": 600,
+      "genes": 160,
+      "diffusion": 0.012,
+      "dropout": 0.0
+    },
+    {
+      "family": "diffusion_dropout",
+      "topology": "cycle_bifurcation",
+      "cells": 600,
+      "genes": 160,
+      "diffusion": 0.012,
+      "dropout": 0.3
+    }
+  ],
+  "crossed": {
+    "cell_gene": [
+      "topology",
+      "cells",
+      "genes"
+    ],
+    "diffusion_dropout": [
+      "topology",
+      "diffusion",
+      "dropout"
+    ]
+  },
+  "not_crossed": {
+    "cell_gene": {
+      "diffusion": 0.006,
+      "dropout": 0.15
+    },
+    "diffusion_dropout": {
+      "cells": 600,
+      "genes": 160
+    }
+  },
+  "fixed": {
+    "signal_reference_genes": 160,
+    "base": {
+      "dt": 0.01,
+      "steps": 1200,
+      "burnin_steps": 200,
+      "diffusion": 0.006,
+      "trajectories": 48,
+      "genes": 160,
+      "observations": 600,
+      "save_every": 20,
+      "neighbors": 20
+    },
+    "synth_defaults": {
+      "background_noise": 0.015,
+      "lib_size_mean": 10000.0,
+      "lib_size_sd": 0.35,
+      "sampling": "nb",
+      "nb_dispersion": 1.5,
+      "dropout_prob": 0.15,
+      "dropout_slope": 0.5,
+      "splicing_rate": 1.0,
+      "degradation_rate": 0.5,
+      "noise_alpha_range": [
+        0.01,
+        0.06
+      ]
+    },
+    "reference": "Same smoothed RNA-state truth before/after one PCA fit to smoothed observed RNA state",
+    "estimator": "Oracle capture-corrected deterministic scVelo; no cross-method comparison",
+    "replication_unit": "Independent seeds, paired across all design rows"
+  },
+  "source_sha256": {
+    "experiments\\revision_cell_gene_factor_closure.py": "9bf145bf484eb0aff12105a774299779f3eb9123474cb7bf530a9f0043e5b814",
+    "experiments\\revision_factor_regions.py": "cd0686a2de264e16c416d5cc414598f37b046a6f8d4f22a1903e9d2310991344",
+    "experiments\\revision_coordinate_projection.py": "8441cfcf020e28e0ffc81b8e1feaf353457b3e5a521d965a3cd1dfcd040390af",
+    "experiments\\figures\\fig_coord_velocity_consistency\\lib\\core.py": "043c2b4ac32f61fd65ddb3ac8e2234472d28a812b14178f53e29efb43d4d860c",
+    "data_generation_module\\synthesizer_gene.py": "b75a0b6c17cc88910703203742d1c5521e6093a778099ed4359b88bc86a508f6"
+  },
+  "versions": {
+    "numpy": "2.2.6",
+    "scipy": "1.15.3",
+    "pandas": "2.3.3",
+    "scvelo": "0.3.3",
+    "scikit-learn": "1.7.2"
+  },
+  "config_sha256": "93ed636eb5ec9380045d180da6269e14129506a959fbbe43f10926e05ba7606b"
+}

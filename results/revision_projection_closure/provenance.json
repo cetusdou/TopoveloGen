@@ -1,0 +1,186 @@
+{
+  "archive_configuration": {
+    "config": {
+      "dt": 0.01,
+      "steps": 1200,
+      "burnin_steps": 200,
+      "diffusion": 0.006,
+      "trajectories": 48,
+      "genes": 160,
+      "observations": 600,
+      "save_every": 20,
+      "neighbors": 20,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55
+      ],
+      "topologies": [
+        "cycle",
+        "bifurcation",
+        "cycle_bifurcation"
+      ]
+    },
+    "interpretation": "Supplementary oracle capture-corrected deterministic scVelo control; not default preprocessing or cross-method validation",
+    "smoothing": "Fixed uniform kNN operator including self, built from log1p capture-corrected counts; both GT and observations smoothed",
+    "projection": "PCA linear pushforward; UMAP positive cosine kernel over fixed neighbors, row normalized, zero if no positive weights; no grid scaling",
+    "uncertainty": "Independent dataset seeds are replication units; snapshots within a trajectory are correlated",
+    "source_sha256": "df53630696e32c9a4e3392ca3ccc0d9f05d86f0239f5b90e766860d5a297f8b9",
+    "source_hashes": {
+      "data_generation_module\\graph_core.py": "497290588d56320bf3c76794222d9d278d17b5114ba0c3a06f52359efb205b6d",
+      "data_generation_module\\synthesizer_gene.py": "aeb9eb30f655be863536b66eb8c77301b7a105fcfbb53dd0cfcfd8972529a7dd",
+      "experiments\\figures\\fig_coord_velocity_consistency\\lib\\core.py": "0c8e10cc04a6980d16ef792ce25b9d6140e8731719404ee5d356222c64d16c01",
+      "experiments\\results_topology_primitives.py": "dafa5f048372bdf092efc98a9ac6f829b4117abf6372ba37e0ccc2dbcba57882",
+      "experiments\\results_statistical_realism.py": "418bc3f10fa4f2266436019666685f74380494d27c870d39525b0f8b1547b005"
+    },
+    "synthesizer_settings": {
+      "background_noise": 0.015,
+      "lib_size_mean": 10000.0,
+      "lib_size_sd": 0.35,
+      "sampling": "nb",
+      "nb_dispersion": 1.5,
+      "dropout_prob": 0.15,
+      "dropout_slope": 0.5,
+      "splicing_rate": 1.0,
+      "degradation_rate": 0.5,
+      "noise_alpha_range": [
+        0.01,
+        0.06
+      ]
+    },
+    "git_head": "6d81fc432558b29d7bf68ba3d369a3a05f57ef27",
+    "versions": {
+      "numpy": "2.2.6",
+      "scipy": "1.15.3",
+      "pandas": "2.3.3",
+      "scvelo": "0.3.3",
+      "scanpy": "1.11.5",
+      "anndata": "0.11.4",
+      "umap-learn": "0.5.12",
+      "scikit-learn": "1.7.2"
+    }
+  },
+  "archive_provenance_sha256": "5ebad9de7119070c5ac85ddffdaf514f036c5b8bf1bcfdb5b19b70f4344b4297",
+  "script_sha256": "e79d16f5c475e1df38a48cb6bdded2fe7ab11f917d33f2946472c9e730656e6b",
+  "native_graph_settings": {
+    "xkey": "Ms",
+    "n_neighbors": 20,
+    "n_recurse_neighbors": 1,
+    "sqrt_transform": false,
+    "approx": false,
+    "mode_neighbors": "distances",
+    "n_jobs": 1,
+    "backend": "threading",
+    "show_progress_bar": false
+  },
+  "native_embedding_settings": {
+    "basis": "umap",
+    "scale": 10,
+    "self_transitions": true,
+    "use_negative_cosines": true,
+    "direct_pca_projection": false,
+    "retain_scale": false,
+    "autoscale": false,
+    "all_comps": true
+  },
+  "fixed_graph": "Archived neighbor_indices; distances in log1p(sc/capture) space, no refitting",
+  "gene_mask": "all 160 archived genes, identical for prediction and reference",
+  "pca": "pred/gt_smoothed @ archived pca_loadings.T (no recentering)",
+  "umap_kernel": "positive gene-space cosine to archived neighbor state displacements; row normalize; weighted raw UMAP displacement; zero if no positive weight",
+  "regions": {
+    "cycle": "latent z angle quadrants [0,pi/2), ...",
+    "bifurcation": "z_x < 0 trunk; else sign(z_y) upper/lower",
+    "cycle_bifurcation": "z_x < 1 cycle; else sign(z_y) upper/lower"
+  },
+  "norm_floors": [
+    1e-08,
+    1e-06,
+    0.0001,
+    0.01
+  ],
+  "threshold_high": [
+    0.5,
+    0.7,
+    0.9
+  ],
+  "threshold_low": [
+    0.0,
+    0.2,
+    0.4
+  ],
+  "threshold_event": "projected cosine > high AND gene cosine < low, among paired valid cells",
+  "replication_unit": "dataset seed; cell scores are descriptive, not independent replicates",
+  "versions": {
+    "numpy": "2.2.6",
+    "scipy": "1.15.3",
+    "pandas": "2.3.3",
+    "matplotlib": "3.10.9",
+    "scvelo": "0.3.3",
+    "anndata": "0.11.4"
+  },
+  "archives": {
+    "cycle_seed11": {
+      "data.npz": "ec159384c24e30768972098ae3379a187a73e767ea22bd3be7435b0fcc4cb524",
+      "smoothing_weights.npz": "31c3fef34fdc4e1f845065d59d54b5e59a314231505528f1f11e65732c014ef0"
+    },
+    "cycle_seed22": {
+      "data.npz": "94d7e3d7ba0839c4ad63bf76d8777cad4c79b8effcd615ec0d394e2c6f45a9f7",
+      "smoothing_weights.npz": "9802beec3435fad0dd36949528f990fdd5557ccb22b1dad3c81c764a98fd33ca"
+    },
+    "cycle_seed33": {
+      "data.npz": "3b35fdc6129f5bba70b5f0c6caf9bed9fd39c1bdad25ffc7dcc40a448cd8fb04",
+      "smoothing_weights.npz": "a8bff8560e67eeb6816bf6ef4dce3d069682d3ccbba271acb1b9a4a6ca7a5836"
+    },
+    "cycle_seed44": {
+      "data.npz": "b89274633f881656e9b413f7b229d54c357da2061dc9315023a20a6e07748a0b",
+      "smoothing_weights.npz": "3c888f469d8ac606fca9b29484af2c74eae347b71fbfd0b19dc1cd1fd164a898"
+    },
+    "cycle_seed55": {
+      "data.npz": "2af0fa3b0f25a63d0f4fdf7484b6a695e58985556a5be56d949041bb06b30962",
+      "smoothing_weights.npz": "a1ff30dc1781f5743dc4f814fffb9a7f48832bd1823c44d25d242861c8e3ea0b"
+    },
+    "bifurcation_seed11": {
+      "data.npz": "f5049e5bf9f0040f19aeee3cc139737f96c7531c1781a8d3cb2e360777b36e5b",
+      "smoothing_weights.npz": "4e27da8afad4fa5f1aaf61e7feec951f06aecc0b795de0e739ee2656352d8e3d"
+    },
+    "bifurcation_seed22": {
+      "data.npz": "f08a5701dd5f7bf5979abbd7031e5918ce247ac8f2534633d457ca3edabde90f",
+      "smoothing_weights.npz": "dadc4d857a1ca6f6efce43143a311ac7abc4f697554fa1d4ce7c03b68067fc6b"
+    },
+    "bifurcation_seed33": {
+      "data.npz": "389f70cd2c956d05955075a77a20a282833a847ed708fc8993387643aecc77e1",
+      "smoothing_weights.npz": "bead85edb9fbd1e00b75963fcaa44325dcfbf1f4c198daf1db5b5bf6f920b3c7"
+    },
+    "bifurcation_seed44": {
+      "data.npz": "94135952d14578f36b4c3a7abd6c1e05dd7afdde6f79ecaa9ecf5bb9cbc88e0d",
+      "smoothing_weights.npz": "d4f16b8c1774d8b38afc37665ad005a31fad440fa523e919d145044a157c1fe2"
+    },
+    "bifurcation_seed55": {
+      "data.npz": "fa3816e865fa5f43039672a3fc7f65f854edfc3c6282a28b9856b01a7bf4dbe0",
+      "smoothing_weights.npz": "6049050f83a3caa8e2be241344769407cd755cde3c464dad5fff0a95f3b917f9"
+    },
+    "cycle_bifurcation_seed11": {
+      "data.npz": "12edcdc5f6660371ad8bf1b55bd248c1ce59e7eba89434c71794435cfde278b8",
+      "smoothing_weights.npz": "6e782619084ddb4e9b4a0e137d6c4a61e00dc89371a4c561d268c06bade0c37e"
+    },
+    "cycle_bifurcation_seed22": {
+      "data.npz": "1102bdbddc1c660df916577b2afe9655d9cd2cd742f6bf5607ec42c53c711bee",
+      "smoothing_weights.npz": "77f9dac5d094181fc795aacc27e71027c22e7282996b8ebdab1f337214a4aab7"
+    },
+    "cycle_bifurcation_seed33": {
+      "data.npz": "c405128d1a1b13e375e31b4648fc236186e646a59b022bf95a76a918015661ec",
+      "smoothing_weights.npz": "3b4d6bb3f67689a310d3d69f8210442f96f6dcbd8b26daf36978c17321c823d6"
+    },
+    "cycle_bifurcation_seed44": {
+      "data.npz": "b720933d6c376f21f32196afa99a984eb528abd9720dc19b9dcdf6b579478506",
+      "smoothing_weights.npz": "c658f39e859bbe74c6103d1f50f96df6a401b6dd7df0b2b2c5b6c5371c726bdf"
+    },
+    "cycle_bifurcation_seed55": {
+      "data.npz": "1e4e6bc276582353c5e53c560fbc50241e0cfc8dafce947c7daf8f6fe760b2e9",
+      "smoothing_weights.npz": "7b365cfbd672fc2d70280a50edc4fdafd8bdddba2fc83dc5b9037c2e52d1abaa"
+    }
+  },
+  "native_failures": 0
+}
