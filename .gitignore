@@ -6,6 +6,10 @@ styles/
 *.png
 .venv/
 .venv-revision/
+.venv-methods/
+.method_wheels/
+.r-methods/
+results/revision_three_method_benchmark/method_work/
 data/Pancreas/endocrinogenesis_day15.h5ad
 results/statistical_realism_figure4/data/kinetics_cache.pt
 *.csv
