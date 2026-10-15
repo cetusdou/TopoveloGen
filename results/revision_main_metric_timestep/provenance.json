@@ -1,0 +1,41 @@
+{
+  "config": {
+    "duration": 12.0,
+    "burnin": 2.0,
+    "sampling_interval": 0.2,
+    "diffusion": 0.006,
+    "trajectories": 48,
+    "genes": 160,
+    "observations": 600,
+    "neighbors": 20
+  },
+  "topologies": [
+    "cycle",
+    "bifurcation",
+    "cycle_bifurcation"
+  ],
+  "seeds": [
+    11,
+    22,
+    33
+  ],
+  "steps": [
+    0.01,
+    0.005,
+    0.0025
+  ],
+  "source_sha256": "616ec3fbc45717e73114f29d3bdbba00fc530c45d953d3d40898cf1bf1e7d545",
+  "core_sha256": "043c2b4ac32f61fd65ddb3ac8e2234472d28a812b14178f53e29efb43d4d860c",
+  "coupling": "coarse Brownian increments sum shared finest increments",
+  "coordinate": "oracle-corrected abundance with fixed 20-neighbor-plus-self moments",
+  "reference": "stored-state beta*u-gamma*s, smoothed with the same matrix",
+  "projections": "dataset-fitted 2D PCA; native scVelo UMAP with matched key settings",
+  "masking": "projected cosine > 0.7 and gene cosine < 0.2 among paired valid cells",
+  "versions": {
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "scvelo": "0.3.3",
+    "scikit-learn": "1.7.2",
+    "matplotlib": "3.10.9"
+  }
+}
