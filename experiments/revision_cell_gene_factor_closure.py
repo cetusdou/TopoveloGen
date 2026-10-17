@@ -16,7 +16,8 @@ import pandas as pd
 from scipy import stats
 from sklearn.decomposition import PCA
 
-from experiments import revision_factor_regions as regions
+from experiments import revision_factor_core as regions
+from experiments.revision_cache import prepare_cache
 from experiments.revision_coordinate_projection import cosine
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -116,7 +117,7 @@ def paired_contrasts(seed_metrics):
     return pd.DataFrame(contrasts)
 
 
-def figure(overall, region_summary, contrast_summary):
+def figure(overall, region_summary, contrast_summary, out):
     fig, axes = plt.subplots(2, 2, figsize=(12, 9), layout="constrained")
     colors = {"cycle": "#087e76", "bifurcation": "#bd4f59", "cycle_bifurcation": "#62529a"}
     main = overall[overall.family == "cell_gene"]
@@ -153,22 +154,21 @@ def figure(overall, region_summary, contrast_summary):
     axes[1, 1].tick_params(axis="x", rotation=40)
     for ax in axes.flat:
         ax.grid(alpha=.2)
-    fig.savefig(OUT / "factor_closure.pdf")
+    fig.savefig(out / "factor_closure.pdf")
     plt.close(fig)
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--seeds", nargs="+", type=int, default=SEEDS)
+    parser.add_argument("--out", type=Path, default=OUT,
+                        help="Fresh result directory for a new code/config revision")
     args = parser.parse_args()
+    out = args.out.resolve()
     rows = list(design())
     expected = len(rows) * len(args.seeds)
     assert len(rows) == 24 and len(set(args.seeds)) == len(args.seeds)
-    OUT.mkdir(parents=True, exist_ok=True)
-    dataset_dir = OUT / "datasets"
-    dataset_dir.mkdir(exist_ok=True)
-    source_paths = [Path(__file__), Path(regions.__file__), ROOT / "experiments/revision_coordinate_projection.py",
-                    Path(regions.core.__file__), ROOT / "data_generation_module/synthesizer_gene.py"]
+    source_paths = [Path(__file__), *regions.SOURCE_DEPENDENCIES]
     provenance = dict(
         seeds=args.seeds, dataset_count=expected, design_rows=rows,
         crossed={"cell_gene": ["topology", "cells", "genes"],
@@ -186,12 +186,9 @@ def main():
     config_bytes = json.dumps(provenance, sort_keys=True, indent=2).encode("utf-8")
     config_hash = hashlib.sha256(config_bytes).hexdigest()
     provenance["config_sha256"] = config_hash
-    config_path = OUT / "config.json"
-    if config_path.exists():
-        old = json.loads(config_path.read_text(encoding="utf-8"))
-        assert old == provenance, "Existing dataset cache has different config or source hashes"
-    else:
-        config_path.write_text(json.dumps(provenance, indent=2), encoding="utf-8")
+    prepare_cache(out, provenance)
+    dataset_dir = out / "datasets"
+    dataset_dir.mkdir(exist_ok=True)
     frames = []
     for row in rows:
         for seed in args.seeds:
@@ -221,14 +218,14 @@ def main():
                          np.where(contrasts.factor.eq("cells"), contrasts.get("genes", np.nan),
                          np.where(contrasts.factor.eq("diffusion"), contrasts.get("dropout", np.nan), contrasts.get("diffusion", np.nan))))
     contrast_summary = summarize_contrasts(contrasts, contrast_keys + ["level"])
-    seeds.to_csv(OUT / "seed_overall_metrics.csv", index=False)
-    region_seeds.to_csv(OUT / "seed_region_metrics.csv", index=False)
-    summary.to_csv(OUT / "summary.csv", index=False)
-    region_summary.to_csv(OUT / "region_summary.csv", index=False)
-    contrasts.to_csv(OUT / "paired_seed_contrasts.csv", index=False)
-    contrast_summary.to_csv(OUT / "paired_contrast_summary.csv", index=False)
-    figure(summary, region_summary, contrast_summary)
-    print(f"Verified {expected} datasets, {len(cells)} cells, {len(region_seeds)} seed-region rows; {OUT}", flush=True)
+    seeds.to_csv(out / "seed_overall_metrics.csv", index=False)
+    region_seeds.to_csv(out / "seed_region_metrics.csv", index=False)
+    summary.to_csv(out / "summary.csv", index=False)
+    region_summary.to_csv(out / "region_summary.csv", index=False)
+    contrasts.to_csv(out / "paired_seed_contrasts.csv", index=False)
+    contrast_summary.to_csv(out / "paired_contrast_summary.csv", index=False)
+    figure(summary, region_summary, contrast_summary, out)
+    print(f"Verified {expected} datasets, {len(cells)} cells, {len(region_seeds)} seed-region rows; {out}", flush=True)
 
 
 def summarize_contrasts(contrasts, keys):

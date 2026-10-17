@@ -39,6 +39,16 @@ def score(pred, true):
 
 
 def main():
+    required = [TOPO / f"bifurcation_seed{seed}.npz" for seed in (11, 22, 33)]
+    required += [OUT / f"{layer}_seed{seed}.csv" for seed in (11, 22, 33)
+                 for layer in ("spliced", "unspliced", "velocity")]
+    missing = [path for path in required if not path.is_file()]
+    if missing:
+        raise FileNotFoundError(
+            "Run the three-method prepare stage and the scMultiSim R stage first; "
+            f"missing inputs: {', '.join(str(path) for path in missing)}"
+        )
+    OUT.mkdir(parents=True, exist_ok=True)
     scv.settings.verbosity = 0
     rows = []
     provenance = []

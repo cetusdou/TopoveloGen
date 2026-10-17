@@ -1,5 +1,12 @@
 # Supplementary revision experiments
 
+For the current manuscript figure mapping and dependency order, see
+[`../REPRODUCIBILITY.md`](../REPRODUCIBILITY.md). The factor, interaction, and
+cell/gene runners now share `revision_factor_core.py` and reject an existing
+cache when its recorded configuration or source hashes differ. Use their
+`--out` option for a fresh run after code changes; archived results remain
+untouched.
+
 These experiments generate new synthetic data. They do not silently replace
 the original Figure 5/6 benchmark or validate all three inference methods.
 

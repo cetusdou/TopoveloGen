@@ -1,5 +1,10 @@
 # Experiments
 
+For the current PRE manuscript figure numbers, environment split, and run
+dependencies, start with [`../REPRODUCIBILITY.md`](../REPRODUCIBILITY.md).
+The figure numbers below describe an earlier organization and should not be
+used as a current manuscript-to-code map.
+
 **Preferred entrypoint:** panelized packages under [`figures/`](figures/README.md)
 (one script per panel, JSON configs, compose for large figures).
 

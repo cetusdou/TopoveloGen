@@ -1,5 +1,8 @@
 # Experiment figures (panelized)
 
+These package names retain their historical numbering. The current paper's
+figure-to-source map is in [`../../REPRODUCIBILITY.md`](../../REPRODUCIBILITY.md).
+
 Each figure lives under `experiments/figures/fig*/` with the same contract:
 
 1. **One executable script per small panel** (`panels/panel_*.py`)
