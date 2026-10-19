@@ -1336,14 +1336,14 @@ from umap import UMAP
 from matplotlib import gridspec
 
 # --- 绘图 ---
-fig = plt.figure(figsize=(18, 15.5))
+fig = plt.figure(figsize=(18, 19.5))
 gs = gridspec.GridSpec(
     3,
     4,
     figure=fig,
     width_ratios=[1, 1, 1, 1.5],
     height_ratios=[1, 1, 0.62],
-    hspace=0.5,
+    hspace=0.62,
     wspace=0.35,
 )
 
@@ -1454,7 +1454,7 @@ color1 = kinetics_result['alpha'][z_trajectory_sample_indices,gene_idx]
 scatter1 = ax.scatter(z_trajectory.reshape(-1,2)[z_trajectory_sample_indices,0],
                         z_trajectory.reshape(-1,2)[z_trajectory_sample_indices,1],
                         s=10,alpha=0.5,c=color1,cmap='TopoVelo_grad', rasterized=True)
-ax.set_title('alpha of cycle gene 5')
+ax.set_title('A1. Transcription rate')
 # ax.set_aspect('equal')
 ax.axis('off')
 plt.colorbar(scatter1, ax=ax, label='Alpha (transcription rate)')
@@ -1465,7 +1465,7 @@ ax = fig.add_subplot(gs[0,1])
 scatter2 = ax.scatter(z_trajectory.reshape(-1,2)[z_trajectory_sample_indices,0],
                         z_trajectory.reshape(-1,2)[z_trajectory_sample_indices,1],
                         s=10,alpha=0.5,c=color2,cmap='TopoVelo_grad', rasterized=True)
-ax.set_title('unspliced RNA of cycle gene 5')
+ax.set_title('A2. Unspliced RNA')
 # ax.set_aspect('equal')
 ax.axis('off')
 plt.colorbar(scatter2, ax=ax, label='Unspliced RNA')
@@ -1476,7 +1476,7 @@ ax = fig.add_subplot(gs[0,2])
 scatter3 = ax.scatter(z_trajectory.reshape(-1,2)[z_trajectory_sample_indices,0],
                         z_trajectory.reshape(-1,2)[z_trajectory_sample_indices,1],
                         s=10,alpha=0.5,c=color3,cmap='TopoVelo_grad', rasterized=True)
-ax.set_title('spliced RNA of cycle gene 5')
+ax.set_title('A3. Spliced RNA')
 # ax.set_aspect('equal')
 ax.axis('off')
 plt.colorbar(scatter3, ax=ax, label='Spliced RNA')
@@ -1501,7 +1501,7 @@ def plot_scatter(ax, coords, title, xlabel, ylabel):
 for j in range(3):
     ax = fig.add_subplot(gs[1,j])
     plot_scatter(ax, z_pca_spliced[:,[j,j+1]], 
-        f'A. PCA Visualization\n(Spliced PC{j+1}+PC{j+2})', 
+        f'B{j+1}. PCA Visualization\n(Spliced PC{j+1}+PC{j+2})',
         f'PC{j+1} ({var_ratio_spliced[j]:.1%} variance)', 
         f'PC{j+2} ({var_ratio_spliced[j+1]:.1%} variance)')
 
@@ -1514,7 +1514,7 @@ for j in range(3):
 # ==========================================
 # 1. 数据生成 (保持你的逻辑不变)
 # ==========================================
-sub_gs = gs[0:2, 3].subgridspec(3, 1, hspace=0.2)  
+sub_gs = gs[0:2, 3].subgridspec(3, 1, hspace=0.55)
 
 def plot_kinetic_hysteresis(ax, kinetics_result, cell_idx, gene_idx):
     # ODE 求解
@@ -1588,10 +1588,10 @@ def plot_kinetic_hysteresis(ax, kinetics_result, cell_idx, gene_idx):
     # 3. 标签与标题
     ax.set_xlabel('Latent Time (t)', fontsize=12, labelpad=8)
     ax.set_ylabel('Expression Level', fontsize=12, labelpad=8)
-    ax.set_title('Kinetic Hysteresis: Molecular Time Lag', fontsize=14, fontweight='bold', pad=15)
+    ax.set_title('C. Kinetic Hysteresis', fontsize=11, fontweight='bold', pad=8)
 
     # 4. 图例 (去掉边框)
-    ax.legend(frameon=False, loc='upper right', fontsize=10)
+    ax.legend(frameon=False, loc='upper right', fontsize=8)
 
 
 ax = fig.add_subplot(sub_gs[0])
@@ -1643,7 +1643,7 @@ ax_g.plot(
 )
 ax_g.set_xlabel("Spliced (s)")
 ax_g.set_ylabel("Unspliced (u)")
-ax_g.set_title("G. Phase Portrait", fontweight="bold")
+ax_g.set_title("D. Phase Portrait", fontweight="bold")
 ax_g.grid(True, linestyle=":", alpha=0.3, zorder=0)
 ax_g.legend(frameon=False, fontsize=7)
 
@@ -1695,7 +1695,7 @@ ax_h.scatter(s_smooth, u_smooth, c="#1E3A8A", s=8, alpha=0.55, label="Smoothed",
 ax_h.quiver(s_arrows, u_arrows, vs_arrows, vu_arrows, color="#EF4444", angles="xy", scale_units="xy", scale=None)
 ax_h.set_xlabel("Spliced (s)")
 ax_h.set_ylabel("Unspliced (u)")
-ax_h.set_title("H. Velocity Tangency", fontweight="bold")
+ax_h.set_title("E. Velocity Tangency", fontweight="bold")
 ax_h.grid(True, linestyle=":", alpha=0.3)
 ax_h.legend(frameon=False, fontsize=7)
 
@@ -1720,7 +1720,7 @@ for i, gene_info in enumerate(selected_genes):
         ax_i.plot(s_traj, u_traj, "-", color=color, linewidth=1.8, label=label, alpha=0.85)
 ax_i.set_xlabel("Spliced (s)")
 ax_i.set_ylabel("Unspliced (u)")
-ax_i.set_title("I. Parameter Control", fontweight="bold")
+ax_i.set_title("F. Parameter Control", fontweight="bold")
 ax_i.grid(True, alpha=0.3)
 ax_i.legend(frameon=False, fontsize=6)
 
@@ -1759,11 +1759,11 @@ if cycle_gene is not None:
             )
 ax_j.set_xlabel("Spliced (s)")
 ax_j.set_ylabel("Unspliced (u)")
-ax_j.set_title("J. Stochasticity", fontweight="bold")
+ax_j.set_title("G. Stochasticity", fontweight="bold")
 ax_j.grid(True, alpha=0.3)
 ax_j.legend(frameon=False, fontsize=6)
 
-fig.subplots_adjust(hspace=0.5, wspace=0.35)
+fig.subplots_adjust(hspace=0.62, wspace=0.35)
 for out_name in ("Figure3Series_big_figure", "Figure3Series_big_editable"):
     fig.savefig(FIG_DIR / f"{out_name}.png", dpi=300, bbox_inches="tight")
     fig.savefig(FIG_DIR / f"{out_name}.pdf", bbox_inches="tight")

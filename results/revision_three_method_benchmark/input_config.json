@@ -13,7 +13,10 @@
   "seeds": [
     11,
     22,
-    33
+    33,
+    44,
+    55,
+    66
   ],
   "topologies": [
     "cycle",
@@ -22,7 +25,7 @@
   ],
   "coordinate": "oracle capture-corrected continuous-abundance units; fixed uniform neighbor moments applied to prediction target and RNA-state reference",
   "capture_correction": "spliced counts / cell capture; unspliced counts / cell capture / fixed unspliced efficiency ratio",
-  "source_sha256": "ce15c366476d7cf26b3507961de936dcf7db64179c791ae30f1adb2fe5c93433",
+  "source_sha256": "147299ef2ea741f424efc5e48a55501662a89b60ea601f3d433f34459a3cdfae",
   "simulator_source_sha256": "043c2b4ac32f61fd65ddb3ac8e2234472d28a812b14178f53e29efb43d4d860c",
   "synthesizer_settings": {
     "background_noise": 0.015,

@@ -1,0 +1,36 @@
+{
+  "method": "unitvelo",
+  "dataset": "cycle_bifurcation_seed44",
+  "input_sha256": "3767db37d8f4307da4c75da4bf459331669f83203419da61873be1c6084a4ec9",
+  "versions": {
+    "python": "3.9.19",
+    "numpy": "1.23.5",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "anndata": "0.8.0",
+    "scanpy": "1.9.3",
+    "scvelo": "0.2.5",
+    "unitvelo": "0.2.5.2",
+    "deepvelo": "0.2.4",
+    "torch": "1.12.1",
+    "tensorflow-cpu": "2.10.1",
+    "dgl": "0.6.1"
+  },
+  "input_coordinate": "oracle capture-corrected abundance; 20-neighbor uniform Ms/Mu supplied; X=log1p(Ms)",
+  "fit": {
+    "normalize": false,
+    "GPU": -1,
+    "BASIS": "pca",
+    "VGENES": "raws",
+    "RESCALE_DATA": false,
+    "MAX_ITER": 600,
+    "NUM_REP": 1,
+    "FIT_OPTION": "1",
+    "initializer": "scvelo deterministic velocity_gamma on identical Ms/Mu",
+    "label": "all_cells, one constant noninformative label; no root specified"
+  },
+  "status": "success",
+  "n_genes_used": 160,
+  "output_sha256": "05be0125f7be1d25cc49326a37aaf90b0f1249137af9420034dc2be5b6f6a454",
+  "output_coordinate": "method velocity layer fitted from supplied oracle-corrected Ms/Mu; temporal scale is method-specific and not physically calibrated"
+}

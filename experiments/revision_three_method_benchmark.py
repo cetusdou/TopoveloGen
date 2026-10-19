@@ -29,7 +29,7 @@ from sklearn.decomposition import PCA
 from sklearn.neighbors import NearestNeighbors
 
 OUT = ROOT / "results" / "revision_three_method_benchmark"
-SEEDS = (11, 22, 33)
+SEEDS = (11, 22, 33, 44, 55, 66)
 TOPOLOGIES = ("cycle", "bifurcation", "cycle_bifurcation")
 CFG = dict(dt=.01, steps=1000, burnin_steps=200, diffusion=.006,
            trajectories=32, genes=160, observations=360, save_every=20,
@@ -191,6 +191,22 @@ def fit(method, name):
     return settings["status"] == "success"
 
 
+def common_valid_cells(predictions, reference):
+    reference_norm = np.linalg.norm(reference, axis=1)
+    positive_reference = reference_norm[np.isfinite(reference_norm) & (reference_norm > 0)]
+    reference_floor = 1e-6 * np.median(positive_reference) if len(positive_reference) else np.inf
+    reference_valid = np.isfinite(reference).all(axis=1) & (reference_norm > reference_floor)
+    method_masks = {}
+    for method, prediction in predictions.items():
+        prediction_norm = np.linalg.norm(prediction, axis=1)
+        positive_prediction = prediction_norm[np.isfinite(prediction_norm) & (prediction_norm > 0)]
+        prediction_floor = 1e-6 * np.median(positive_prediction) if len(positive_prediction) else np.inf
+        method_masks[method] = (reference_valid & np.isfinite(prediction).all(axis=1)
+                                & (prediction_norm > prediction_floor))
+    common = np.logical_and.reduce(list(method_masks.values()))
+    return common, method_masks
+
+
 def summarize():
     rows = []
     for path in sorted(OUT.glob("*_seed*.npz")):
@@ -207,12 +223,15 @@ def summarize():
         if mask.sum() < 10:
             continue
         gt = gt[:, mask]
+        predictions = {method: np.asarray(item["pred"], dtype=float)[:, mask]
+                       for method, item in preds.items()}
+        common_valid, method_masks = common_valid_cells(predictions, gt)
+        if not common_valid.any():
+            raise ValueError(f"No cells valid for all three methods: {name}")
         for method, item in preds.items():
-            pred = np.asarray(item["pred"], dtype=float)[:, mask]
+            pred = predictions[method]
             pn, gn = np.linalg.norm(pred, axis=1), np.linalg.norm(gt, axis=1)
-            floor_p = 1e-6 * np.median(pn[pn > 0]) if np.any(pn > 0) else np.inf
-            floor_g = 1e-6 * np.median(gn[gn > 0]) if np.any(gn > 0) else np.inf
-            valid = np.isfinite(pred).all(1) & (pn > floor_p) & (gn > floor_g)
+            valid = common_valid
             cos = np.full(len(pred), np.nan)
             cos[valid] = np.einsum("ij,ij->i", pred[valid], gt[valid]) / (pn[valid] * gn[valid])
             dot = float(np.einsum("ij,ij->", pred[valid], gt[valid]))
@@ -224,6 +243,7 @@ def summarize():
                 rows.append(dict(dataset=name, topology=name.rsplit("_seed", 1)[0],
                     seed=int(name.rsplit("seed", 1)[1]), method=method, cell=i,
                     n_common_genes=int(mask.sum()), valid=bool(valid[i]),
+                    method_valid=bool(method_masks[method][i]),
                     cosine=float(cos[i]), pred_norm=float(pn[i]), gt_norm=float(gn[i]),
                     fitted_positive_scale=scale, calibrated_nrmse=calibrated_nrmse))
     frame = pd.DataFrame(rows)
@@ -232,7 +252,8 @@ def summarize():
         return
     frame.to_csv(OUT / "per_cell.csv", index=False)
     per_seed = frame.groupby(["topology", "seed", "method"], as_index=False).agg(
-        n_valid=("valid", "sum"), n_common_genes=("n_common_genes", "first"),
+        n_valid=("valid", "sum"), n_method_valid=("method_valid", "sum"),
+        n_common_genes=("n_common_genes", "first"),
         mean_cosine=("cosine", "mean"), median_cosine=("cosine", "median"),
         median_pred_norm=("pred_norm", "median"), median_gt_norm=("gt_norm", "median"),
         fitted_positive_scale=("fitted_positive_scale", "first"),
@@ -243,34 +264,39 @@ def summarize():
         seeds=("seed", "nunique"), mean_cosine=("mean_cosine", "mean"),
         sd_cosine=("mean_cosine", "std"), common_genes=("n_common_genes", "min"),
         mean_calibrated_nrmse=("calibrated_nrmse", "mean"),
+        sd_calibrated_nrmse=("calibrated_nrmse", "std"),
+        sd_raw_norm_ratio=("raw_norm_ratio", "std"),
         mean_raw_norm_ratio=("raw_norm_ratio", "mean"))
     summary.to_csv(OUT / "summary.csv", index=False)
     assert (per_seed.n_valid > 0).all()
     assert np.isfinite(per_seed.mean_cosine).all()
     import matplotlib.pyplot as plt
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.7), layout="constrained")
-    fields = ("mean_cosine", "mean_calibrated_nrmse", "mean_raw_norm_ratio")
-    titles = ("Direction: mean cosine", "Positive-scale-calibrated NRMSE", "Raw median norm ratio")
-    methods = ("scvelo", "unitvelo", "deepvelo")
-    topologies = tuple(summary.topology.unique())
-    for ax, field, title in zip(axes, fields, titles):
-        for j, method in enumerate(methods):
-            vals = [summary.loc[(summary.topology == t) & (summary.method == method), field].iloc[0]
-                    for t in topologies]
-            line, = ax.plot(np.arange(len(topologies)), vals, marker="o", label=method)
-            seed_field = {"mean_cosine": "mean_cosine",
-                          "mean_calibrated_nrmse": "calibrated_nrmse",
-                          "mean_raw_norm_ratio": "raw_norm_ratio"}[field]
-            for k, topology in enumerate(topologies):
-                points = per_seed.loc[(per_seed.topology == topology) &
-                                      (per_seed.method == method), seed_field].to_numpy()
-                ax.scatter(k + (j - 1) * .07 + np.linspace(-.018, .018, len(points)),
-                           points, color=line.get_color(), s=14, alpha=.5, zorder=3)
-        ax.set_xticks(range(len(topologies)), [t.replace("_", "\n") for t in topologies])
+    fields = (("mean_cosine", "sd_cosine", "Mean cell-wise cosine"),
+              ("mean_calibrated_nrmse", "sd_calibrated_nrmse", "Calibrated NRMSE"),
+              ("mean_raw_norm_ratio", "sd_raw_norm_ratio", "Raw median norm ratio"))
+    methods = (("scvelo", "scVelo", "#366b85"),
+               ("unitvelo", "UniTVelo", "#d28a45"),
+               ("deepvelo", "DeepVelo", "#678e70"))
+    topologies = TOPOLOGIES
+    x = np.arange(len(topologies))
+    width = .25
+    for ax, (field, sd_field, title) in zip(axes, fields):
+        for j, (method, label, color) in enumerate(methods):
+            values = [summary.loc[(summary.topology == t) & (summary.method == method), field].iloc[0]
+                      for t in topologies]
+            errors = [summary.loc[(summary.topology == t) & (summary.method == method), sd_field].iloc[0]
+                      for t in topologies]
+            ax.bar(x + (j - 1) * width, values, width, yerr=errors, label=label,
+                   color=color, edgecolor="white", linewidth=.5, capsize=2,
+                   error_kw={"elinewidth": .9, "capthick": .9}, zorder=3)
+        ax.set_xticks(x, ("Cycle", "Bifurcation", "Cycle +\nbifurcation"))
         ax.set_title(title)
-        ax.grid(axis="y", alpha=.25)
-    axes[0].set_ylim(-1, 1)
-    axes[-1].set_yscale("log")
+        ax.grid(axis="y", alpha=.2, zorder=0)
+        ax.spines[["top", "right"]].set_visible(False)
+    axes[0].set_ylim(-.5, 1)
+    axes[0].axhline(0, color="0.35", linewidth=.7)
+    axes[-1].axhline(1, color="0.35", linewidth=.7, linestyle="--")
     axes[-1].legend(frameon=False, fontsize=8)
     fig.savefig(OUT / "three_method_controlled.pdf")
     plt.close(fig)
@@ -304,7 +330,10 @@ def main():
                 meta_path = OUT / f"{name}_{method}.json"
                 if not args.force and path.exists() and meta_path.exists():
                     meta = json.loads(meta_path.read_text(encoding="utf-8"))
-                    if meta.get("status") == "success" and meta["versions"]["scvelo"] == versions()["scvelo"]:
+                    input_path = OUT / f"{name}.npz"
+                    input_hash = hashlib.sha256(input_path.read_bytes()).hexdigest() if input_path.exists() else None
+                    if (meta.get("status") == "success" and input_hash == meta.get("input_sha256")
+                            and meta["versions"]["scvelo"] == versions()["scvelo"]):
                         print("retained", method, name, flush=True)
                         continue
                 log = OUT / "method_work" / method / name / "run.log"

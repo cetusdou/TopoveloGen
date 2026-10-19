@@ -63,7 +63,7 @@
     }
   },
   "archive_provenance_sha256": "5ebad9de7119070c5ac85ddffdaf514f036c5b8bf1bcfdb5b19b70f4344b4297",
-  "script_sha256": "e79d16f5c475e1df38a48cb6bdded2fe7ab11f917d33f2946472c9e730656e6b",
+  "script_sha256": "d72930dbff4decc6e830c0e094a7a9b2c8384980376debe6d6828c38b414f6ea",
   "native_graph_settings": {
     "xkey": "Ms",
     "n_neighbors": 20,
@@ -87,6 +87,7 @@
   },
   "fixed_graph": "Archived neighbor_indices; distances in log1p(sc/capture) space, no refitting",
   "gene_mask": "all 160 archived genes, identical for prediction and reference",
+  "main_comparison_cells": "intersection of gene, PCA, native UMAP, and positive-cosine UMAP valid cells within each dataset",
   "pca": "pred/gt_smoothed @ archived pca_loadings.T (no recentering)",
   "umap_kernel": "positive gene-space cosine to archived neighbor state displacements; row normalize; weighted raw UMAP displacement; zero if no positive weight",
   "regions": {

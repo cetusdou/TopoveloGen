@@ -1,0 +1,15 @@
+font.family: Arial
+font.sans-serif: Arial
+font.size: 9
+axes.titlesize: 10
+axes.labelsize: 9
+xtick.labelsize: 8
+ytick.labelsize: 8
+axes.spines.top: False
+axes.spines.right: False
+axes.spines.left: True
+axes.spines.bottom: True
+pdf.fonttype: 42
+ps.fonttype: 42
+svg.fonttype: none
+savefig.facecolor: white

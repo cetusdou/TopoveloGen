@@ -1,7 +1,8 @@
 __pycache__
 */__pycache__
 .numba_cache
-styles/
+styles/*
+!styles/nature_science.mplstyle
 *.pdf
 *.png
 .venv/

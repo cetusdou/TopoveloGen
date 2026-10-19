@@ -541,7 +541,7 @@ def style_latent_axis(ax):
     ax.set_aspect("equal", adjustable="box")
     ax.set_xticks([])
     ax.set_yticks([])
-    for sp in ax.spines():
+    for sp in ax.spines.values():
         sp.set_visible(False)
 
 

@@ -119,6 +119,10 @@ def metric_row(topology, seed, region, operator, score, baseline, mask):
                 median_delta_vs_gene=float(np.median(score[valid] - baseline[valid])) if n else np.nan)
 
 
+def common_score_cells(scores):
+    return np.logical_and.reduce([np.isfinite(score) for score in scores.values()])
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     metadata = json.loads((ARCHIVE / "provenance.json").read_text())
@@ -127,6 +131,7 @@ def main():
                       native_embedding_settings=EMBEDDING_SETTINGS,
                       fixed_graph="Archived neighbor_indices; distances in log1p(sc/capture) space, no refitting",
                       gene_mask="all 160 archived genes, identical for prediction and reference",
+                      main_comparison_cells="intersection of gene, PCA, native UMAP, and positive-cosine UMAP valid cells within each dataset",
                       pca="pred/gt_smoothed @ archived pca_loadings.T (no recentering)",
                       umap_kernel="positive gene-space cosine to archived neighbor state displacements; row normalize; weighted raw UMAP displacement; zero if no positive weight",
                       regions={"cycle": "latent z angle quadrants [0,pi/2), ...",
@@ -171,16 +176,23 @@ def main():
             regions = region_labels(topology, d["z"])
             scores = {"gene": cosine(pred, gt, 1e-6)}
             scores.update({key: cosine(*pair, 1e-6) for key, pair in pairs.items()})
+            if len(scores) != 4:
+                raise ValueError(f"Missing projection operator for common-cell comparison: {name}")
+            common_valid = common_score_cells(scores)
+            common_scores = {key: np.where(common_valid, score, np.nan)
+                             for key, score in scores.items()}
             cell = pd.DataFrame(dict(topology=topology, seed=seed, cell=np.arange(len(pred)),
                                      region=regions, trajectory=d["trajectory"],
-                                     simulation_time=d["time"], **{f"cosine_{k}": v for k, v in scores.items()}))
+                                     simulation_time=d["time"], common_valid=common_valid,
+                                     **{f"cosine_{k}": v for k, v in scores.items()}))
             for key in pairs:
-                cell[f"delta_{key}_vs_gene"] = scores[key] - scores["gene"]
+                cell[f"delta_{key}_vs_gene"] = common_scores[key] - common_scores["gene"]
             all_cells.append(cell)
             for region in ("all", *np.unique(regions)):
                 mask = np.ones(len(pred), bool) if region == "all" else regions == region
-                for key, score in scores.items():
-                    all_rows.append(metric_row(topology, seed, region, key, score, scores["gene"], mask))
+                for key, score in common_scores.items():
+                    all_rows.append(metric_row(topology, seed, region, key, score,
+                                               common_scores["gene"], mask))
             for floor in FLOORS:
                 base = cosine(pred, gt, floor)
                 for key, pair in pairs.items():
