@@ -1,16 +1,22 @@
 # Experiments
 
-For the current PRE manuscript figure numbers, environment split, and run
-dependencies, start with [`../REPRODUCIBILITY.md`](../REPRODUCIBILITY.md).
-The figure numbers below describe an earlier organization and should not be
-used as a current manuscript-to-code map.
+For the **current PRE manuscript**, use the figure-to-source map and environment
+instructions in [`../REPRODUCIBILITY.md`](../REPRODUCIBILITY.md). Current
+quantitative controls are the `revision_*.py` entrypoints; their archived
+outputs are under `../results/revision_*/`. Run them from the repository root
+with `python -m experiments.NAME`, using a fresh output directory when the
+entrypoint supports `--out`. Check the archive's recorded source hashes with
+`python -m experiments.revision_status` before interpreting a rerun as the
+same numerical experiment.
 
-**Preferred entrypoint:** panelized packages under [`figures/`](figures/README.md)
-(one script per panel, JSON configs, compose for large figures).
+The panelized packages under [`figures/`](figures/README.md) and the
+`results_*.py` / `figure_4_fast.py` monoliths remain available for the earlier
+figure organization. Their numbers and recipes below are **historical**;
+do not use them to assign current main-text, Supplemental, or response figure
+numbers. Shared plotting style lives in `figure_style.py` and
+`../styles/nature_science.mplstyle`.
 
-The `results_*.py` / `figure_4_fast.py` scripts below remain as **legacy monoliths**
-(still runnable; docstrings point to the new packages). Shared style lives in
-`styles/nature_science.mplstyle` via `figure_style.py`.
+## Historical figure recipes
 
 ## Figure 2 — topology primitives (`results_topology_primitives.py`)
 

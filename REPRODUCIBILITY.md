@@ -47,29 +47,28 @@ there after review. A PDF alone is not the complete reproducibility record.
 | Fig. 2 | `experiments/figures/fig02_topology_primitives/pipeline/run_pipeline.py` | `results/topology_primitives/`; historical panelized pipeline. |
 | Fig. 3 | `experiments/reproduce_figure3_series.py` and `experiments/compose_figure3_series_big.py` | `results/figure3_series/`; panel-level settings and source history should be checked before claiming pixel-identical reconstruction. |
 | Fig. 4 | `experiments/figure4_series_pipeline.py` / `experiments/figures/fig4series_pancreas_stats/` | `results/statistical_realism_figure4/`; requires the external pancreas input. |
-| Fig. 5 / response R8 | `experiments/revision_three_method_benchmark.py` | `results/revision_three_method_benchmark/`; staged `prepare`, `fit`, `summarize` workflow with separate method environment. |
-| Fig. 6 / R6 | `experiments/revision_projection_closure.py` | `results/revision_projection_closure/`; reads archived coordinate-control datasets. |
-| S1 / R7 | `experiments/revision_coordinate_projection.py` | `results/revision_coordinate_projection/`; upstream of several projection controls. |
-| S2 / R3 and S5 / R17 | `experiments/revision_numerical_kinetics.py` | `results/revision_numerical_kinetics/`; numerical summary and harmonic phase. |
-| S3 / R5 | Figure-3 series pipeline | Seed-42 supplementary phase-portrait realization; see manuscript parameter table. |
-| S4 / R18 | Figure-4 pancreas pipeline | Reference-guided replay; see manuscript parameter table and input checksum. |
-| S6 / R2 | `experiments/revision_figure8_junction.py` | `results/revision_figure8_junction/`. |
-| S7 / R14 | `experiments/revision_coordinate_projection.py` plus `experiments/response_sensitivity_panels.py` | `results/revision_coordinate_projection/`; threshold/norm-floor summaries. |
-| S8 / R12 and S9 / R13 | `experiments/revision_factor_regions.py` | `results/revision_factor_regions/`; shared simulation core in `revision_factor_core.py`. |
-| S10 / R9 | `experiments/revision_interaction_scan.py` | `results/revision_interaction_scan/`; depends on the shared factor core. |
-| S11 / R10 | `experiments/revision_cell_gene_factor_closure.py` | `results/revision_cell_gene_factor_closure/`; depends on the shared factor core. |
-| S12 / R4 | `experiments/revision_topology_numerics_closure.py` | `results/revision_topology_numerics_closure/`. |
-| S13 / R15 | `experiments/revision_main_metric_timestep.py` | `results/revision_main_metric_timestep/`. |
-| S14 / R11 | `experiments/revision_scmultisim_comparison.R`, then `experiments/revision_cross_simulator.py` | `results/revision_scmultisim_comparison/`; Python also reads `results/revision_three_method_benchmark/`. |
-| S15 / R16 | `experiments/revision_branch_convergence.py` | `results/revision_branch_convergence/`. |
-| S16 / R1 | `experiments/revision_escape_scan.py` | `results/revision_escape_scan/`. |
-| S17 / R19 | `experiments/revision_pancreas_higher_order.py` | `results/revision_pancreas_higher_order/`; requires pancreas reference and synthetic count input. |
-| S18--S19 | Archived `../figure/Figure5.png`, `../figure/Figure6.png` | Legacy exploratory displays. Do not treat them as outputs of the controlled Fig. 5/6 runners. |
+| Fig. 5F--H / response R7 | `experiments/revision_three_method_benchmark.py` | `results/revision_three_method_benchmark/`; staged `prepare`, `fit`, `summarize` workflow in the separate methods environment. |
+| Fig. 6F--H / response R5 | `experiments/revision_projection_closure.py` | `results/revision_projection_closure/`; reads the archived coordinate-control datasets. |
+| S1 / R6 | `experiments/revision_coordinate_projection.py` | `results/revision_coordinate_projection/`; also supplies inputs for several projection controls. |
+| S2 / R3 | `experiments/revision_numerical_kinetics.py` | `results/revision_numerical_kinetics/`; latent/RNA numerical summary. |
+| S3 / R16 | `experiments/revision_numerical_kinetics.py` | `results/revision_numerical_kinetics/`; harmonic phase response. |
+| S4 / R2 | `experiments/revision_figure8_junction.py` | `results/revision_figure8_junction/`; crossing audit. |
+| S5 / R13 | `experiments/revision_coordinate_projection.py` and `experiments/response_sensitivity_panels.py` | `results/revision_coordinate_projection/`; threshold/norm-floor summaries. |
+| S6 / R11 and S7 / R12 | `experiments/revision_factor_regions.py` | `results/revision_factor_regions/`; shared simulation core in `revision_factor_core.py`. |
+| S8 / R8 | `experiments/revision_interaction_scan.py` | `results/revision_interaction_scan/`; diffusion/kinetics/dropout crossing. |
+| S9 / R9 | `experiments/revision_cell_gene_factor_closure.py` | `results/revision_cell_gene_factor_closure/`; cell/gene and diffusion/dropout crossings. |
+| S10 / R4 | `experiments/revision_topology_numerics_closure.py` | `results/revision_topology_numerics_closure/`; start-group junction sensitivity. |
+| S11 / R14 | `experiments/revision_main_metric_timestep.py` | `results/revision_main_metric_timestep/`; time-step sensitivity of velocity scores. |
+| S12 / R10 | `experiments/revision_scmultisim_comparison.R`, then `experiments/revision_cross_simulator.py` | `results/revision_scmultisim_comparison/`; Python also reads the three-method archive. |
+| S13 / R15 | `experiments/revision_branch_convergence.py` | `results/revision_branch_convergence/`; branch-label refinement. |
+| S14 / R1 | `experiments/revision_escape_scan.py` | `results/revision_escape_scan/`; finite-horizon first-exit scan. |
+| S15 / R17 | `experiments/revision_pancreas_higher_order.py` | `results/revision_pancreas_higher_order/`; requires the pancreas reference and synthetic count input. |
+| S16--S17 | Enlarged main-text Figs. 5A--E and 6A--E | Archival displays, not outputs of the controlled Fig. 5F--H and 6F--H runners. |
 
-For main Figs. 2--4 and S3/S4, the figure-series pipelines and the paper assets
-are related but not asserted to be the same byte-for-byte run. The manuscript
-parameter tables and archived manifests are the authority for the reported
-replays. Do not silently replace an archived asset with a new pipeline output.
+For main Figs. 2--4, the figure-series pipelines and paper assets are related
+but not asserted to be the same byte-for-byte run. The manuscript parameter
+tables and archived manifests are the authority for the reported experiments.
+Do not silently replace an archived asset with a new pipeline output.
 
 ## Running and preserving results
 
