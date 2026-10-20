@@ -17,25 +17,23 @@ The current manuscript-to-code map, execution order, and environment details
 are in [REPRODUCIBILITY.md](REPRODUCIBILITY.md). For the generator API, see
 [data_generation_module/README.md](data_generation_module/README.md).
 
-## Quick start (Windows PowerShell)
+## Read-only first check (Windows PowerShell)
 
-Run commands from this repository root with Python 3.10:
+From this repository root, inspect recorded source hashes without installing
+scientific dependencies or rewriting result archives:
 
 ```powershell
-py -3.10 -m venv .venv-revision
-.\.venv-revision\Scripts\python.exe -m pip install -r requirements-revision.txt
-.\.venv-revision\Scripts\python.exe -m experiments.revision_coordinate_projection --help
+py -3.10 -m experiments.revision_status
 ```
 
-The three-method benchmark uses a separate legacy dependency stack documented
-in [requirements-methods.txt](requirements-methods.txt) and
-[REPRODUCIBILITY.md](REPRODUCIBILITY.md). Installing those versions into the
-revision environment would change the numerical environment.
-An exact-version snapshot of the current revision environment is in
-[requirements-revision-lock.txt](requirements-revision-lock.txt); it does not
-include wheel hashes.
+The current checkout does not contain the former Python requirements files.
+Consequently, it does not provide a complete fresh-install recipe. Existing
+local environments and recorded package versions are described in
+[REPRODUCIBILITY.md](REPRODUCIBILITY.md); the three-method benchmark needs a
+separate legacy environment. Do not mix those package stacks.
 
-To rerun factor experiments after editing code, use a **new** output directory:
+After provisioning the appropriate environment, rerun factor experiments in a
+**new** output directory:
 
 ```powershell
 .\.venv-revision\Scripts\python.exe -m experiments.revision_factor_regions --out results/new_factor_run
@@ -45,12 +43,5 @@ The factor, three-factor interaction, and cell/gene runners compare the
 settings and source hashes with `config.json` before reusing cached datasets.
 They refuse a mismatched archive rather than mixing old and new results.
 
-No experiment is run during installation. Some full grids take substantial
-time and disk space; check their design and prerequisites first.
-
-To compare archived source hashes with the current checkout without running
-any simulation:
-
-```powershell
-.\.venv-revision\Scripts\python.exe -m experiments.revision_status
-```
+Some full grids take substantial time and disk space; check their design and
+prerequisites first.

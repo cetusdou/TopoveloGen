@@ -18,16 +18,16 @@ do not delete them merely because a panelized replacement exists.
 
 | Task | Runtime | Notes |
 | --- | --- | --- |
-| Generator and most revision controls | Python 3.10, `requirements-revision.txt` | Observed environment uses scVelo 0.3.3. The requirements file pins direct dependencies, not every transitive wheel. |
-| scVelo / UniTVelo / DeepVelo operational comparison | Separate Python 3.9, `requirements-methods.txt` | Observed environment uses scVelo 0.2.5, UniTVelo 0.2.5.2, DeepVelo 0.2.4, PyTorch 1.12.1, DGL 0.6.1. The recorded PyTorch wheel is CPython 3.9 for Windows; old PyTorch/DGL wheels may require platform-specific installation. |
+| Generator and most revision controls | Python 3.10 revision environment | Observed environment uses scVelo 0.3.3. The former requirements manifest is not in this checkout. |
+| scVelo / UniTVelo / DeepVelo operational comparison | Separate Python 3.9 methods environment | Observed environment uses scVelo 0.2.5, UniTVelo 0.2.5.2, DeepVelo 0.2.4, PyTorch 1.12.1, DGL 0.6.1. The former requirements manifest is not in this checkout; old PyTorch/DGL wheels may require platform-specific installation. |
 | scMultiSim reference generation | R with scMultiSim 1.2.0 | `experiments/revision_scmultisim_comparison.R` uses `.r-methods` if present. Record the R and package versions separately. |
 | Pancreas reference | `data/Pancreas/endocrinogenesis_day15.h5ad` | External input, deliberately ignored by Git. Verify the SHA-256 in the corresponding experiment manifest before claiming an exact replay. |
 
-`requirements-revision-lock.txt` records the full installed Python package
-version set for the revision environment. The methods environment used local
-PyTorch/UniTVelo/DeepVelo wheels, so `requirements-methods.txt` records their
-versions without embedding machine-specific `file:///` paths. Neither file
-locks the R environment or the external pancreas input.
+The former revision lock and direct-dependency manifests are absent from this
+checkout. Archived manifests and local environments record some package
+versions but are not a complete fresh-install recipe. The methods environment
+used local PyTorch/UniTVelo/DeepVelo wheels; neither Python environment fixes
+the R package state or supplies the external pancreas input.
 
 Do not install both Python stacks in one virtual environment. The existing
 `.venv-revision`, `.venv-methods`, `.r-methods`, and local wheel directories are
@@ -47,7 +47,9 @@ there after review. A PDF alone is not the complete reproducibility record.
 | Fig. 2 | `experiments/figures/fig02_topology_primitives/pipeline/run_pipeline.py` | `results/topology_primitives/`; historical panelized pipeline. |
 | Fig. 3 | `experiments/reproduce_figure3_series.py` and `experiments/compose_figure3_series_big.py` | `results/figure3_series/`; panel-level settings and source history should be checked before claiming pixel-identical reconstruction. |
 | Fig. 4 | `experiments/figure4_series_pipeline.py` / `experiments/figures/fig4series_pancreas_stats/` | `results/statistical_realism_figure4/`; requires the external pancreas input. |
+| Fig. 5A--E | Enlarged in S16 from `../figure/figure_benchmark_velo_test.pdf` | Illustrative saved display; not an output of the controlled three-method runner. |
 | Fig. 5F--H / response R7 | `experiments/revision_three_method_benchmark.py` | `results/revision_three_method_benchmark/`; staged `prepare`, `fit`, `summarize` workflow in the separate methods environment. |
+| Fig. 6A--E | Enlarged in S17 from `../figure/projection_masking_diagnosis.pdf` | Exploratory saved display; not an output of the matched-pair runner. |
 | Fig. 6F--H / response R5 | `experiments/revision_projection_closure.py` | `results/revision_projection_closure/`; reads the archived coordinate-control datasets. |
 | S1 / R6 | `experiments/revision_coordinate_projection.py` | `results/revision_coordinate_projection/`; also supplies inputs for several projection controls. |
 | S2 / R3 | `experiments/revision_numerical_kinetics.py` | `results/revision_numerical_kinetics/`; latent/RNA numerical summary. |
@@ -63,7 +65,7 @@ there after review. A PDF alone is not the complete reproducibility record.
 | S13 / R15 | `experiments/revision_branch_convergence.py` | `results/revision_branch_convergence/`; branch-label refinement. |
 | S14 / R1 | `experiments/revision_escape_scan.py` | `results/revision_escape_scan/`; finite-horizon first-exit scan. |
 | S15 / R17 | `experiments/revision_pancreas_higher_order.py` | `results/revision_pancreas_higher_order/`; requires the pancreas reference and synthetic count input. |
-| S16--S17 | Enlarged main-text Figs. 5A--E and 6A--E | Archival displays, not outputs of the controlled Fig. 5F--H and 6F--H runners. |
+| S16--S17 | `../figure/figure_benchmark_velo_test.pdf`, `../figure/projection_masking_diagnosis.pdf` | Enlarged main-text Figs. 5A--E and 6A--E; separate from the controlled lower panels. |
 
 For main Figs. 2--4, the figure-series pipelines and paper assets are related
 but not asserted to be the same byte-for-byte run. The manuscript parameter
