@@ -15,3 +15,4 @@ data/Pancreas/endocrinogenesis_day15.h5ad
 results/statistical_realism_figure4/data/kinetics_cache.pt
 *.csv
 *.npy
+results/figure3_series/figures/

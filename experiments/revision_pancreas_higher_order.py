@@ -161,9 +161,9 @@ def draw_panels(first: dict, summary: dict, joint_first: dict, output: Path) -> 
         ("u_s_raw", "Gene-wise spliced/unspliced r", None),
         ("u_s_normalized", "Gene-wise r, log-normalized", None),
         ("conditional_fano_spliced", "Conditional spliced Fano", "log"),
-        ("gene_covariance_log_cpm", "Gene-pair covariance, log CPM", None),
-        ("gene_correlation_log_cpm", "Gene-pair correlation, log CPM", None),
-        ("cell_distance_log_cpm", "Cell-pair RMS distance, log CPM", None),
+        ("gene_covariance_log_cpm", "Gene-pair covariance, log counts per 10k", None),
+        ("gene_correlation_log_cpm", "Gene-pair correlation, log counts per 10k", None),
+        ("cell_distance_log_cpm", "Cell-pair RMS distance, log counts per 10k", None),
         ("cell_distance_gene_z", "Cell-pair RMS distance, gene z", None),
     ]
     plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 8,
