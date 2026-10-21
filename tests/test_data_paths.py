@@ -33,6 +33,18 @@ class DataPathTests(unittest.TestCase):
             with self.assertRaisesRegex(FileNotFoundError, "missing.h5ad"):
                 load_pancreas_reference(missing)
 
+    def test_figure4_config_preserves_missing_explicit_path(self):
+        from experiments.figures.fig4series_pancreas_stats.lib import core
+
+        previous = core.PANCREAS_H5AD
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                missing = Path(tmp) / "requested.h5ad"
+                core.configure(pipeline={"stage1": {"pancreas_h5ad": str(missing)}})
+                self.assertEqual(core.PANCREAS_H5AD, missing)
+        finally:
+            core.PANCREAS_H5AD = previous
+
 
 if __name__ == "__main__":
     unittest.main()

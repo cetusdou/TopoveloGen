@@ -96,10 +96,9 @@ def configure(*, out_dir=None, data_dir=None, fig_dir=None, pipeline: dict | Non
 
     h5ad = STAGE1.get("pancreas_h5ad")
     if h5ad:
-        p = Path(h5ad)
-        PANCREAS_H5AD = p if p.exists() else None
+        PANCREAS_H5AD = Path(h5ad)
     else:
-        PANCREAS_H5AD = DEFAULT_PANCREAS_H5AD if DEFAULT_PANCREAS_H5AD.exists() else None
+        PANCREAS_H5AD = DEFAULT_PANCREAS_H5AD
 
     pp = dict(pipeline.get("stage2_postprocess", {}))
     known = {f.name for f in PostProcessConfig.__dataclass_fields__.values()}  # type: ignore[attr-defined]

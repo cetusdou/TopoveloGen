@@ -729,7 +729,7 @@ if __name__ == "__main__":
                         help="Pancreas h5ad path")
     args = parser.parse_args()
 
-    h5ad_arg = args.h5ad if args.h5ad.exists() else None
+    h5ad_arg = args.h5ad
     if args.plot_only:
         plot_only(h5ad_arg)
     else:

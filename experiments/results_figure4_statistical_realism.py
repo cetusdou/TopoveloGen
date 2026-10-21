@@ -723,4 +723,4 @@ Modes:
     elif args.plot_only:
         plot_only()
     else:
-        run(args.h5ad if args.h5ad.exists() else None, force_rebuild=args.rebuild_cache)
+        run(args.h5ad, force_rebuild=args.rebuild_cache)
