@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy import sparse, stats
+from experiments.common.projection import positive_cosine_neighbor_projection as kernel_project
 
 ARCHIVE = ROOT / "results" / "revision_coordinate_projection"
 OUT = ROOT / "results" / "revision_projection_closure"
@@ -49,17 +50,6 @@ def cosine(a, b, floor):
     result = np.full(len(a), np.nan)
     result[valid] = np.einsum("ij,ij->i", a[valid], b[valid]) / (na[valid] * nb[valid])
     return np.clip(result, -1, 1)
-
-
-def kernel_project(v, x, y, indices):
-    dx = x[indices] - x[:, None, :]
-    den = np.linalg.norm(v, axis=1)[:, None] * np.linalg.norm(dx, axis=2)
-    similarity = np.divide(np.einsum("ig,ikg->ik", v, dx), den,
-                           out=np.zeros(den.shape), where=den > 0)
-    weight = np.maximum(similarity, 0)
-    total = weight.sum(1, keepdims=True)
-    weight = np.divide(weight, total, out=np.zeros_like(weight), where=total > 0)
-    return np.einsum("ik,ikd->id", weight, y[indices] - y[:, None, :])
 
 
 def region_labels(topology, z):

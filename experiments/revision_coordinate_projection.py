@@ -28,22 +28,8 @@ from sklearn.neighbors import NearestNeighbors
 import matplotlib.pyplot as plt
 
 from experiments.figures.fig_coord_velocity_consistency.lib import core
-
-
-def cosine(a, b, relative_floor=1e-6):
-    na, nb = np.linalg.norm(a, axis=1), np.linalg.norm(b, axis=1)
-    fa = relative_floor * np.median(na[na > 0]) if np.any(na > 0) else np.inf
-    fb = relative_floor * np.median(nb[nb > 0]) if np.any(nb > 0) else np.inf
-    valid = np.isfinite(a).all(1) & np.isfinite(b).all(1) & (na > fa) & (nb > fb)
-    out = np.full(len(a), np.nan)
-    out[valid] = np.einsum("ij,ij->i", a[valid] / na[valid, None], b[valid] / nb[valid, None])
-    return np.clip(out, -1, 1)
-
-
-def pushforward(s, v, target=10000.):
-    total = s.sum(1, keepdims=True)
-    vp = target * (v - s * v.sum(1, keepdims=True) / total) / total
-    return vp, vp / (1 + target * s / total)
+from experiments.common.velocity_metrics import cosine, pushforward
+from experiments.common.projection import positive_cosine_neighbor_projection as kernel_project
 
 
 def simulate(cfg, topology, seed):
@@ -107,16 +93,6 @@ def infer_and_smooth(data, cfg):
     if not np.isfinite(pred).all():
         raise ValueError("Nonfinite scVelo output")
     return pred, np.asarray(w@data["v"]), np.asarray(w@data["s"]), ms, indices, w
-
-
-def kernel_project(v, x, y, indices):
-    dx = x[indices] - x[:, None, :]
-    den = np.linalg.norm(v, axis=1)[:, None] * np.linalg.norm(dx, axis=2)
-    similarity = np.divide(np.einsum("ig,ikg->ik", v, dx), den, out=np.zeros_like(den), where=den>0)
-    weights = np.maximum(similarity, 0.)
-    totals = weights.sum(1, keepdims=True)
-    weights = np.divide(weights, totals, out=np.zeros_like(weights), where=totals>0)
-    return np.einsum("ik,ikd->id", weights, y[indices]-y[:, None, :])
 
 
 def evaluate(data, cfg, topology, seed, dest):

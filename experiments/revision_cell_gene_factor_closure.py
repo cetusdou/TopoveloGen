@@ -18,7 +18,7 @@ from sklearn.decomposition import PCA
 
 from experiments import revision_factor_core as regions
 from experiments.revision_cache import prepare_cache
-from experiments.revision_coordinate_projection import cosine
+from experiments.common.velocity_metrics import cosine
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "results" / "revision_cell_gene_factor_closure"
