@@ -38,9 +38,10 @@ from experiments.figure4_series_pipeline import (  # noqa: E402
     _add_noise_genes,
     _apply_count_noise,
 )
+from experiments.data_paths import pancreas_reference, result_dir
 
-H5AD = ROOT / "data" / "Pancreas" / "endocrinogenesis_day15.h5ad"
-CACHE = ROOT / "results" / "statistical_realism_figure4" / "data" / "kinetics_cache.pt"
+H5AD = pancreas_reference(require=False)
+CACHE = result_dir("statistical_realism_figure4") / "data" / "kinetics_cache.pt"
 CONFIG = ROOT / "experiments" / "figures" / "fig4series_pancreas_stats" / "configs" / "pipeline.json"
 
 

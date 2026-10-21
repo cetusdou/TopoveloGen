@@ -37,6 +37,7 @@ from scipy import sparse
 from data_generation_module import GeneSynthesizer, GraphEdge, GraphNode, UniversalGraphSystem
 from data_generation_module import GraphSimulator
 from data_generation_module.generate_gene_config import auto_generate_config_from_system
+from experiments.data_paths import pancreas_reference, result_dir
 
 # ---------------------------------------------------------------------------
 # Simulation hyper-parameters  (changing any of these invalidates the cache)
@@ -108,10 +109,8 @@ DEFAULT_PP_CONFIG = PostProcessConfig()
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-DEFAULT_PANCREAS_H5AD = Path(
-    "/data/doujy/Documents/Code/Single_Cell_neuron/data/Pancreas/endocrinogenesis_day15.h5ad"
-)
-_DEFAULT_CACHE_DIR = Path(__file__).parent.parent / "results" / "statistical_realism_figure4" / "data"
+DEFAULT_PANCREAS_H5AD = pancreas_reference(require=False)
+_DEFAULT_CACHE_DIR = result_dir("statistical_realism_figure4") / "data"
 KINETICS_CACHE_PATH = _DEFAULT_CACHE_DIR / "kinetics_cache.pt"
 
 
@@ -159,12 +158,8 @@ def _to_dense(x) -> np.ndarray:
 
 
 def load_pancreas_reference(h5ad_path: Optional[Path] = None) -> Tuple[np.ndarray, np.ndarray, object]:
-    import scvelo as scv
-    path = Path(h5ad_path) if h5ad_path else DEFAULT_PANCREAS_H5AD
-    if path.exists() and path.stat().st_size > 1_000_000:
-        adata = sc.read_h5ad(path)
-    else:
-        adata = scv.datasets.pancreas()
+    path = pancreas_reference(h5ad_path)
+    adata = sc.read_h5ad(path)
     if "spliced" not in adata.layers or "unspliced" not in adata.layers:
         raise ValueError("Pancreas reference missing spliced/unspliced layers")
     return _to_dense(adata.layers["spliced"]), _to_dense(adata.layers["unspliced"]), adata

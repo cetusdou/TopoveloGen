@@ -23,6 +23,11 @@ do not delete them merely because a panelized replacement exists.
 | scMultiSim reference generation | R with scMultiSim 1.2.0 | `experiments/revision_scmultisim_comparison.R` uses `.r-methods` if present. Record the R and package versions separately. |
 | Pancreas reference | `data/Pancreas/endocrinogenesis_day15.h5ad` | External input, deliberately ignored by Git. Verify the SHA-256 in the corresponding experiment manifest before claiming an exact replay. |
 
+The active Figure 4 loader uses this repository-relative input and raises an
+explicit error when it is absent. It no longer substitutes the scVelo example
+dataset. Generated datasets and plots remain under `results/`; the existing
+archives were not moved during the code-module split.
+
 The former revision lock and direct-dependency manifests are absent from this
 checkout. Archived manifests and local environments record some package
 versions but are not a complete fresh-install recipe. The methods environment
