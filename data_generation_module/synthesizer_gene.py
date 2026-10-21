@@ -3,6 +3,7 @@ from typing import List, Dict, Union, Optional, Tuple, Any
 import yaml
 
 from .graph_core import UniversalGraphSystem, GraphEdge, CycleNode, GraphNode
+from .observation import draw_capture_factor, sample_counts
 
 
 def _sigmoid(x: np.ndarray) -> np.ndarray:
@@ -698,11 +699,7 @@ class GeneSynthesizer:
 
     def _draw_capture_factor(self, expr_rate: np.ndarray) -> np.ndarray:
         """Draw a cell-specific capture factor for absolute-abundance counts."""
-        N = expr_rate.shape[0]
-        lib_size = np.random.lognormal(mean=np.log(self.lib_size_mean), sigma=self.lib_size_sd, size=(N, 1)).astype(np.float32)
-        total_abundance = np.clip(expr_rate.sum(axis=1, keepdims=True), 1e-6, None)
-        reference_total = np.clip(np.median(total_abundance), 1e-6, None)
-        return lib_size / reference_total
+        return draw_capture_factor(expr_rate, self.lib_size_mean, self.lib_size_sd)
 
     def _sample_counts(
         self,
@@ -713,34 +710,10 @@ class GeneSynthesizer:
         """Sample counts from absolute abundances with a cell-specific capture factor."""
         if capture_factor is None:
             capture_factor = self._draw_capture_factor(expr_rate)
-
-        mean_counts = np.clip(expr_rate, 0.0, None) * capture_factor * float(capture_scale)
-
-        # 采样计数
-        if self.sampling == 'poisson':
-            counts = np.random.poisson(mean_counts).astype(np.float32)
-        elif self.sampling in ['nb', 'negative_binomial']:
-            r = self.nb_dispersion
-            mean_counts_clamped = np.clip(mean_counts, 1e-6, None)
-            # torch Gamma(concentration=r, rate=r/mean)  <->  numpy gamma(shape=r, scale=mean/r)
-            lam = np.random.gamma(shape=r, scale=mean_counts_clamped / r)
-            counts = np.random.poisson(lam).astype(np.float32)
-        else:
-            counts = mean_counts # fallback
-
-        # 应用dropout噪声（如果启用）
-        if self.dropout_prob > 0:
-            # Dropout概率与表达量相关：低表达基因更容易dropout
-            # p_dropout = base_prob * exp(-slope * normalized_expression)
-            # 归一化表达量（相对于每个细胞的平均表达）
-            normalized_expr = mean_counts / (mean_counts.mean(axis=1, keepdims=True) + 1e-6)
-            # 计算dropout概率：低表达 = 高dropout概率
-            p_dropout = self.dropout_prob * np.exp(-self.dropout_slope * normalized_expr)
-            # 随机决定哪些基因-细胞对发生dropout
-            dropout_mask = np.random.rand(*counts.shape) < p_dropout
-            counts[dropout_mask] = 0
-
-        return counts
+        return sample_counts(
+            expr_rate, capture_factor, capture_scale, self.sampling,
+            self.nb_dispersion, self.dropout_prob, self.dropout_slope,
+        )
 
     # =====================================================
     # 3. 两种生成模式：静态 (Legacy) vs 动力学 (New)

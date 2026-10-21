@@ -20,3 +20,14 @@
 ```bash
 python data_generation_module/examples/example_generate.py
 ```
+
+## Module boundaries
+
+- `graph_core.py` defines the graph geometry and latent drift.
+- `synthesizer_gene.py` owns transcription fields and RNA-state integration.
+- `observation.py` converts continuous abundances to sampled counts using
+  capture variation, Poisson or negative-binomial sampling, and dropout.
+- `presets.py` assembles reusable topology and gene-module configurations.
+
+The public `GeneSynthesizer` methods still call the observation module, so
+existing imports through `data_generation_module` remain valid.
