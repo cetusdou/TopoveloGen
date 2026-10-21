@@ -25,8 +25,7 @@ from sklearn.decomposition import PCA
 from experiments.figures.fig_coord_velocity_consistency.lib import core
 from experiments.common.velocity_metrics import cosine
 from experiments.common.coordinate_simulation import infer_and_smooth
-from experiments.revision_projection_closure import (fixed_distances, native_project,
-                                                      region_labels)
+from experiments.common.native_projection import fixed_distances, native_project, region_labels
 
 OUT = ROOT / "results" / "revision_main_metric_timestep"
 TOPOLOGIES = ("cycle", "bifurcation", "cycle_bifurcation")

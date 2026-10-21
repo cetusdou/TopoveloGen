@@ -14,7 +14,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from data_generation_module import SkeletonNode, UniversalGraphSystem
-from experiments.revision_numerical_kinetics import run_coupled
+from experiments.common.numerical_controls import run_coupled
 
 OUT = ROOT / "results" / "revision_figure8_junction"
 CONFIG = {"seeds": [11, 22, 33, 44, 55], "cells_per_incoming": 12,

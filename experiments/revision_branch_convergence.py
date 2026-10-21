@@ -15,7 +15,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from data_generation_module import build_topology
-from experiments.revision_numerical_kinetics import CONFIG, run_coupled
+from experiments.common.numerical_controls import CONFIG, run_coupled
 
 OUT = ROOT / "results" / "revision_branch_convergence"
 SEEDS = (11, 22, 33, 44, 55)

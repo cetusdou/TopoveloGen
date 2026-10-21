@@ -26,7 +26,7 @@ import scipy
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from data_generation_module import CycleNode, GraphSimulator, build_topology  # noqa: E402
-from experiments.revision_numerical_kinetics import scaffold_distance  # noqa: E402
+from experiments.common.numerical_controls import scaffold_distance  # noqa: E402
 
 OUT = ROOT / "results" / "revision_escape_scan"
 CONFIG = {
