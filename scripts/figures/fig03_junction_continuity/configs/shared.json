@@ -1,0 +1,8 @@
+{
+  "figure_id": "fig03",
+  "title": "Junction continuity",
+  "seed": 1,
+  "out_dir": "data/results/junction_continuity",
+  "data_subdir": "data",
+  "figures_subdir": "figures"
+}

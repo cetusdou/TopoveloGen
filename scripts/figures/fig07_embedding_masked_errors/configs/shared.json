@@ -1,0 +1,14 @@
+{
+  "figure_id": "fig07",
+  "title": "Embedding masked errors",
+  "seed": 1,
+  "out_dir": "data/results/embedding_masked_errors",
+  "data_subdir": "data",
+  "figures_subdir": "figures",
+  "numba_cache_dir": ".numba_cache",
+  "colors": {
+    "gt_velocity": "C0",
+    "scvelo_velocity": "C1",
+    "mismatch": "C1"
+  }
+}

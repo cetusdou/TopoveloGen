@@ -1,8 +1,0 @@
-{
-  "figure_id": "fig04",
-  "title": "Alpha fields",
-  "seed": 1,
-  "out_dir": "results/alpha_fields",
-  "data_subdir": "data",
-  "figures_subdir": "figures"
-}
