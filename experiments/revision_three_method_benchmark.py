@@ -53,7 +53,7 @@ def dataset_name(topology, seed):
 
 
 def prepare(topologies, seeds, observations):
-    from experiments.revision_coordinate_projection import simulate
+    from experiments.common.coordinate_simulation import simulate
     from experiments.figures.fig_coord_velocity_consistency.lib import core
 
     OUT.mkdir(parents=True, exist_ok=True)

@@ -8,7 +8,7 @@ output locations, use the [reproduction map](../REPRODUCIBILITY.md).
 | `revision_*.py` | Current controlled experiments and numerical checks. Run from the repository root with `python -m experiments.NAME`. |
 | `revision_factor_core.py`, `revision_cache.py` | Shared factor-simulation logic and cache provenance guard. |
 | `revision_status.py` | Read-only comparison of archived source hashes with this checkout. |
-| `common/` | Shared coordinate-aware metrics and explicit projection operators for current runners. |
+| `common/` | Shared simulation setup, coordinate-aware metrics, and explicit projection operators for current runners. |
 | `figures/` | Panelized figure pipelines, including earlier figure numbering. |
 | `results_*.py`, `figure_4_fast.py` | Retained earlier single-script entrypoints. |
 

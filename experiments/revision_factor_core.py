@@ -13,7 +13,7 @@ from sklearn.decomposition import PCA
 
 from experiments.figures.fig_coord_velocity_consistency.lib import core
 from experiments.common.velocity_metrics import cosine
-from experiments.revision_coordinate_projection import infer_and_smooth, simulate
+from experiments.common.coordinate_simulation import infer_and_smooth, simulate
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_DEPENDENCIES = (
